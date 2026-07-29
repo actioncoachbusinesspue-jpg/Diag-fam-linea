@@ -40,5 +40,9 @@ return [
     'security' => [
         'max_login_attempts' => 5,
         'lockout_minutes'    => 15,
+        // Caracteres aleatorios de la clave de familia (PREFIJO-XXXXXX).
+        // Rango permitido: 6 a 10. Cualquier valor inválido cae a 6.
+        // Las claves de 4 caracteres emitidas antes de 1.0.2 siguen funcionando.
+        'family_access_random_length' => 6,
     ],
 ];

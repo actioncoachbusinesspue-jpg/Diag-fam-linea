@@ -73,10 +73,28 @@ check('password_verify incorrecto rechazado', !password_verify('otra-clave', $fo
 [$family, $accessCode] = FamilyRepository::create('Familia Horizonte', 5, null, null, $adminId);
 check('Crear familia', $family !== null && $family['status'] === 'borrador');
 check('Slug aleatorio válido', bvm_valid_slug($family['public_slug']));
-check('Clave con formato legible', (bool)preg_match('/^[A-Z]+-[A-Z2-9]{4}$/', $accessCode));
+check('Clave con formato legible (6 aleatorios desde 1.0.2)', (bool)preg_match('/^[A-Z]+-[A-Z2-9]{6}$/', $accessCode));
 check('Clave no almacenada en claro', strpos(json_encode($family), $accessCode) === false);
 check('Clave verifica', FamilyRepository::verifyAccessCode($family, $accessCode));
-check('Clave incorrecta rechazada', !FamilyRepository::verifyAccessCode($family, 'HORIZONTE-XXXX'));
+check('Clave incorrecta rechazada', !FamilyRepository::verifyAccessCode($family, 'HORIZONTE-XXXXXX'));
+
+// Compatibilidad: una clave de 4 caracteres (formato anterior a 1.0.2) sigue verificando
+$legacyKey = 'HORIZONTE-8K4P';
+Database::pdo()->prepare('UPDATE families SET access_code_hash = ? WHERE id = ?')
+    ->execute([password_hash($legacyKey, PASSWORD_DEFAULT), (int)$family['id']]);
+$familyLegacy = FamilyRepository::findById((int)$family['id']);
+check('Clave antigua de 4 caracteres sigue funcionando', FamilyRepository::verifyAccessCode($familyLegacy, $legacyKey));
+// Restaurar la clave nueva para el resto del flujo
+Database::pdo()->prepare('UPDATE families SET access_code_hash = ? WHERE id = ?')
+    ->execute([password_hash($accessCode, PASSWORD_DEFAULT), (int)$family['id']]);
+$family = FamilyRepository::findById((int)$family['id']);
+
+// Regenerar produce el formato nuevo y la longitud configurada se respeta
+$regen = FamilyRepository::regenerateAccessCode((int)$family['id']);
+check('Clave regenerada usa 6 caracteres aleatorios', (bool)preg_match('/^[A-Z]+-[A-Z2-9]{6}$/', $regen));
+$family = FamilyRepository::findById((int)$family['id']);
+check('Clave regenerada verifica', FamilyRepository::verifyAccessCode($family, $regen));
+check('Longitud aleatoria validada al rango [6,10]', bvm_family_access_random_length() === 6);
 
 // Familia B para aislamiento
 [$familyB, $codeB] = FamilyRepository::create('Familia Robles', 3, null, null, $adminId);

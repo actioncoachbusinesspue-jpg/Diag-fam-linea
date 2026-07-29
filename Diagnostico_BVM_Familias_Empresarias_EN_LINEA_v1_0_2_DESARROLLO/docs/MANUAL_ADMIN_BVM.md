@@ -13,7 +13,8 @@
    (opcional) y ventana de fechas (opcional).
 2. Al crearla, el sistema muestra **una sola vez**:
    - la **liga** de invitación (`participar.php?f=…`), y
-   - la **clave de acceso** (formato `ROBLES-8K4P`).
+   - la **clave de acceso** (formato `ROBLES-8K4P7M`; las claves emitidas antes
+     de la versión 1.0.2, con 4 caracteres, siguen funcionando).
    Use el botón *Copiar invitación* y compártala por el medio que la familia
    prefiera. Si la clave se pierde, **regenérela** en la ficha de la familia
    (la anterior deja de funcionar).

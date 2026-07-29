@@ -53,9 +53,27 @@ function bvm_random_slug(int $length = 12): string
 }
 
 /**
- * Clave de familia legible: PREFIJO-XXXX (ej. ROBLES-8K4P).
+ * Longitud de la parte aleatoria de la clave de familia.
+ * Configurable en security.family_access_random_length; se valida al rango
+ * [6, 10] y cualquier valor inválido cae de forma segura a 6.
+ */
+function bvm_family_access_random_length(): int
+{
+    $configured = bvm_config('security.family_access_random_length', 6);
+    if (!is_numeric($configured)) {
+        return 6;
+    }
+    $n = (int)$configured;
+    return ($n >= 6 && $n <= 10) ? $n : 6;
+}
+
+/**
+ * Clave de familia legible: PREFIJO-XXXXXX (ej. ROBLES-8K4P7M).
  * El prefijo deriva del nombre solo para reconocimiento humano;
- * la parte aleatoria es criptográficamente segura.
+ * la parte aleatoria (6 caracteres desde 1.0.2, sin ambiguos) es
+ * criptográficamente segura (random_int). Las claves de 4 caracteres
+ * emitidas por versiones anteriores siguen funcionando: la verificación
+ * es contra el hash almacenado, sin requisito de formato.
  */
 function bvm_family_access_code(string $familyName): string
 {
@@ -63,15 +81,16 @@ function bvm_family_access_code(string $familyName): string
     if ($ascii === false) {
         $ascii = $familyName;
     }
-    // Omite palabras genéricas para que "Familia Robles" produzca ROBLES-XXXX.
+    // Omite palabras genéricas para que "Familia Robles" produzca ROBLES-XXXXXX.
     $stop = ['familia', 'family', 'empresa', 'grupo', 'casa', 'de', 'del', 'la', 'las', 'los', 'y'];
     $words = preg_split('/[^A-Za-z]+/', $ascii, -1, PREG_SPLIT_NO_EMPTY) ?: [];
     $candidates = array_values(array_filter($words, fn($w) => !in_array(strtolower($w), $stop, true)));
     $base = $candidates[0] ?? ($words[0] ?? 'BVM');
     $prefix = substr(strtoupper($base), 0, 8) ?: 'BVM';
     $alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    $length = bvm_family_access_random_length();
     $rand = '';
-    for ($i = 0; $i < 4; $i++) {
+    for ($i = 0; $i < $length; $i++) {
         $rand .= $alphabet[random_int(0, strlen($alphabet) - 1)];
     }
     return $prefix . '-' . $rand;

@@ -100,10 +100,10 @@
   function stageKey(mode) {
     return '<div class="question-card">' +
       '<h1>' + (mode === 'resume' ? 'Continuar mi participación' : 'Clave de la familia') + '</h1>' +
-      '<p>Ingrese la clave que recibió junto con esta liga (por ejemplo: ROBLES-8K4P).</p>' +
+      '<p>Ingrese la clave que recibió junto con esta liga (por ejemplo: ROBLES-8K4P7M).</p>' +
       '<div id="stage-msg"></div>' +
       '<label for="family-key">Clave de la familia</label>' +
-      '<input id="family-key" type="text" autocomplete="off" autocapitalize="characters" placeholder="FAMILIA-XXXX">' +
+      '<input id="family-key" type="text" autocomplete="off" autocapitalize="characters" placeholder="FAMILIA-XXXXXX">' +
       (mode === 'resume'
         ? '<label for="personal-code">Su código personal de continuidad</label>' +
           '<input id="personal-code" type="text" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX">' +

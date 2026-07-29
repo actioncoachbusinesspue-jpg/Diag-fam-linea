@@ -5,7 +5,7 @@
 Su familia le compartirá dos cosas:
 
 1. Una **liga** (dirección web).
-2. La **clave de la familia** (por ejemplo `ROBLES-8K4P`).
+2. La **clave de la familia** (por ejemplo `ROBLES-8K4P7M`).
 
 ## Cómo responder
 

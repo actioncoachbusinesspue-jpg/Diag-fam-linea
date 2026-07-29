@@ -30,6 +30,11 @@ return [
         'env'                      => 'production',
         // URL base pública SIN diagonal final, ej: https://sudominio.com/diagnostico-bvm-online
         'base_url'                 => '',
+        // Zona horaria para decisiones de apertura/cierre y presentación
+        // administrativa (identificador IANA). Los timestamps técnicos se
+        // guardan siempre en UTC. Si el valor es inválido, la aplicación NO
+        // inicia (falla explícita, nunca silenciosa).
+        'timezone'                 => 'America/Mexico_City',
         'session_name'             => 'BVMSESSID',
         // Expiración de sesión administrativa por inactividad.
         'session_lifetime_minutes' => 45,

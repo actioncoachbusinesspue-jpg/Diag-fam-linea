@@ -10,6 +10,12 @@
     return meta ? meta.getAttribute('content').replace(/\/$/, '') : '';
   }
 
+  /** Zona horaria configurada en el servidor (presentación administrativa). */
+  function timezone() {
+    var meta = document.querySelector('meta[name="bvm-timezone"]');
+    return meta ? meta.getAttribute('content') : 'America/Mexico_City';
+  }
+
   function post(path, payload, opts) {
     opts = opts || {};
     payload = payload || {};
@@ -54,5 +60,5 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  global.BvmApi = { post: post, postWithRetry: postWithRetry, escapeHtml: escapeHtml, base: apiBase };
+  global.BvmApi = { post: post, postWithRetry: postWithRetry, escapeHtml: escapeHtml, base: apiBase, timezone: timezone };
 })(window);

@@ -110,7 +110,8 @@ function fmtDate(v) {
   if (!v) { return '—'; }
   var d = new Date(v.replace(' ', 'T') + (v.indexOf('Z') === -1 ? 'Z' : ''));
   if (isNaN(d)) { return v; }
-  return d.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+  // Los timestamps llegan en UTC; se muestran en la zona configurada del servidor.
+  return d.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', timeZone: BvmApi.timezone() });
 }
 
 function renderFamilies() {

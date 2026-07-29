@@ -14,6 +14,7 @@ function bvm_admin_header(array $user, string $title, string $active, array $bre
 <meta name="robots" content="noindex,nofollow">
 <meta name="csrf-token" content="<?= e(bvm_csrf_token()) ?>">
 <meta name="bvm-base" content="<?= e($base) ?>">
+<meta name="bvm-timezone" content="<?= e(bvm_configured_timezone()->getName()) ?>">
 <title><?= e($title) ?> — Administración BVM</title>
 <link rel="stylesheet" href="<?= e($base) ?>/assets/css/bvm-app.css">
 </head>
@@ -53,7 +54,10 @@ function bvm_admin_footer(string $extraScript = ''): void
     ?>
 </main>
 <footer class="public-footer">
-  <div class="inner">Uso interno BVM. La información de las familias es confidencial: los reportes muestran únicamente resultados agregados.</div>
+  <div class="inner">Uso interno BVM. La información de las familias es confidencial: los reportes muestran únicamente resultados agregados.
+  <?= bvm_configured_timezone()->getName() === 'America/Mexico_City'
+      ? 'Fechas interpretadas en hora de Ciudad de México.'
+      : 'Fechas interpretadas en la zona ' . e(bvm_configured_timezone()->getName()) . '.' ?></div>
 </footer>
 <script src="<?= e($base) ?>/assets/js/bvm-api.js"></script>
 <script>

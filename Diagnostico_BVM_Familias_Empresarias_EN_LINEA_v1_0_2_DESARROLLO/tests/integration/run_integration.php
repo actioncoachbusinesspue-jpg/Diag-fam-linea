@@ -179,6 +179,39 @@ for ($i = 1; $i <= 6; $i++) {
 }
 check('Sin expected no existe límite (6 registros)', $okAll);
 
+// 2b-bis. Zona horaria (1.0.2): decisiones en hora local configurada
+check('Zona configurada por defecto es America/Mexico_City',
+    bvm_configured_timezone()->getName() === 'America/Mexico_City');
+
+// Un día antes de la apertura: cerrado; día de apertura: abierto
+check('Cerrado un día antes de la apertura', !bvm_local_date_is_open('2026-08-10', '2026-08-20', '2026-08-09'));
+check('Abierto el día de apertura (desde las 00:00 locales)', bvm_local_date_is_open('2026-08-10', '2026-08-20', '2026-08-10'));
+// Día de cierre: abierto TODO el día; día siguiente: cerrado
+check('Abierto durante todo el día de cierre', bvm_local_date_is_open('2026-08-10', '2026-08-20', '2026-08-20'));
+check('Cerrado el día siguiente al cierre', !bvm_local_date_is_open('2026-08-10', '2026-08-20', '2026-08-21'));
+// Cambio de año
+check('Rango que cruza el año funciona', bvm_local_date_is_open('2026-12-28', '2027-01-05', '2027-01-01'));
+check('Cerrado tras el cierre en año nuevo', !bvm_local_date_is_open('2026-12-28', '2027-01-05', '2027-01-06'));
+// Fechas NULL no restringen
+check('Sin fechas no hay restricción', bvm_local_date_is_open(null, null, '2026-08-10'));
+
+// UTC puede ir un día adelante de México (22:00 en CDMX = 04:00 UTC del día
+// siguiente): la fecha local NO debe adelantarse a la de UTC en ese caso.
+$utcToday = gmdate('Y-m-d');
+$localToday = bvm_local_today();
+check('Fecha local nunca va después de la fecha UTC', $localToday <= $utcToday);
+$cdmxNow = new DateTimeImmutable('now', new DateTimeZone('America/Mexico_City'));
+check('bvm_local_today coincide con America/Mexico_City', $localToday === $cdmxNow->format('Y-m-d'));
+
+// report_date es editorial: se conserva el día tal cual, sin conversión
+FamilyRepository::update((int)$familyB['id'], ['report_date' => '2026-01-01']);
+$familyB = FamilyRepository::findById((int)$familyB['id']);
+$objB = FamilyDataService::buildFamilyObject($familyB);
+check('report_date conserva el día (sin conversión de zona)', $objB['reportDate'] === '2026-01-01');
+
+// Timestamps técnicos siguen en UTC
+check('bvm_now() persiste en UTC', abs(strtotime(bvm_now() . ' UTC') - time()) < 5);
+
 // 2c. Reanudación indexada por código personal (1.0.2)
 $anaRow = ParticipantRepository::findById($bCodes['Ana Robles']['id']);
 check('Participante nuevo tiene lookup hash', !empty($anaRow['resume_token_lookup_hash'])

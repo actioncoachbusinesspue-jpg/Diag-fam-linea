@@ -141,7 +141,8 @@ $script .= <<<'JS'
 function fmtDate(v) {
   if (!v) { return '—'; }
   var d = new Date(String(v).replace(' ', 'T') + (String(v).indexOf('Z') === -1 ? 'Z' : ''));
-  return isNaN(d) ? v : d.toLocaleString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  // Los timestamps llegan en UTC; se muestran en la zona configurada del servidor.
+  return isNaN(d) ? v : d.toLocaleString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: BvmApi.timezone() });
 }
 function statusLabel(s) {
   return { borrador: 'Borrador', abierta: 'Abierta', cerrada: 'Cerrada', archivada: 'Archivada',

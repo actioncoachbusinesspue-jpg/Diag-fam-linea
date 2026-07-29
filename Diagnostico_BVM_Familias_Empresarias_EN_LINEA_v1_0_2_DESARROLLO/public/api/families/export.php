@@ -16,5 +16,5 @@ AuditRepository::log('family-exported', (int)$user['id'], $id);
 bvm_security_headers(null, true);
 header('Content-Type: application/json; charset=utf-8');
 $slug = preg_replace('/[^a-z0-9]+/i', '_', (string)$family['family_name']);
-header('Content-Disposition: attachment; filename="respaldo_bvm_' . $slug . '_' . gmdate('Ymd') . '.json"');
+header('Content-Disposition: attachment; filename="respaldo_bvm_' . $slug . '_' . str_replace('-', '', bvm_local_today()) . '.json"');
 echo json_encode($backup, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

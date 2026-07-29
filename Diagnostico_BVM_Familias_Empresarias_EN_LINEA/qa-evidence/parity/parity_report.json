@@ -1,0 +1,157 @@
+{
+  "generatedBy": "tests/parity/parity_check.mjs",
+  "result": "PARIDAD EXACTA",
+  "master": {
+    "questionAverages": [
+      4.2,
+      3.8,
+      3.6,
+      3.6,
+      3.6,
+      3.2,
+      3.4,
+      3.2,
+      3.2,
+      3.2,
+      3.4,
+      3.4,
+      3.2,
+      3.2,
+      3.4,
+      2.4,
+      2.6,
+      2.8,
+      2.4,
+      2.2
+    ],
+    "dimensionScores": {
+      "relaciones": 3.76,
+      "gobierno": 3.24,
+      "desarrollo": 3.32,
+      "continuidad": 2.48
+    },
+    "normalizedDimensionScores": {
+      "relaciones": 69,
+      "gobierno": 56,
+      "desarrollo": 58,
+      "continuidad": 37
+    },
+    "generalIndex": 55,
+    "generalLevel": "parcial",
+    "externalQuestionAverages": {
+      "priorityNextTwelveMonths": 3.8,
+      "willingnessToEngage": 3.6
+    },
+    "questionDispersion": [
+      0.4,
+      0.4,
+      0.49,
+      0.49,
+      0.49,
+      0.4,
+      0.49,
+      0.4,
+      0.4,
+      0.4,
+      0.49,
+      0.49,
+      0.4,
+      0.4,
+      0.49,
+      0.49,
+      0.49,
+      0.98,
+      0.49,
+      0.4
+    ],
+    "dimensionDispersion": {
+      "relaciones": 0.45,
+      "gobierno": 0.42,
+      "desarrollo": 0.45,
+      "continuidad": 0.57
+    },
+    "generalDispersion": 0.47,
+    "generalDispersionLevel": "alta_coincidencia",
+    "finishedCount": 5,
+    "alignmentInterpretable": true,
+    "mostAlignedDimension": "gobierno",
+    "mostDispersedDimension": "continuidad"
+  },
+  "online": {
+    "questionAverages": [
+      4.2,
+      3.8,
+      3.6,
+      3.6,
+      3.6,
+      3.2,
+      3.4,
+      3.2,
+      3.2,
+      3.2,
+      3.4,
+      3.4,
+      3.2,
+      3.2,
+      3.4,
+      2.4,
+      2.6,
+      2.8,
+      2.4,
+      2.2
+    ],
+    "dimensionScores": {
+      "relaciones": 3.76,
+      "gobierno": 3.24,
+      "desarrollo": 3.32,
+      "continuidad": 2.48
+    },
+    "normalizedDimensionScores": {
+      "relaciones": 69,
+      "gobierno": 56,
+      "desarrollo": 58,
+      "continuidad": 37
+    },
+    "generalIndex": 55,
+    "generalLevel": "parcial",
+    "externalQuestionAverages": {
+      "priorityNextTwelveMonths": 3.8,
+      "willingnessToEngage": 3.6
+    },
+    "questionDispersion": [
+      0.4,
+      0.4,
+      0.49,
+      0.49,
+      0.49,
+      0.4,
+      0.49,
+      0.4,
+      0.4,
+      0.4,
+      0.49,
+      0.49,
+      0.4,
+      0.4,
+      0.49,
+      0.49,
+      0.49,
+      0.98,
+      0.49,
+      0.4
+    ],
+    "dimensionDispersion": {
+      "relaciones": 0.45,
+      "gobierno": 0.42,
+      "desarrollo": 0.45,
+      "continuidad": 0.57
+    },
+    "generalDispersion": 0.47,
+    "generalDispersionLevel": "alta_coincidencia",
+    "finishedCount": 5,
+    "alignmentInterpretable": true,
+    "mostAlignedDimension": "gobierno",
+    "mostDispersedDimension": "continuidad"
+  },
+  "diffs": []
+}

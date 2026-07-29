@@ -63,8 +63,12 @@ function bvm_family_access_code(string $familyName): string
     if ($ascii === false) {
         $ascii = $familyName;
     }
-    $prefix = strtoupper(preg_replace('/[^A-Za-z]/', '', $ascii) ?: 'BVM');
-    $prefix = substr($prefix, 0, 8) ?: 'BVM';
+    // Omite palabras genéricas para que "Familia Robles" produzca ROBLES-XXXX.
+    $stop = ['familia', 'family', 'empresa', 'grupo', 'casa', 'de', 'del', 'la', 'las', 'los', 'y'];
+    $words = preg_split('/[^A-Za-z]+/', $ascii, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $candidates = array_values(array_filter($words, fn($w) => !in_array(strtolower($w), $stop, true)));
+    $base = $candidates[0] ?? ($words[0] ?? 'BVM');
+    $prefix = substr(strtoupper($base), 0, 8) ?: 'BVM';
     $alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     $rand = '';
     for ($i = 0; $i < 4; $i++) {

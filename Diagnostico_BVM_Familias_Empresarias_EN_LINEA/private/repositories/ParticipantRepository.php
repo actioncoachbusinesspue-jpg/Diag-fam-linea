@@ -59,7 +59,7 @@ final class ParticipantRepository
 
     public static function listByFamily(int $familyId): array
     {
-        $st = Database::pdo()->prepare('SELECT * FROM participants WHERE family_id = ? ORDER BY created_at ASC');
+        $st = Database::pdo()->prepare('SELECT * FROM participants WHERE family_id = ? ORDER BY created_at ASC, id ASC');
         $st->execute([$familyId]);
         return $st->fetchAll();
     }

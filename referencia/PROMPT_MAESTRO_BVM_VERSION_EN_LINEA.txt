@@ -1,0 +1,1261 @@
+PROMPT MAESTRO — DIAGNÓSTICO BVM PARA FAMILIAS EMPRESARIAS
+VERSIÓN EN LÍNEA CON ACCESO BVM, BASE DE DATOS Y PARTICIPACIÓN REMOTA
+
+ACTÚA COMO UN EQUIPO SENIOR INTEGRADO POR:
+
+1. Arquitecto de software para aplicaciones web seguras.
+2. Desarrollador senior PHP, MySQL/MariaDB, JavaScript, HTML y CSS.
+3. Especialista en despliegues sobre Hostinger y hosting compartido.
+4. Especialista en autenticación, sesiones, protección de datos y seguridad web.
+5. Diseñador UX/UI de productos premium para alta dirección y familias empresarias.
+6. Especialista en arquitectura de datos multiempresa y multiusuario.
+7. Especialista en Playwright, pruebas E2E, PDF y regresión visual.
+8. Consultor metodológico para familias empresarias.
+9. Auditor técnico encargado de impedir cambios no autorizados en fórmulas, cuestionario, interpretación y reporte.
+10. Documentador técnico capaz de entregar una solución instalable, mantenible y comprensible para un encargado de hosting.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. CONTEXTO Y REGLA ABSOLUTA DE PROTECCIÓN DEL TRABAJO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Existe una versión local estable, validada y lista para demostración:
+
+Diagnostico_BVM_Familias_Empresarias.html
+
+ESA VERSIÓN ES EL ARCHIVO MAESTRO ESTABLE.
+
+NO DEBES:
+
+- modificarla;
+- renombrarla;
+- sobrescribirla;
+- convertirla directamente;
+- usarla como archivo de trabajo;
+- eliminarla;
+- reemplazar su contenido;
+- guardar cambios sobre ella.
+
+Existe una copia separada de referencia:
+
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA_DESARROLLO.html
+
+Esta copia sirve como referencia funcional, visual, metodológica y de comportamiento.
+
+La versión en línea NO debe terminar como un único HTML. Debe convertirse en una pequeña aplicación web con frontend, backend PHP y base de datos MySQL/MariaDB.
+
+Crea un proyecto completamente separado llamado:
+
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA
+
+Dentro del proyecto conserva una copia inmutable del HTML de referencia en:
+
+/reference/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_DESARROLLO.html
+
+Añade un archivo:
+
+/reference/NO_MODIFICAR_ARCHIVO_ESTABLE.txt
+
+con el siguiente mensaje:
+
+“Esta carpeta contiene la referencia funcional de la versión local validada. No debe sustituirse, sobrescribirse ni publicarse como la versión en línea.”
+
+Si existe Git:
+
+- crear una rama:
+  claude/bvm-en-linea-mvp
+- hacer un commit inicial antes de modificar;
+- hacer un commit por hito;
+- no mezclar cambios con la versión local;
+- entregar el hash final.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. OBJETIVO DE LA VERSIÓN EN LÍNEA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Construir el segundo camino del proyecto:
+
+1. Cualquier persona con la liga pública puede abrir la plataforma.
+2. La demostración ficticia puede consultarse sin contraseña.
+3. Solo el equipo BVM puede entrar a Administración BVM.
+4. Administración BVM debe requerir usuario y contraseña reales, validados en el servidor.
+5. BVM puede crear y administrar varias familias o empresas.
+6. Al crear una familia, el sistema genera una liga única y una clave de acceso.
+7. Los participantes pueden responder desde teléfonos o computadoras diferentes.
+8. Las respuestas se guardan centralmente en MySQL/MariaDB.
+9. BVM puede consultar el avance en tiempo real.
+10. Los participantes no pueden ver resultados ni Administración BVM.
+11. El reporte ejecutivo se genera con las respuestas finalizadas.
+12. El reporte conserva exactamente su metodología, diseño y estructura de 12 páginas.
+13. La Familia Horizonte permanece como demostración ficticia y aislada.
+14. La solución debe poder subirse a Hostinger sin procesos complejos de servidor.
+
+El flujo final debe ser:
+
+BVM inicia sesión
+→ crea familia
+→ define participantes esperados y vigencia
+→ el sistema genera liga y clave
+→ BVM comparte la invitación
+→ cada participante accede desde su equipo
+→ se registra y obtiene un código personal de continuidad
+→ responde con guardado automático
+→ finaliza y queda bloqueado
+→ BVM ve avances agregados
+→ BVM genera la radiografía y el reporte.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. TECNOLOGÍA RECOMENDADA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Utiliza una arquitectura compatible con hosting compartido:
+
+- PHP 8.2 o una versión estable disponible en el hosting;
+- MySQL o MariaDB;
+- PDO;
+- HTML semántico;
+- CSS propio;
+- JavaScript vanilla modular;
+- sesiones PHP;
+- HTTPS;
+- Apache/.htaccess cuando esté disponible.
+
+No utilices Node.js como requisito de producción.
+
+Node.js y Playwright pueden utilizarse localmente para pruebas, pero la aplicación publicada debe funcionar con PHP y MySQL/MariaDB.
+
+Evita dependencias remotas y CDNs.
+
+La aplicación debe seguir funcionando si el navegador bloquea recursos de terceros, porque no debe requerirlos.
+
+No uses frameworks pesados salvo que exista una justificación técnica contundente. Prioriza una solución sencilla de instalar, auditar y mantener.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. ESTRUCTURA MÍNIMA DEL PROYECTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Crea una estructura similar a:
+
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA/
+│
+├── public/
+│   ├── index.php
+│   ├── participar.php
+│   ├── demostracion.php
+│   ├── acceso-bvm.php
+│   ├── admin/
+│   │   ├── index.php
+│   │   ├── familias.php
+│   │   ├── familia.php
+│   │   ├── reporte.php
+│   │   └── cerrar-sesion.php
+│   ├── api/
+│   │   ├── auth/
+│   │   ├── families/
+│   │   ├── participants/
+│   │   ├── responses/
+│   │   └── reports/
+│   ├── assets/
+│   │   ├── css/
+│   │   ├── js/
+│   │   ├── img/
+│   │   └── fonts/
+│   └── .htaccess
+│
+├── private/
+│   ├── config.example.php
+│   ├── bootstrap.php
+│   ├── database.php
+│   ├── auth.php
+│   ├── csrf.php
+│   ├── security.php
+│   ├── validators.php
+│   ├── repositories/
+│   ├── services/
+│   └── scoring/
+│
+├── database/
+│   ├── schema.sql
+│   ├── seed_demo.sql
+│   └── migrations/
+│
+├── tools/
+│   ├── import-local-backup.php
+│   └── health-check.php
+│
+├── tests/
+│   ├── e2e/
+│   ├── integration/
+│   └── fixtures/
+│
+├── qa-evidence/
+├── reference/
+├── docs/
+├── README.md
+├── CHANGELOG.md
+└── DEPLOY_HOSTINGER.md
+
+La estructura puede ajustarse si existe una razón técnica, pero debe mantener:
+
+- separación entre archivos públicos y privados;
+- configuración fuera del acceso público;
+- API protegida;
+- activos separados;
+- documentación;
+- pruebas;
+- migraciones de base de datos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. EXPERIENCIA PÚBLICA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+La página pública debe mostrar tres caminos:
+
+A. RESPONDER EL DIAGNÓSTICO
+Para personas invitadas por una familia.
+
+B. CONOCER LA RADIOGRAFÍA BVM
+Demostración con Familia Horizonte, completamente ficticia.
+
+C. ACCESO BVM
+Uso exclusivo del equipo autorizado de BVM.
+
+Jerarquía recomendada:
+
+- acción principal: Responder diagnóstico;
+- demostración claramente visible, con explicación del beneficio y duración;
+- Acceso BVM visible pero sobrio, acompañado de un icono de candado;
+- no presentar Administración BVM como una opción disponible para participantes.
+
+El botón de demostración debe aparecer:
+
+- en la página inicial;
+- en el estado inicial cuando no se ha ingresado a una familia;
+- dentro de la ayuda;
+- con el texto “Iniciar demostración guiada”;
+- con una explicación breve de qué permite conocer;
+- con duración estimada;
+- con opción de minimizar o salir;
+- sin competir con la acción principal cuando existe una invitación real.
+
+La experiencia debe sentirse:
+
+- premium;
+- sobria;
+- fluida;
+- propia de alta dirección;
+- clara;
+- no saturada;
+- no parecida a un SaaS genérico.
+
+Debe mantener:
+
+- navegación consistente;
+- estado activo visible;
+- contexto de ubicación;
+- breadcrumbs cuando ayuden;
+- regreso sencillo;
+- ayuda permanente;
+- foco y teclado accesibles;
+- experiencia móvil completa;
+- transiciones discretas;
+- continuidad sin perder datos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. ACCESO BVM SEGURO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Implementa autenticación real del lado del servidor.
+
+No guardar usuario o contraseña dentro de JavaScript, HTML, CSS o localStorage.
+
+Requisitos:
+
+- tabla de usuarios;
+- password_hash para almacenar contraseñas;
+- password_verify para validar;
+- sesiones PHP;
+- regenerar ID de sesión al iniciar sesión;
+- cookie HttpOnly;
+- cookie Secure cuando existe HTTPS;
+- SameSite=Strict o Lax con justificación;
+- cierre de sesión;
+- expiración por inactividad;
+- protección CSRF;
+- límite de intentos;
+- bloqueo temporal tras intentos repetidos;
+- mensajes genéricos de error;
+- consultas preparadas PDO;
+- validación y escape de salidas;
+- no revelar si un usuario existe;
+- no registrar contraseñas;
+- no registrar respuestas individuales en logs.
+
+Crear un asistente de instalación inicial seguro:
+
+- solo funciona cuando no existe ningún usuario;
+- exige un token de instalación ubicado en configuración privada;
+- crea el primer administrador;
+- se deshabilita automáticamente al completar la instalación;
+- no deja credenciales predeterminadas;
+- no utiliza admin/admin ni contraseñas fijas.
+
+Preparar la arquitectura para roles:
+
+- administrador;
+- consultor.
+
+En el MVP puede existir un solo administrador, pero la base de datos debe permitir agregar consultores posteriormente.
+
+Un consultor nunca debe acceder a familias que no le fueron asignadas cuando se habiliten varios usuarios.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. ALTA Y ADMINISTRACIÓN DE FAMILIAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Administración BVM debe permitir:
+
+1. Crear familia o empresa.
+2. Editar el nombre.
+3. Definir número esperado de participantes.
+4. Definir fecha de apertura.
+5. Definir fecha de cierre.
+6. Cambiar estado:
+   - borrador;
+   - abierta;
+   - cerrada;
+   - archivada.
+7. Copiar la liga de invitación.
+8. Generar o regenerar clave de acceso.
+9. Consultar avance:
+   - registrados;
+   - en proceso;
+   - finalizados;
+   - porcentaje;
+   - última actividad.
+10. Abrir resultados.
+11. Generar reporte.
+12. Exportar respaldo.
+13. Archivar.
+14. Eliminar de forma definitiva únicamente con doble confirmación.
+15. Reabrir una participación finalizada únicamente con autorización expresa y registro de auditoría.
+
+Al crear una familia, genera:
+
+- identificador interno;
+- slug público aleatorio no predecible;
+- liga pública;
+- clave de familia aleatoria;
+- fecha de creación;
+- estado inicial;
+- usuario BVM responsable.
+
+La clave de familia:
+
+- debe generarse de manera criptográficamente segura;
+- debe mostrarse al administrador para copiarla;
+- debe almacenarse como hash;
+- si se pierde, se regenera;
+- nunca debe enviarse al navegador público desde la API;
+- no debe utilizarse como contraseña administrativa.
+
+Ejemplo conceptual:
+
+Liga:
+https://dominio.com/diagnostico-bvm-online/participar.php?f=RANDOM_SLUG
+
+Clave:
+ROBLES-8K4P
+
+La liga identifica la familia.
+
+La clave autoriza el acceso para responder.
+
+Ninguna de las dos permite entrar a Administración BVM.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. EXPERIENCIA DEL PARTICIPANTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Flujo:
+
+1. Abrir liga de familia.
+2. Ver una bienvenida sin mostrar información sensible innecesaria.
+3. Ingresar clave de familia.
+4. Leer aviso de privacidad y consentimiento.
+5. Registrar:
+   - nombre;
+   - generación;
+   - tipo de participación;
+   - rol patrimonial.
+6. El sistema genera un código personal de continuidad.
+7. Mostrar el código una vez y permitir copiarlo.
+8. Comenzar cuestionario.
+9. Guardar cada respuesta automáticamente.
+10. Mostrar estado:
+    - Guardando…
+    - Guardado.
+    - Sin conexión; reintentando.
+11. Permitir salir y continuar posteriormente.
+12. Permitir continuar desde otro dispositivo usando:
+    - liga de familia;
+    - clave de familia;
+    - código personal.
+13. Revisar respuestas.
+14. Responder las dos preguntas externas.
+15. Finalizar.
+16. Bloquear modificaciones.
+17. Mostrar confirmación.
+
+El código personal:
+
+- debe ser aleatorio;
+- no debe derivarse del nombre;
+- debe guardarse como hash;
+- debe poder regenerarse desde Administración BVM;
+- no debe permitir ver respuestas de otra persona;
+- no debe permitir ver resultados familiares.
+
+Evitar duplicados razonables:
+
+- normalizar espacios;
+- comparación insensible a mayúsculas;
+- advertir si ya existe un nombre igual;
+- permitir nombres iguales únicamente con confirmación administrativa o identificador distinto.
+
+No usar correo electrónico como requisito en el MVP.
+
+No pedir datos que no son necesarios.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. GUARDADO, CONCURRENCIA Y CONTINUIDAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Sustituir localStorage como fuente principal de datos reales.
+
+La base de datos debe ser la fuente de verdad.
+
+localStorage puede conservar únicamente:
+
+- preferencia de interfaz;
+- código o token de continuidad cifrado o protegido de forma razonable;
+- última ruta;
+- estado temporal no sensible;
+- onboarding visto.
+
+No guardar el conjunto completo de respuestas reales en localStorage.
+
+El guardado automático debe:
+
+- guardar una respuesta por operación;
+- validar que el valor esté entre 1 y 5;
+- usar transacciones;
+- impedir cambios después de finalizar;
+- manejar pérdida temporal de conexión;
+- reintentar sin duplicar;
+- informar al usuario;
+- conservar orden e índice actual;
+- registrar updated_at;
+- usar un número de revisión para detectar ediciones simultáneas.
+
+Si dos dispositivos intentan editar la misma participación:
+
+- detectar conflicto;
+- no sobrescribir silenciosamente;
+- conservar la versión más reciente confirmada;
+- mostrar un mensaje comprensible;
+- permitir recargar.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. MODELO DE DATOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Crear al menos las tablas siguientes:
+
+admin_users
+- id
+- name
+- username o email
+- password_hash
+- role
+- active
+- last_login_at
+- created_at
+- updated_at
+
+families
+- id
+- public_slug
+- family_name
+- access_code_hash
+- expected_participants
+- questionnaire_version
+- report_date
+- status
+- opens_at
+- closes_at
+- created_by
+- created_at
+- updated_at
+- archived_at
+- deleted_at
+
+participants
+- id
+- public_id
+- family_id
+- participant_name
+- normalized_name
+- generation
+- participation_type
+- participation_role
+- resume_token_hash
+- status
+- current_index
+- revision
+- created_at
+- updated_at
+- completed_at
+
+responses
+- id
+- participant_id
+- question_id
+- answer_value
+- created_at
+- updated_at
+
+external_responses
+- id
+- participant_id
+- question_id
+- answer_value
+- created_at
+- updated_at
+
+audit_events
+- id
+- admin_user_id nullable
+- family_id nullable
+- participant_id nullable
+- event_type
+- metadata_json sin respuestas completas
+- created_at
+
+login_attempts o mecanismo equivalente
+- identifier_hash
+- ip_hash o dato minimizado
+- attempts
+- locked_until
+- updated_at
+
+Agregar:
+
+- claves foráneas;
+- índices;
+- restricciones;
+- unicidad;
+- borrado lógico;
+- integridad referencial.
+
+No almacenar la contraseña de familia, código personal o contraseña BVM en texto plano.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. PRIVACIDAD Y CONTROL DE ACCESO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Los participantes no deben poder:
+
+- entrar a Administración BVM;
+- listar familias;
+- conocer otras familias;
+- acceder mediante cambio de ID;
+- ver resultados;
+- ver respuestas de otros;
+- consultar participantes;
+- descargar respaldos;
+- generar reportes.
+
+El administrador puede ver:
+
+- nombre del participante;
+- estatus;
+- avance;
+- fechas;
+- perfil general;
+- resultados agregados.
+
+La interfaz administrativa no debe mostrar respuestas individuales afirmación por afirmación.
+
+Los reportes continúan siendo agregados.
+
+Las API públicas solo deben devolver la información mínima necesaria.
+
+Proteger contra:
+
+- SQL injection;
+- XSS;
+- CSRF;
+- IDOR;
+- fuerza bruta;
+- enumeración de usuarios;
+- manipulación de family_id;
+- edición posterior al cierre;
+- acceso directo a archivos privados;
+- listado de directorios;
+- exposición de config.php;
+- exposición de SQL;
+- errores detallados en producción.
+
+Añadir encabezados:
+
+- Content-Security-Policy compatible con la aplicación;
+- X-Content-Type-Options;
+- Referrer-Policy;
+- Permissions-Policy;
+- frame-ancestors o X-Frame-Options;
+- Cache-Control no-store para administración y API.
+
+No usar eval.
+
+No usar innerHTML con datos no escapados.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+12. METODOLOGÍA QUE NO DEBE CAMBIAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Conservar exactamente:
+
+- A1–A20;
+- redacción de afirmaciones;
+- escala 1–5;
+- opciones de respuesta;
+- cuatro dimensiones;
+- cinco afirmaciones por dimensión;
+- dos preguntas externas;
+- regla de que las preguntas externas no modifican el índice;
+- fórmula de normalización;
+- fórmula del índice general;
+- ponderación;
+- umbrales;
+- dispersión;
+- alineación;
+- matrices;
+- riesgo y oportunidad;
+- priorización de conversaciones;
+- ruta Alinear–Acordar–Institucionalizar;
+- narrativas;
+- notas metodológicas;
+- Familia Horizonte;
+- aislamiento entre demostración y datos reales;
+- cierre ejecutivo;
+- reporte de 12 páginas.
+
+Crear pruebas de paridad:
+
+- usar los datos de Familia Horizonte;
+- obtener los resultados del HTML estable;
+- obtener los resultados de la plataforma en línea;
+- comparar cada indicador;
+- la diferencia permitida debe ser 0, salvo redondeo ya existente;
+- cualquier diferencia debe detener la entrega.
+
+No reescribir fórmulas “para simplificar”.
+
+No inferir reglas nuevas.
+
+No hacer afirmaciones científicas o psicométricas.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13. MEJORAS EDITORIALES PUNTUALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Incorporar sin alterar la metodología:
+
+1. Manejo correcto de empates.
+   Si dos dimensiones tienen el mismo máximo o mínimo, mostrar ambas o indicar “Empate”.
+
+2. Sustituir, cuando proceda:
+   “Afirmaciones más consolidadas”
+   por:
+   “Afirmaciones relativamente más consolidadas”
+   cuando el nivel absoluto sea bajo.
+
+3. Mantener la frase:
+   “se observa que la familia…”
+
+4. Corregir capitalización al inicio de textos dinámicos, incluyendo el tipo de acompañamiento.
+
+5. Añadir en Metodología:
+   “Los indicadores describen las percepciones de quienes participaron y no constituyen una estimación estadística de una población más amplia.”
+
+6. No exagerar precisión cuando existen pocos participantes.
+
+7. No mostrar un reporte como definitivo si:
+   - no existe ninguna participación finalizada;
+   - la familia sigue abierta;
+   - el número finalizado es inferior al esperado.
+   En esos casos mostrar:
+   “Lectura preliminar con X de Y participaciones finalizadas”.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+14. ADMINISTRACIÓN PREMIUM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+La pantalla administrativa debe sentirse propia de BVM y no de una plantilla genérica.
+
+Debe tener:
+
+- encabezado claro;
+- usuario activo;
+- cerrar sesión;
+- familia seleccionada;
+- estado;
+- breadcrumbs;
+- navegación consistente;
+- pestaña activa visible;
+- siguiente paso persistente;
+- accesos rápidos;
+- buscador de familias;
+- filtros por estado;
+- tabla o tarjetas con:
+  - familia;
+  - estado;
+  - avance;
+  - fecha;
+  - última actividad;
+  - acción principal;
+- ayuda permanente;
+- recorrido guiado de 8–12 minutos;
+- confirmaciones antes de acciones destructivas;
+- estados vacíos útiles;
+- skeleton o indicador de carga discreto;
+- errores recuperables;
+- navegación móvil completa;
+- foco visible;
+- teclado accesible.
+
+Evitar:
+
+- exceso de menús;
+- botones compitiendo;
+- apariencia SaaS genérica;
+- gradientes llamativos;
+- animaciones innecesarias;
+- tarjetas demasiado redondeadas;
+- saturación;
+- textos técnicos frente al usuario.
+
+Mantener identidad BVM:
+
+- navy #172541;
+- dorado claro #EDCD5B;
+- dorado #B08026;
+- amarillo suave #DFC565;
+- blanco;
+- grises fríos;
+- tipografía Poppins y tipografías BVM disponibles;
+- jerarquía editorial;
+- sombras mínimas;
+- radios moderados.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+15. DEMOSTRACIÓN FICTICIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Familia Horizonte debe permanecer:
+
+- pública;
+- ficticia;
+- claramente etiquetada;
+- sin acceso a la base real;
+- sin posibilidad de escribir en tablas reales;
+- sin mezclar sesiones;
+- sin mostrar Administración BVM;
+- sin mostrar Metodología interna si no corresponde;
+- reiniciable sin afectar datos reales.
+
+La demostración puede cargarse desde un archivo estático JS/JSON incluido en el proyecto.
+
+No es necesario guardar la demostración en la misma tabla de familias reales.
+
+Añadir pruebas que confirmen que abrir, usar y cerrar la demostración no cambia ninguna fila real.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+16. REPORTE E IMPRESIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Conservar el reporte integral de 12 páginas.
+
+Debe funcionar con datos obtenidos desde la base de datos.
+
+Validar:
+
+- Carta: 12 páginas;
+- A4: 12 páginas;
+- escala 100%;
+- márgenes 0;
+- fondos activados;
+- encabezados del navegador desactivados;
+- cero páginas en blanco;
+- cero página 13;
+- cero cortes;
+- cero superposiciones;
+- cero colisiones con el pie;
+- todas las páginas fits:true;
+- página 11 intacta;
+- contenido dinámico completo.
+
+Reutilizar y fortalecer:
+
+- PrintManager;
+- PrintAudit;
+- window.__BVM_PRINT_QA__;
+- medición geométrica;
+- pruebas de tinta;
+- comparación visual.
+
+Generar:
+
+- demo_letter.pdf;
+- demo_a4.pdf;
+- real_letter.pdf;
+- real_a4.pdf;
+- stress_letter.pdf;
+- stress_a4.pdf.
+
+Crear PNG de las 72 páginas y hojas de contacto.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+17. RESPALDOS Y MIGRACIÓN DESDE LA VERSIÓN LOCAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Conservar una forma de exportar una familia a JSON desde Administración BVM.
+
+Crear una herramienta administrativa para importar respaldos JSON generados por la versión local.
+
+La importación debe:
+
+1. aceptar únicamente archivos JSON;
+2. limitar tamaño;
+3. validar schemaVersion;
+4. mostrar vista previa;
+5. mostrar:
+   - familia;
+   - participantes;
+   - finalizados;
+   - fecha;
+   - versión;
+6. no importar automáticamente;
+7. pedir confirmación;
+8. usar transacción;
+9. no duplicar silenciosamente;
+10. permitir:
+    - crear como nueva familia;
+    - reemplazar una familia seleccionada;
+11. mantener fórmulas y respuestas;
+12. registrar auditoría;
+13. permitir rollback si falla.
+
+La herramienta de importación:
+
+- debe requerir sesión BVM;
+- no debe estar disponible públicamente;
+- no debe aceptar PHP, HTML u otros archivos;
+- no debe guardar archivos en una carpeta ejecutable;
+- debe borrar temporales.
+
+Además, documentar respaldo general de MySQL mediante hPanel/phpMyAdmin.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+18. INSTALACIÓN EN HOSTINGER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Crear DEPLOY_HOSTINGER.md con instrucciones exactas:
+
+1. Crear una nueva carpeta:
+   public_html/diagnostico-bvm-online/
+
+2. No tocar:
+   public_html/diagnostico-bvm/
+   que contiene la versión temporal local.
+
+3. Crear base de datos MySQL desde hPanel.
+
+4. Anotar:
+   - host;
+   - nombre de base;
+   - usuario;
+   - contraseña;
+   sin incluirlos en documentación pública.
+
+5. Importar schema.sql.
+
+6. Copiar config.example.php a la ubicación privada indicada.
+
+7. Completar credenciales.
+
+8. Generar APP_KEY segura.
+
+9. Configurar HTTPS.
+
+10. Configurar versión PHP.
+
+11. Ejecutar instalador de administrador.
+
+12. Confirmar que el instalador quedó bloqueado.
+
+13. Probar health-check.
+
+14. Eliminar archivos de desarrollo que no deban publicarse.
+
+15. Probar:
+    - página pública;
+    - demostración;
+    - login;
+    - creación de familia;
+    - participante remoto;
+    - guardado;
+    - finalización;
+    - reporte;
+    - cierre de sesión.
+
+16. Documentar rollback.
+
+La versión en desarrollo debe publicarse primero en:
+
+/diagnostico-bvm-online-dev/
+
+y estar protegida o no indexada.
+
+La versión aprobada debe publicarse después en:
+
+/diagnostico-bvm-online/
+
+No sustituir la versión temporal hasta contar con aprobación formal.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+19. PRUEBAS E2E OBLIGATORIAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Automatizar con Playwright:
+
+E01 — Carga pública.
+
+E02 — Demostración sin login.
+
+E03 — Acceso directo a admin redirige a login.
+
+E04 — Login incorrecto.
+
+E05 — Bloqueo por intentos.
+
+E06 — Login correcto.
+
+E07 — Cierre de sesión.
+
+E08 — CSRF rechazado.
+
+E09 — Crear familia.
+
+E10 — Generar liga y clave.
+
+E11 — Abrir liga desde contexto de navegador distinto.
+
+E12 — Clave incorrecta rechazada.
+
+E13 — Registro de participante.
+
+E14 — Generar código personal.
+
+E15 — Guardar respuestas.
+
+E16 — Cerrar navegador.
+
+E17 — Reanudar desde otro contexto.
+
+E18 — Finalizar.
+
+E19 — Intentar editar después de finalizar.
+
+E20 — Segundo participante desde otro equipo simulado.
+
+E21 — Administrador ve avance actualizado.
+
+E22 — Participante no puede ver resultados.
+
+E23 — Familia A no puede acceder a Familia B.
+
+E24 — ID manipulado devuelve 403/404.
+
+E25 — XSS escapado.
+
+E26 — SQL injection rechazada.
+
+E27 — Reporte real.
+
+E28 — Reporte demo.
+
+E29 — Carta 12 páginas.
+
+E30 — A4 12 páginas.
+
+E31 — Móvil 390×844.
+
+E32 — Móvil 375×667.
+
+E33 — Teclado y foco.
+
+E34 — Importación de respaldo local.
+
+E35 — Exportación de respaldo en línea.
+
+E36 — Familia cerrada no acepta nuevos registros.
+
+E37 — Participante ya registrado puede terminar si la política lo permite.
+
+E38 — Demostración no cambia base real.
+
+E39 — Dos dispositivos detectan conflicto.
+
+E40 — Cero errores JavaScript y PHP visibles.
+
+Crear pruebas con:
+
+- familia demo;
+- familia real controlada;
+- familia de estrés con 8–12 participantes;
+- nombres largos;
+- resultados mixtos;
+- empate en alineación;
+- baja muestra;
+- todos altos;
+- todos bajos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+20. HITOS DE IMPLEMENTACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No intentes cambiar todo sin puntos de control.
+
+HITO 0 — Congelamiento
+- conservar originales;
+- crear proyecto;
+- inventario de funciones;
+- mapa de dependencias;
+- commit.
+
+HITO 1 — Base técnica
+- configuración;
+- conexión DB;
+- esquema;
+- seguridad;
+- instalador;
+- health-check.
+
+HITO 2 — Autenticación
+- login;
+- sesión;
+- logout;
+- CSRF;
+- rate limit;
+- pruebas.
+
+HITO 3 — Familias
+- CRUD;
+- estados;
+- liga;
+- clave;
+- progreso.
+
+HITO 4 — Participantes
+- acceso;
+- registro;
+- código personal;
+- autosave;
+- continuidad;
+- finalización.
+
+HITO 5 — Administración y resultados
+- selección de familia;
+- progreso;
+- datos agregados;
+- dashboard;
+- reporte.
+
+HITO 6 — Paridad metodológica
+- Familia Horizonte;
+- comparación exacta;
+- empates;
+- notas;
+- correcciones editoriales.
+
+HITO 7 — Migración y respaldos
+- importar local;
+- exportar online;
+- pruebas.
+
+HITO 8 — Impresión
+- Carta;
+- A4;
+- demo;
+- real;
+- estrés;
+- 72 imágenes.
+
+HITO 9 — Seguridad y regresión
+- ataques básicos;
+- aislamiento;
+- accesibilidad;
+- móvil;
+- rendimiento.
+
+HITO 10 — Entrega
+- ZIP;
+- SQL;
+- documentación;
+- guía Hostinger;
+- evidencias;
+- commit.
+
+Después de cada hito:
+
+- ejecutar pruebas;
+- documentar resultado;
+- hacer commit;
+- no continuar si existe una regresión crítica.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+21. CRITERIOS DE ACEPTACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No declarar terminado si falta cualquiera de estos puntos:
+
+1. El HTML estable permanece intacto.
+2. El proyecto en línea está separado.
+3. Administración requiere login de servidor.
+4. No hay contraseña en JavaScript.
+5. Se crean varias familias.
+6. Cada familia tiene liga y clave.
+7. Se responde desde distintos dispositivos.
+8. La base es la fuente de verdad.
+9. Existe guardado automático.
+10. Existe continuidad.
+11. Existe cierre y bloqueo.
+12. Existe aislamiento entre familias.
+13. Participante no ve admin.
+14. Participante no ve resultados.
+15. Demo no toca datos reales.
+16. Fórmulas idénticas.
+17. Cuestionario idéntico.
+18. Resultados Familia Horizonte idénticos.
+19. Empates correctos.
+20. Reporte Carta completo.
+21. Reporte A4 completo.
+22. 12 páginas exactas.
+23. Página 11 intacta.
+24. Respaldo local puede importarse.
+25. Existe exportación online.
+26. Existe documentación de despliegue.
+27. Existe rollback.
+28. No hay credenciales en archivos públicos.
+29. No hay SQL injection conocida.
+30. No hay XSS reflejado o almacenado.
+31. CSRF funciona.
+32. Login limita intentos.
+33. Sesión expira.
+34. HTTPS está contemplado.
+35. Móvil funciona.
+36. Teclado funciona.
+37. Cero errores de consola.
+38. Cero errores PHP mostrados al usuario.
+39. Pruebas E2E pasan.
+40. Se entrega evidencia.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+22. ENTREGABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Entregar:
+
+1. Carpeta completa:
+   Diagnostico_BVM_Familias_Empresarias_EN_LINEA/
+
+2. ZIP:
+   Diagnostico_BVM_Familias_Empresarias_EN_LINEA.zip
+
+3. database/schema.sql
+
+4. config.example.php sin secretos.
+
+5. DEPLOY_HOSTINGER.md
+
+6. README.md
+
+7. MANUAL_ADMIN_BVM.md
+
+8. GUIA_PARTICIPANTE.md
+
+9. SEGURIDAD_Y_PRIVACIDAD.md
+
+10. MIGRACION_DESDE_VERSION_LOCAL.md
+
+11. CHANGELOG.md
+
+12. qa-evidence/ con:
+    - matriz de pruebas;
+    - PDF;
+    - PNG;
+    - hojas de contacto;
+    - logs;
+    - resultados de seguridad;
+    - comparación metodológica;
+    - paridad Familia Horizonte.
+
+13. Resumen final:
+    - arquitectura;
+    - cambios;
+    - decisiones;
+    - limitaciones;
+    - riesgos residuales;
+    - pruebas ejecutadas;
+    - pruebas no ejecutadas;
+    - instrucciones de publicación;
+    - hash del commit.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+23. FORMA DE TRABAJO Y RESPUESTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Primero:
+
+- inspecciona el HTML de referencia;
+- crea un inventario de módulos;
+- identifica todas las funciones de StorageAdapter;
+- identifica todos los motores de cálculo;
+- identifica rutas del participante, demo y admin;
+- identifica respaldo, impresión y onboarding;
+- crea un mapa de migración.
+
+Después implementa.
+
+No respondas solo con recomendaciones.
+
+No entregues maquetas estáticas.
+
+No simules una base de datos con localStorage.
+
+No declares seguridad si la contraseña está en el frontend.
+
+No modifiques el archivo estable.
+
+No mezcles versión local y versión en línea.
+
+No publiques credenciales.
+
+No inventes metodología.
+
+No elimines funciones para terminar más rápido.
+
+No declares “listo” sin pruebas reales.
+
+El objetivo es una versión piloto en línea profesional, segura, centralizada y defendible, sin perder el trabajo ya validado.

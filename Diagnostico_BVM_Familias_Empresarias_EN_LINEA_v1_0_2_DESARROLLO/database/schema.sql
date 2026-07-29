@@ -24,6 +24,9 @@ CREATE TABLE IF NOT EXISTS families (
   family_name VARCHAR(150) NOT NULL,
   access_code_hash VARCHAR(255) NOT NULL,
   expected_participants SMALLINT UNSIGNED NULL,
+  -- 1 = expected_participants es límite real (bloquea registros nuevos al
+  -- alcanzarlo); 0 = solo referencia. Sin efecto cuando expected es NULL.
+  enforce_participant_limit TINYINT(1) NOT NULL DEFAULT 1,
   questionnaire_version VARCHAR(20) NOT NULL DEFAULT 'BVM-FE-1.2',
   report_date DATE NULL,
   status ENUM('borrador','abierta','cerrada','archivada') NOT NULL DEFAULT 'borrador',
@@ -50,6 +53,9 @@ CREATE TABLE IF NOT EXISTS participants (
   participation_type VARCHAR(80) NULL,
   participation_role VARCHAR(80) NOT NULL,
   resume_token_hash VARCHAR(255) NOT NULL,
+  -- HMAC-SHA256 (APP_KEY) del código personal normalizado, para localizar
+  -- por índice. NULL en participantes creados antes de la versión 1.0.2.
+  resume_token_lookup_hash CHAR(64) NULL,
   status ENUM('en_proceso','finalizado') NOT NULL DEFAULT 'en_proceso',
   current_index SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   revision INT UNSIGNED NOT NULL DEFAULT 0,
@@ -59,6 +65,7 @@ CREATE TABLE IF NOT EXISTS participants (
   PRIMARY KEY (id),
   UNIQUE KEY uq_participant_public_id (public_id),
   UNIQUE KEY uq_participant_name_per_family (family_id, normalized_name),
+  UNIQUE KEY uq_resume_lookup_per_family (family_id, resume_token_lookup_hash),
   KEY idx_participant_family (family_id),
   CONSTRAINT fk_participant_family FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

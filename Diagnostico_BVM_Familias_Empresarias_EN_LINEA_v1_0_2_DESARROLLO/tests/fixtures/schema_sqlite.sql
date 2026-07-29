@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS families (
   family_name TEXT NOT NULL,
   access_code_hash TEXT NOT NULL,
   expected_participants INTEGER NULL,
+  enforce_participant_limit INTEGER NOT NULL DEFAULT 1,
   questionnaire_version TEXT NOT NULL DEFAULT 'BVM-FE-1.2',
   report_date TEXT NULL,
   status TEXT NOT NULL DEFAULT 'borrador' CHECK (status IN ('borrador','abierta','cerrada','archivada')),
@@ -40,13 +41,15 @@ CREATE TABLE IF NOT EXISTS participants (
   participation_type TEXT NULL,
   participation_role TEXT NOT NULL,
   resume_token_hash TEXT NOT NULL,
+  resume_token_lookup_hash TEXT NULL,
   status TEXT NOT NULL DEFAULT 'en_proceso' CHECK (status IN ('en_proceso','finalizado')),
   current_index INTEGER NOT NULL DEFAULT 0,
   revision INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   completed_at TEXT NULL,
-  UNIQUE (family_id, normalized_name)
+  UNIQUE (family_id, normalized_name),
+  UNIQUE (family_id, resume_token_lookup_hash)
 );
 
 CREATE TABLE IF NOT EXISTS responses (

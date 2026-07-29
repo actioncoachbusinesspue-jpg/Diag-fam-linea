@@ -40,6 +40,12 @@ sleep 1
 BASE_URL="$BASE" node "$ROOT/tests/e2e/e2e_api.mjs"
 STATUS=$?
 
+# Verificaciones estáticas E45-E49 (código fuente + respuestas servidas)
+if [ $STATUS -eq 0 ]; then
+  BASE_URL="$BASE" node "$ROOT/tests/e2e/static_checks.mjs"
+  STATUS=$?
+fi
+
 # Pruebas de navegador (opcionales): requieren playwright-core y Chromium.
 # Exporte PLAYWRIGHT_MODULE con la ruta al paquete playwright-core.
 if [ $STATUS -eq 0 ] && [ -n "${PLAYWRIGHT_MODULE:-}" ]; then

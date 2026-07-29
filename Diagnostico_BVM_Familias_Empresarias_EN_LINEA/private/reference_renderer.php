@@ -85,6 +85,15 @@ HTML;
 /* BVM en línea — arranque directo de la demostración Familia Horizonte. */
 document.addEventListener('DOMContentLoaded', function(){
   AppModeManager.exitToSelector = function(){ window.location.href = $returnUrlJson; };
+  // Sección 15 del prompt maestro: en la pieza pública no debe existir un
+  // camino al modo administrativo, ni siquiera desde la consola. La
+  // administración real vive en el servidor (admin/ + sesión); aquí la
+  // llamada se neutraliza. openAdmin() del selector resuelve
+  // AppModeManager.enterAdmin en el momento de la llamada, así que esta
+  // sustitución también anula ese camino.
+  AppModeManager.enterAdmin = function(){
+    console.info('Demostración BVM: la administración no está disponible aquí; requiere iniciar sesión en el servidor.');
+  };
   AppModeManager.enterCommercial();
 });
 </script>

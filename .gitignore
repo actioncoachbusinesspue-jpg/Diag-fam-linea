@@ -4,3 +4,12 @@ Diagnostico_BVM_Familias_Empresarias_EN_LINEA/private/config.php
 # Artefactos locales
 node_modules/
 *.sqlite
+
+# Evidencia binaria pesada (PDF/PNG) — se regenera con tests/evidence y viaja en el ZIP de entrega
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA/qa-evidence/pdf/
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA/qa-evidence/png/
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA/qa-evidence/contact-sheets/
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/private/config.php

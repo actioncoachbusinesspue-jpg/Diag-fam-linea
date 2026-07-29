@@ -50,11 +50,20 @@
 [OK]    Sesión invalidada tras logout
 
 E2E: TODAS LAS PRUEBAS PASARON
+[OK]    E47 código desplegable sin rutas con localhost/127.0.0.1
+[OK]    E49 assets propios sin contraseñas ni PIN embebidos
+[OK]    E48 demo servida neutraliza AppModeManager.enterAdmin
+[OK]    E47b demo servida sin la redirección 127.0.0.1:8099 de la entrega anterior
+[OK]    E49b demo servida con PIN local deshabilitado y vacío
+[OK]    E46 errores de API sin trazas PHP/SQL ni rutas internas
+
+ESTÁTICAS: TODAS LAS PRUEBAS PASARON
 [OK]    Demo entra directo al modo comercial (Familia Horizonte)
 [OK]    Demo sin errores de JavaScript
 [OK]    Demo: localStorage deshabilitado (modo memoria)
 [OK]    Demo: StorageAdapter en memoria
 [OK]    Demo: índice general Horizonte = 55
+[OK]    E48 demo: enterAdmin() desde consola queda neutralizado
 [OK]    Login de navegador llega a administración
 [OK]    Reporte carga con la familia real
 [OK]    Reporte sin errores de JavaScript
@@ -63,5 +72,6 @@ E2E: TODAS LAS PRUEBAS PASARON
 [OK]    Reporte: todas las páginas caben (fits:true)
 [OK]    E31 móvil 390×844 sin desborde horizontal
 [OK]    E31b acciones visibles en móvil
+[OK]    E32 móvil 375×667 sin desborde horizontal
 
 NAVEGADOR: TODAS LAS PRUEBAS PASARON

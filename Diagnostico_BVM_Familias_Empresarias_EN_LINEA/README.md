@@ -31,6 +31,7 @@ public/                 ← único directorio expuesto al web
   assets/               CSS/JS propios, sin CDNs
 private/                configuración, seguridad, repositorios, motor de referencia
 database/schema.sql     esquema MySQL/MariaDB
+database/migrations/    migraciones numeradas (ver su README; sin seed de demo a propósito)
 tools/                  health-check, importación CLI
 tests/                  integración (PHP+SQLite), paridad (Node), E2E (API + navegador)
 qa-evidence/            evidencia de pruebas
@@ -74,6 +75,8 @@ node tests/parity/parity_check.mjs          # paridad metodológica exacta (tras
 bash tests/e2e/run_e2e.sh                   # E2E de API sobre servidor PHP real
 PLAYWRIGHT_MODULE=/ruta/a/playwright-core \
   bash tests/e2e/run_e2e.sh                 # + E2E de navegador (demo, reporte 12 págs, móvil)
+PLAYWRIGHT_MODULE=... PDF2PNG_MODULE=... \
+  bash tests/evidence/run_evidence.sh       # evidencia: 6 PDFs auditados + PNGs + hojas de contacto
 ```
 
 La prueba de paridad compara cada indicador de Familia Horizonte calculado por
@@ -86,3 +89,4 @@ cualquier diferencia distinta de 0 detiene la entrega.
 - `docs/GUIA_PARTICIPANTE.md` — qué recibe y qué hace cada participante.
 - `docs/SEGURIDAD_Y_PRIVACIDAD.md` — modelo de amenazas y decisiones.
 - `docs/MIGRACION_DESDE_VERSION_LOCAL.md` — importación de respaldos locales.
+- `docs/RESUMEN_EJECUTIVO.md` — resumen de entrega y recomendación GO/NO-GO.

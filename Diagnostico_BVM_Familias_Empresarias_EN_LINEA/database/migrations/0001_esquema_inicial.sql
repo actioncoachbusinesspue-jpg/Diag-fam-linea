@@ -1,3 +1,7 @@
+-- MIGRACIÓN 0001 — esquema inicial (idéntico a database/schema.sql).
+-- Una instalación nueva puede importar schema.sql O esta migración: son
+-- equivalentes. Ver database/migrations/README.md para la política.
+
 -- ============================================================
 -- Diagnóstico BVM para Familias Empresarias — versión en línea
 -- Esquema MySQL/MariaDB (utf8mb4). Importar desde phpMyAdmin/hPanel.
@@ -109,15 +113,4 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   locked_until DATETIME NULL,
   updated_at DATETIME NOT NULL,
   PRIMARY KEY (identifier_hash)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Asignación de familias a consultores (modelo preparado para roles; el MVP
--- opera con el administrador principal y no escribe aún en esta tabla).
-CREATE TABLE IF NOT EXISTS family_assignments (
-  family_id INT UNSIGNED NOT NULL,
-  admin_user_id INT UNSIGNED NOT NULL,
-  created_at DATETIME NOT NULL,
-  PRIMARY KEY (family_id, admin_user_id),
-  CONSTRAINT fk_assignment_family FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE,
-  CONSTRAINT fk_assignment_admin FOREIGN KEY (admin_user_id) REFERENCES admin_users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

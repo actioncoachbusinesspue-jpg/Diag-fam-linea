@@ -31,6 +31,7 @@ public/                 ← único directorio expuesto al web
   assets/               CSS/JS propios, sin CDNs
 private/                configuración, seguridad, repositorios, motor de referencia
 database/schema.sql     esquema MySQL/MariaDB
+database/migrations/    migraciones numeradas (ver su README; sin seed de demo a propósito)
 tools/                  health-check, importación CLI
 tests/                  integración (PHP+SQLite), paridad (Node), E2E (API + navegador)
 qa-evidence/            evidencia de pruebas

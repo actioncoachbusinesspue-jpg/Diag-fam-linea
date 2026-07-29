@@ -39,7 +39,7 @@ Logs completos en `qa-evidence/logs/`.
 | E29 | Carta 12 páginas | e2e_browser: `prepareBvmPrint()` = 12 páginas, `fits:true` | PASA* |
 | E30 | A4 12 páginas | mismo motor/auditoría del maestro validado en E29 | PASA* |
 | E31 | Móvil 390×844 sin desborde | e2e_browser | PASA |
-| E32 | Móvil 375×667 | mismo CSS fluido validado en E31 | PASA* |
+| E32 | Móvil 375×667 | e2e_browser (viewport dedicado) | PASA |
 | E33 | Teclado y foco | foco gestionado por página (h1 tabindex, focus-visible); revisión manual pendiente en hosting | PARCIAL |
 | E34 | Importación de respaldo local (previa+commit+rechazos) | e2e_api | PASA |
 | E35 | Exportación de respaldo en línea | e2e_api | PASA |
@@ -48,6 +48,17 @@ Logs completos en `qa-evidence/logs/`.
 | E38 | Demostración no cambia base real | e2e_api (conteo antes/después) | PASA |
 | E39 | Dos dispositivos detectan conflicto (409 revisión) | e2e_api + integración | PASA |
 | E40 | Cero errores JS visibles (demo y reporte) | e2e_browser (console/pageerror) | PASA |
+
+## Escenarios E45–E50 (numeración del prompt maestro)
+
+| # | Escenario | Cobertura | Resultado |
+|---|---|---|---|
+| E45 | Cero errores JS visibles | e2e_browser (equivale a E40 de la tabla anterior) | PASA |
+| E46 | Cero errores PHP visibles (sin trazas, SQL ni rutas internas en errores de API) | static_checks | PASA |
+| E47 | Ninguna ruta contiene localhost/127.0.0.1 (incluida la redirección 127.0.0.1:8099 de la entrega anterior) | static_checks (código desplegable + demo servida) | PASA |
+| E48 | AppModeManager.enterAdmin no disponible en público: neutralizado al servir la demo y verificado desde consola | static_checks + e2e_browser | PASA |
+| E49 | Sin password/PIN utilizables en frontend (assets propios y demo servida con PIN deshabilitado y vacío) | static_checks | PASA |
+| E50 | Recarga/reingreso conserva datos desde el servidor | e2e_api E16-E17 (jar de cookies nuevo + reanudación con código personal) | PASA |
 
 \* La auditoría geométrica `__BVM_PRINT_QA__` es la del maestro (idéntica);
 Carta/A4 usan la misma caja física auditada. Se recomienda una impresión

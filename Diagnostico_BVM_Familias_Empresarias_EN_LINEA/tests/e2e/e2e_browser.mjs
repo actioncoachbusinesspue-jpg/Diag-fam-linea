@@ -53,6 +53,16 @@ const browser = await chromium.launch({
     return scoring.generalIndex;
   });
   check('Demo: índice general Horizonte = 55', generalIndex === 55, String(generalIndex));
+
+  // E48 — ni siquiera desde consola se puede pasar al modo administrativo.
+  const afterEnterAdmin = await page.evaluate(() => {
+    AppModeManager.enterAdmin();
+    const s = StateManager.get();
+    return { view: s.view, commercial: s.admin.commercial };
+  });
+  check('E48 demo: enterAdmin() desde consola queda neutralizado',
+    afterEnterAdmin.view === 'admin' && afterEnterAdmin.commercial === true,
+    JSON.stringify(afterEnterAdmin));
   await page.close();
 }
 
@@ -109,6 +119,17 @@ const browser = await chromium.launch({
   check('E31 móvil 390×844 sin desborde horizontal', overflow <= 1, overflow + 'px');
   const demoBtn = await page.textContent('body');
   check('E31b acciones visibles en móvil', demoBtn.includes('Iniciar demostración guiada'));
+  await context.close();
+}
+
+// ---------- Móvil 375×667 ----------
+{
+  const context = await browser.newContext({ viewport: { width: 375, height: 667 } });
+  const page = await context.newPage();
+  await page.goto(BASE + '/index.php', { waitUntil: 'networkidle' });
+  const overflow = await page.evaluate(() =>
+    document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  check('E32 móvil 375×667 sin desborde horizontal', overflow <= 1, overflow + 'px');
   await context.close();
 }
 

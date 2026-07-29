@@ -86,3 +86,12 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   locked_until TEXT NULL,
   updated_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS family_assignments (
+  family_id INTEGER NOT NULL,
+  admin_user_id INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (family_id, admin_user_id),
+  FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE,
+  FOREIGN KEY (admin_user_id) REFERENCES admin_users(id) ON DELETE CASCADE
+);

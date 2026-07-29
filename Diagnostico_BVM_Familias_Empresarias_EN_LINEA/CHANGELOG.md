@@ -1,5 +1,21 @@
 # CHANGELOG — Diagnóstico BVM en línea
 
+## 1.0.1 — 2026-07-29
+
+- La demostración pública neutraliza `AppModeManager.enterAdmin` al servirse:
+  tampoco desde la consola del navegador se puede pasar al modo
+  administrativo (sección 15 / E48).
+- Nuevas verificaciones estáticas automatizadas (`tests/e2e/static_checks.mjs`,
+  integradas a `run_e2e.sh`): sin rutas localhost/127.0.0.1 en el código
+  desplegable ni en la demo servida (E47), sin contraseñas/PIN utilizables en
+  el frontend (E49) y errores de API sin trazas PHP/SQL (E46).
+- Prueba de navegador adicional: móvil 375×667 sin desborde (E32).
+- `database/migrations/` con política de migraciones para hosting compartido:
+  `0001_esquema_inicial.sql` (esquema 1.0.0) y `0002_family_assignments.sql`
+  (tabla de asignación de familias a consultores del modelo de datos del
+  prompt maestro; el MVP aún no la usa). `schema.sql` y el fixture SQLite
+  incluyen la tabla.
+
 ## 1.0.0 — 2026-07-29 (MVP en línea)
 
 Primera versión de la plataforma en línea (PHP 8 + MySQL/MariaDB), construida

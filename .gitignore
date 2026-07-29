@@ -13,3 +13,7 @@ Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/
 Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/
 Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/
 Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/private/config.php
+
+# Carpeta de entrega final: su contenido es identico a *_DESARROLLO
+# (mas MANIFEST) y viaja completo dentro del ZIP versionado en entrega/
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2/

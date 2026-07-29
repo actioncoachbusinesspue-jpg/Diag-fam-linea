@@ -1,4 +1,4 @@
-# Diagnóstico BVM para Familias Empresarias — versión en línea
+# Diagnóstico BVM para Familias Empresarias — versión en línea (1.0.2)
 
 Plataforma web (PHP 8 + MySQL/MariaDB) del Diagnóstico BVM: permite a BVM
 administrar varias familias, invitarlas mediante una liga y una clave, recibir
@@ -29,11 +29,13 @@ public/                 ← único directorio expuesto al web
   admin/                familias, detalle, importar, reporte (motor maestro + datos MySQL)
   api/                  endpoints JSON (auth, families, participants, responses, reports)
   assets/               CSS/JS propios, sin CDNs
-private/                configuración, seguridad, repositorios, motor de referencia
-database/schema.sql     esquema MySQL/MariaDB
-database/migrations/    migraciones numeradas (ver su README; sin seed de demo a propósito)
-tools/                  health-check, importación CLI
-tests/                  integración (PHP+SQLite), paridad (Node), E2E (API + navegador)
+private/                configuración, seguridad, repositorios, motor de referencia,
+                        parche de presentación 1.0.2 (empates) y health_checks
+database/schema.sql     esquema MySQL/MariaDB (estado 1.0.2)
+database/migrations/    migraciones numeradas 0001-0004 (ver su README)
+tools/                  health-check (solo CLI), importación CLI
+tests/                  integración (PHP, SQLite o MySQL), paridad (Node),
+                        E2E (API + navegador), mysql/ (suite sobre MySQL real)
 qa-evidence/            evidencia de pruebas
 ```
 
@@ -52,20 +54,33 @@ Decisiones clave:
   intentos con bloqueo temporal, mensajes genéricos.
 - **Claves irrecuperables por diseño.** La clave de familia y el código
   personal se almacenan solo como hash; se muestran una única vez y pueden
-  regenerarse desde Administración BVM.
+  regenerarse desde Administración BVM. Desde 1.0.2 la reanudación usa
+  además un HMAC de localización indexado (nunca el código en claro).
+- **Cupo con garantía de concurrencia (1.0.2).** El número esperado de
+  participantes puede actuar como límite real: la validación completa ocurre
+  en una transacción con `SELECT … FOR UPDATE`, de modo que dos registros
+  simultáneos no pueden exceder el cupo.
+- **Tiempo con una sola regla (1.0.2).** Persistencia técnica en UTC;
+  apertura/cierre y presentación administrativa en `app.timezone`
+  (predeterminado America/Mexico_City), con cierre inclusivo todo el día.
 
 ## Instalación
 
 Ver **DEPLOY_HOSTINGER.md** (pasos exactos para hPanel). Resumen:
 
-1. Importar `database/schema.sql` en una base MySQL nueva.
+1. Importar `database/schema.sql` en una base MySQL nueva (instalaciones
+   1.0.1 existentes: aplicar las migraciones 0003 y 0004 según
+   `docs/MIGRACION_1_0_1_A_1_0_2.md`).
 2. Copiar `private/config.example.php` → `private/config.php` y completar
-   credenciales, `APP_KEY` e `install_token`.
-3. Subir `public/` como raíz web y `private/`, `tools/` fuera de ella (o
-   protegidos por los `.htaccess` incluidos).
+   credenciales, `APP_KEY`, `install_token`, `timezone`, `session_name` y
+   `session_cookie_path` del ambiente.
+3. Subir `public/` como raíz web y `private/`, `tools/` fuera de ella
+   (arquitectura recomendada) o protegidos por los `.htaccess` incluidos
+   con prueba 403 obligatoria.
 4. Abrir `instalar.php`, crear el primer administrador y borrar el
    `install_token` de `config.php`.
-5. Verificar con `php tools/health-check.php`.
+5. Verificar con `php tools/health-check.php` (o `admin/salud.php` con
+   sesión iniciada; el health-check ya no puede publicarse).
 
 ## Pruebas
 
@@ -76,7 +91,9 @@ bash tests/e2e/run_e2e.sh                   # E2E de API sobre servidor PHP real
 PLAYWRIGHT_MODULE=/ruta/a/playwright-core \
   bash tests/e2e/run_e2e.sh                 # + E2E de navegador (demo, reporte 12 págs, móvil)
 PLAYWRIGHT_MODULE=... PDF2PNG_MODULE=... \
-  bash tests/evidence/run_evidence.sh       # evidencia: 6 PDFs auditados + PNGs + hojas de contacto
+  bash tests/evidence/run_evidence.sh       # evidencia: 8 PDFs auditados (incl. empates) + PNGs + hojas de contacto
+bash tests/mysql/run_mysql.sh               # suite sobre MySQL/MariaDB REAL (servidor propio via
+                                            # BVM_MYSQL_HOST/PORT/USER/PASS, o Docker local)
 ```
 
 La prueba de paridad compara cada indicador de Familia Horizonte calculado por
@@ -89,4 +106,5 @@ cualquier diferencia distinta de 0 detiene la entrega.
 - `docs/GUIA_PARTICIPANTE.md` — qué recibe y qué hace cada participante.
 - `docs/SEGURIDAD_Y_PRIVACIDAD.md` — modelo de amenazas y decisiones.
 - `docs/MIGRACION_DESDE_VERSION_LOCAL.md` — importación de respaldos locales.
+- `docs/MIGRACION_1_0_1_A_1_0_2.md` — actualización 1.0.1 → 1.0.2 paso a paso.
 - `docs/RESUMEN_EJECUTIVO.md` — resumen de entrega y recomendación GO/NO-GO.

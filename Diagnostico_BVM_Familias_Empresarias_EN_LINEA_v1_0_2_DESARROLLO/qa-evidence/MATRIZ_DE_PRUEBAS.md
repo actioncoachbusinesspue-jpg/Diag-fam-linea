@@ -1,8 +1,25 @@
-# Matriz de pruebas — Diagnóstico BVM en línea (MVP 1.0.0)
+# Matriz de pruebas — Diagnóstico BVM en línea (versión 1.0.2)
 
-Ejecución: 2026-07-29 · Entorno: PHP 8.4 (servidor embebido) + SQLite (equivalente
-funcional del esquema MySQL) + Chromium vía playwright-core.
-Logs completos en `qa-evidence/logs/`.
+Ejecución: 2026-07-29 · Entorno: PHP 8.4 (servidor embebido) + SQLite +
+**MariaDB 10.11 real** + Chromium vía playwright-core.
+Logs completos en `qa-evidence/logs/` (integracion, paridad, e2e, mysql,
+evidencia).
+
+## Pruebas obligatorias 1.0.2 (sección 18 del prompt de mejora)
+
+| Bloque | Casos | Cobertura | Resultado |
+|---|---|---|---|
+| A. Registro y cupo (1–10) | expected NULL sin límite; 3 de 3 permitidos; 4.º → 409 family_full; reanudar con cupo lleno; disputa simultánea del último lugar (un ganador, un 409, conteo exacto — 5 rondas con procesos reales sobre MariaDB); aumentar cupo permite registro; desactivar límite permite excedente; modo referencia muestra excedido; familia cerrada rechaza; duplicado no consume cupo | integración + e2e_api E50-E53 + tests/mysql/concurrency | PASA |
+| B. Código personal (11–18) | lookup hash al crear; reanudación por índice (un candidato); código incorrecto falla; legacy con lookup NULL funciona; backfill tras acierto; regenerar invalida el anterior; HMAC ausente del frontend (no viaja en respuestas); código ausente de logs | integración + e2e_api | PASA |
+| C. Clave de familia (19–22) | 6 caracteres aleatorios; clave de 4 previa sigue verificando; regeneración con formato nuevo; rate limit intacto | integración + e2e_api E10/E12 | PASA |
+| D. Tiempo (23–27) | apertura/cierre en America/Mexico_City; cierre inclusivo todo el día; UTC adelantado no cambia el estado local; report_date conserva el día; health-check valida timezone | integración (12 casos) + health-check | PASA |
+| E. Sesiones (28–34) | nombre configurable por ambiente; ruta de cookie normalizada y con fallback; logout borra con los mismos atributos; Secure bajo HTTPS; HttpOnly + SameSite=Lax | integración + e2e_api (logout invalida sesión) | PASA |
+| F. Empates (35–42) | máximo único intacto; empate de 2 con « / »; empate de 3 «Empate entre…»; empate de 4 «equivalente en las cuatro»; mínimo empatado (misma tarjeta de mayor diferencia); Carta y A4 de la familia de empates con 12 páginas `fits:true`, página 8 sin overflow | tests/evidence (tie_letter/tie_a4 + asertos en navegador) | PASA |
+| G. Seguridad y roles (43–53) | participante sin acceso admin; aislamiento entre familias; consultor deshabilitado (crear lanza error; login/sesión bloqueados); CSRF; SQLi; XSS; IDOR; sin localhost en código desplegable; sin credenciales; private/database protegidos (estructural o .htaccess + prueba 403 documentada) | e2e_api + static_checks + integración + health-check | PASA |
+| H. MySQL (54–60) | schema nuevo; migración 0001→0004 estructuralmente idéntica a schema.sql; rollback documentado (en migraciones y MIGRACION_1_0_1_A_1_0_2); FOR UPDATE con bloqueo real; transacciones y rollback; índices; utf8mb4 de 4 bytes | tests/mysql sobre MariaDB 10.11 | PASA |
+| I. Regresión (61–74) | login, familias, A1–A20, externas, autosave, conflicto 409, bloqueo 423, importación, exportación, demo, reporte, móvil, cero errores JS, cero errores PHP visibles | e2e_api + e2e_browser + static_checks | PASA |
+
+## Matriz 1.0.1 (regresión completa re-ejecutada en 1.0.2)
 
 ## Escenarios E01–E40 del prompt maestro
 
@@ -17,7 +34,7 @@ Logs completos en `qa-evidence/logs/`.
 | E07 | Cierre de sesión invalida la sesión | e2e_api | PASA |
 | E08 | CSRF ausente rechazado (403) | e2e_api | PASA |
 | E09 | Crear familia | e2e_api | PASA |
-| E10 | Liga y clave generadas (slug aleatorio, PREFIJO-XXXX) | e2e_api | PASA |
+| E10 | Liga y clave generadas (slug aleatorio, PREFIJO-XXXXXX desde 1.0.2) | e2e_api | PASA |
 | E11 | Abrir liga desde contexto distinto | e2e_api (jar de cookies separado) | PASA |
 | E12 | Clave incorrecta rechazada (401) | e2e_api | PASA |
 | E13 | Registro de participante con consentimiento | e2e_api | PASA |
@@ -99,6 +116,8 @@ script termina con error ante cualquier desviación.
 | real_a4 | Familia Robles | 12 | fits:true | `pdf/real_a4.pdf` | `png/real_a4/` | `contact-sheets/real_a4_contacto.png` |
 | stress_letter | Familia de estrés: 12 esperados, 10 registrados (8 finalizados, 2 incompletos), nombres largos, todos-altos, todos-bajos, patrón de empate, resultados mixtos | 12 | fits:true | `pdf/stress_letter.pdf` | `png/stress_letter/` | `contact-sheets/stress_letter_contacto.png` |
 | stress_a4 | Familia de estrés | 12 | fits:true | `pdf/stress_a4.pdf` | `png/stress_a4/` | `contact-sheets/stress_a4_contacto.png` |
+| tie_letter | Familia de empates (1.0.2): dispersión idéntica por pares de dimensiones y madurez baja en las cuatro | 12 | fits:true | `pdf/tie_letter.pdf` | `png/tie_letter/` | `contact-sheets/tie_letter_contacto.png` |
+| tie_a4 | Familia de empates | 12 | fits:true | `pdf/tie_a4.pdf` | `png/tie_a4/` | `contact-sheets/tie_a4_contacto.png` |
 
 Las 72 páginas se renderizaron a PNG (`qa-evidence/png/`) y se inspeccionaron
 visualmente mediante las hojas de contacto: portadas correctas (incluida la
@@ -109,8 +128,10 @@ cierre premium intacto.
 
 ## No ejecutado en este entorno
 
-- Pruebas contra MySQL/MariaDB real (el esquema MySQL se entrega y la capa
-  PDO es común; verificar con health-check en Hostinger).
+- Pruebas contra el MySQL de Hostinger específicamente (la suite completa
+  SÍ se ejecutó contra MariaDB 10.11 real en local — ver
+  `qa-evidence/logs/mysql.log`; queda pendiente repetir el health-check y
+  la prueba funcional en el servidor de Hostinger).
 - Impresión manual desde el diálogo del navegador en el hosting final
-  (DEPLOY_HOSTINGER.md §9.7) como confirmación adicional a la auditoría.
+  (DEPLOY_HOSTINGER.md §8) como confirmación adicional a la auditoría.
 - Revisión manual completa de accesibilidad con lector de pantalla.

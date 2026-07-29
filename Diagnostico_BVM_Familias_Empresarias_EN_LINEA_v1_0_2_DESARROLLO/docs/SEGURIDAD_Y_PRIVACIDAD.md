@@ -8,6 +8,10 @@
   (justificación: los participantes llegan por ligas compartidas — clic
   externo — y `Strict` rompería esa primera navegación; toda mutación exige
   además token CSRF).
+- Aislamiento entre ambientes (1.0.2): nombre Y ruta de cookie propios por
+  instalación (`BVMSESSID` + `/diagnostico-bvm-online/` en producción,
+  `BVMDEVSESSID` + `/diagnostico-bvm-online-dev/` en desarrollo); el cierre
+  de sesión elimina la cookie con exactamente los mismos atributos.
 - Regeneración del ID de sesión al iniciar sesión; expiración por
   inactividad (45 min); cierre de sesión que destruye la sesión y la cookie.
 - Límite de intentos con bloqueo temporal (por usuario+IP, almacenados solo
@@ -20,8 +24,15 @@
 | Secreto | Almacenamiento | Recuperación |
 |---|---|---|
 | Contraseña BVM | hash bcrypt | cambio manual |
-| Clave de familia | hash bcrypt | regenerar (invalida la anterior) |
-| Código personal | hash bcrypt | regenerar desde Administración |
+| Clave de familia | hash bcrypt (6 caracteres aleatorios desde 1.0.2; las de 4 previas siguen válidas) | regenerar (invalida la anterior) |
+| Código personal | hash bcrypt + HMAC-SHA256 de localización (1.0.2) | regenerar desde Administración |
+
+Desde 1.0.2 la reanudación por código personal se resuelve con un índice:
+`resume_token_lookup_hash` guarda el HMAC-SHA256 (con la APP_KEY) del código
+normalizado, lo que localiza UN candidato sin recorrer a los participantes;
+la autorización final sigue siendo `password_verify` contra el hash bcrypt.
+El HMAC no es reversible, no viaja al navegador y no aparece en bitácoras;
+el código personal continúa sin almacenarse en claro en ninguna parte.
 
 Todos se generan con `random_int`/`random_bytes` (criptográficos), se
 muestran una sola vez y jamás viajan del servidor al navegador público.
@@ -80,5 +91,9 @@ escribir filas reales (verificado por prueba E38).
   Mitigación: solo tras login BVM, sin persistencia, `no-store`.
 - En hosting compartido, la seguridad del panel y de la base depende también
   de las credenciales de Hostinger: usar 2FA en hPanel.
-- El MVP tiene un solo rol efectivo (administrador); la tabla ya contempla
-  `consultor` para asignaciones futuras por familia.
+- Roles (1.0.2, Opción A): el ÚNICO rol habilitado es administrador. Crear
+  un usuario `consultor` lanza un error, y uno insertado manualmente en la
+  base no puede iniciar sesión (bloqueo en el login y en la validación de
+  sesión). La tabla `family_assignments` existe solo como preparación para
+  una versión futura con aislamiento real por asignación: NO afirme
+  aislamiento por consultor en esta versión.

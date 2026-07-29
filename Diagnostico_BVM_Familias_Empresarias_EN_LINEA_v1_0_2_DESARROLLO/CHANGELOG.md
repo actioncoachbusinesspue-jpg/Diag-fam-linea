@@ -1,5 +1,103 @@
 # CHANGELOG — Diagnóstico BVM en línea
 
+## 1.0.2 — 2026-07-29 (endurecimiento controlado)
+
+Actualización puntual sobre 1.0.1: sin cambios de metodología, sin pérdida de
+datos, compatible con instalaciones existentes. Migraciones incluidas:
+`0003_enforce_participant_limit.sql` y `0004_resume_token_lookup.sql`
+(procedimiento en `docs/MIGRACION_1_0_1_A_1_0_2.md`).
+
+### Mejora 1 — Control de participantes esperados
+- `families.enforce_participant_limit` (predeterminado: límite ACTIVO).
+  Con límite activo, al alcanzar el número esperado se rechazan nuevos
+  registros con HTTP 409 («Esta aplicación ya alcanzó el número de
+  participantes autorizado…»); continuar y finalizar nunca se bloquea.
+  Con límite desactivado, el número esperado es una meta y el excedente se
+  muestra como referencia.
+- Concurrencia garantizada: estado/fechas, conteo, límite, duplicado e
+  inserción ocurren dentro de una transacción con `SELECT … FOR UPDATE`
+  sobre la familia; dos registros simultáneos no pueden exceder el cupo
+  (verificado con procesos reales contra MariaDB).
+- Administración: «X registrados de Y autorizados», estados Disponible /
+  Cerca del límite (80%) / Completo / Excedido, modo límite o referencia,
+  checkbox con ayuda al crear y configurar; exportación e importación
+  incluyen `enforceParticipantLimit`.
+
+### Mejora 2 — Reanudación eficiente por código personal
+- `participants.resume_token_lookup_hash` (HMAC-SHA256 con APP_KEY del
+  código normalizado) + índice único por familia: la reanudación localiza
+  UN candidato por índice y valida con `password_verify`, sin recorrer a
+  todos los participantes.
+- Datos previos (columna NULL): fallback acotado SOLO a esas filas y
+  backfill automático tras el primer acierto. El código personal sigue sin
+  guardarse en claro y no aparece en bitácoras.
+
+### Mejora 3 — Clave de familia más robusta
+- Nuevas claves y regeneraciones: 6 caracteres aleatorios
+  (`ROBLES-8K4P7M`), configurable con
+  `security.family_access_random_length` (rango 6–10, fallback 6).
+- Las claves de 4 caracteres previas siguen funcionando; no se fuerza
+  regeneración ni se altera ningún hash existente.
+
+### Mejora 4 — Zona horaria correcta
+- `app.timezone` (predeterminado `America/Mexico_City`), validada al
+  arrancar (falla explícita si es inválida).
+- Apertura a las 00:00 locales y cierre inclusivo todo el día local;
+  timestamps técnicos siguen en UTC; `report_date` es editorial y no se
+  convierte de zona. Presentación administrativa en hora local con la
+  leyenda «Fechas interpretadas en hora de Ciudad de México».
+
+### Mejora 5 — Sesiones dev/producción aisladas
+- `app.session_cookie_path` configurable (normalizada, fallback `/`).
+  Combinaciones documentadas: `BVMSESSID` + `/diagnostico-bvm-online/`
+  (producción) y `BVMDEVSESSID` + `/diagnostico-bvm-online-dev/` (dev).
+- Alta y borrado de la cookie con exactamente los mismos atributos
+  (path, Secure bajo HTTPS, HttpOnly, SameSite=Lax).
+
+### Mejora 6 — Empates en el reporte (presentación, no cálculo)
+- `private/reference_presentation_patch.php`, inyectado en memoria por el
+  renderer (el HTML maestro en disco no se toca): empates por igualdad
+  exacta del valor mostrado en «Dimensión de mayor coincidencia/diferencia»
+  — dos: «A / B»; tres: «Empate entre: A, B y C»; cuatro: «Coincidencia
+  equivalente en las cuatro dimensiones». Aplica en pantalla, impresión,
+  demo y reporte real; paridad numérica de Familia Horizonte intacta (0).
+- Con nivel de madurez bajo (clasificación existente), el encabezado de
+  evidencia dice «Afirmaciones relativamente más consolidadas».
+- La nota metodológica declara que los indicadores describen las
+  percepciones de quienes participaron y no constituyen una estimación
+  estadística de una población más amplia.
+
+### Mejora 7 — Health-check realmente útil
+- `private/health_checks.php` con 21 verificaciones y resultado
+  OK/ADVERTENCIA/FALLA: PHP, PDO, driver MySQL en producción, conexión,
+  las 8 tablas (incluida `family_assignments`), columnas e índice 1.0.2,
+  InnoDB, utf8mb4, APP_KEY, zona horaria, base_url (sin localhost, HTTPS
+  en producción), session_name, session_cookie_path, install_token,
+  motor de referencia, protección de `private/` y `database/`, versión de
+  esquema, administrador y permisos de config.php.
+- Ejecución SOLO por CLI (`php tools/health-check.php`) o por la ruta
+  administrativa protegida `admin/salud.php`. Queda prohibido (y el
+  archivo ya no lo permite) publicarlo temporalmente.
+
+### Mejora 8 — `private/` fuera del área publicada
+- `DEPLOY_HOSTINGER.md` reescrito: arquitectura recomendada con raíz de
+  documento en `public/`; fallback con `.htaccess` + prueba 403
+  obligatoria con evidencia. `tools/.htaccess` añadido.
+
+### Mejora 9 — Validación sobre MySQL/MariaDB real
+- `tests/mysql/`: la suite de integración completa corre sobre MySQL
+  (`BVM_IT_DRIVER=mysql`); pruebas específicas (ENUM, CHECK, FK/cascada,
+  unique con NULLs múltiples, utf8mb4 de 4 bytes, fechas, rollback,
+  bloqueo real de `FOR UPDATE`); equivalencia estructural entre migración
+  0001→0004 e instalación nueva; concurrencia real del cupo con dos
+  procesos. Ejecutada contra MariaDB 10.11: TODAS LAS SUITES PASARON.
+
+### Mejora 10 — Roles sin falsa seguridad (Opción A)
+- Solo existe el rol administrador: crear un consultor lanza error, y un
+  consultor insertado manualmente en la base no puede iniciar sesión
+  (bloqueo en login y en la validación de sesión). `family_assignments`
+  queda preparada para una versión futura y documentada como no usada.
+
 ## 1.0.1 — 2026-07-29
 
 - La demostración pública neutraliza `AppModeManager.enterAdmin` al servirse:

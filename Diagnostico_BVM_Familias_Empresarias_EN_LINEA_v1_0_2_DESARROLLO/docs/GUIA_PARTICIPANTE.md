@@ -28,6 +28,17 @@ Abra la misma liga → **Continuar donde me quedé** → clave de la familia +
 su código personal. Si perdió el código, pida al equipo BVM que le genere
 uno nuevo.
 
+## Si aparece «cupo alcanzado»
+
+Algunas familias definen un número autorizado de participantes. Si al
+intentar registrarse ve el mensaje «Esta aplicación ya alcanzó el número de
+participantes autorizado», tome en cuenta:
+
+- **Si usted ya se había registrado**, use **Continuar donde me quedé** con
+  su código personal: continuar y finalizar nunca se bloquea.
+- **Si aún no se había registrado**, contacte a quien le envió la
+  invitación para que amplíe el cupo.
+
 ## Después de finalizar
 
 Sus respuestas quedan **bloqueadas** y ya no pueden modificarse.

@@ -10,12 +10,15 @@ $base = bvm_base_url();
 $families = array_map(function (array $f) use ($base) {
     $expected = $f['expected_participants'] !== null ? (int)$f['expected_participants'] : null;
     $finished = (int)$f['finished_count'];
+    $capacity = FamilyRepository::capacity($f, (int)$f['registered_count']);
     return [
         'id' => (int)$f['id'],
         'family_name' => $f['family_name'],
         'public_slug' => $f['public_slug'],
         'status' => $f['status'],
         'expected_participants' => $expected,
+        'enforce_participant_limit' => $capacity['enforce_participant_limit'],
+        'capacity' => $capacity,
         'registered_count' => (int)$f['registered_count'],
         'finished_count' => $finished,
         'progress_pct' => $expected ? (int)round(100 * $finished / max(1, $expected)) : null,

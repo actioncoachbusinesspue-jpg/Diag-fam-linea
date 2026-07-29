@@ -110,6 +110,17 @@ function bvm_client_ip_hash(): string
     return bvm_hmac((string)($_SERVER['REMOTE_ADDR'] ?? 'cli'));
 }
 
+/**
+ * HMAC de localización del código personal (participants.resume_token_lookup_hash).
+ * Permite encontrar UN candidato por índice; la validación final sigue siendo
+ * password_verify contra resume_token_hash. Normalización: trim + mayúsculas,
+ * conservando el guion tal como se muestra al participante (XXXX-XXXX).
+ */
+function bvm_resume_token_lookup(string $code): string
+{
+    return hash_hmac('sha256', strtoupper(trim($code)), (string)bvm_config('app.key', 'bvm'));
+}
+
 // ---- Respuestas JSON -------------------------------------------------------
 
 function bvm_json_input(): array

@@ -28,6 +28,9 @@ if (array_key_exists('expected_participants', $in)) {
         bvm_json_error('El número esperado de participantes debe estar entre 1 y 500.');
     }
 }
+if (array_key_exists('enforce_participant_limit', $in)) {
+    $fields['enforce_participant_limit'] = filter_var($in['enforce_participant_limit'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+}
 foreach (['opens_at', 'closes_at', 'report_date'] as $dateField) {
     if (array_key_exists($dateField, $in)) {
         $v = $in[$dateField];

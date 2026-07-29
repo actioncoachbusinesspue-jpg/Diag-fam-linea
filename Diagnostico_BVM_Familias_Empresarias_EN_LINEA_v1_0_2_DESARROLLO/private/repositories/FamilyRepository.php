@@ -12,21 +12,22 @@ final class FamilyRepository
         ?int $expectedParticipants,
         ?string $opensAt,
         ?string $closesAt,
-        int $createdBy
+        int $createdBy,
+        bool $enforceParticipantLimit = true
     ): array {
         $slug = self::uniqueSlug();
         $accessCode = bvm_family_access_code($familyName);
         $now = bvm_now();
         $st = Database::pdo()->prepare(
             'INSERT INTO families
-               (public_slug, family_name, access_code_hash, expected_participants, questionnaire_version,
-                report_date, status, opens_at, closes_at, created_by, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+               (public_slug, family_name, access_code_hash, expected_participants, enforce_participant_limit,
+                questionnaire_version, report_date, status, opens_at, closes_at, created_by, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $st->execute([
             $slug, trim($familyName), password_hash($accessCode, PASSWORD_DEFAULT),
-            $expectedParticipants, BVM_QUESTIONNAIRE_VERSION,
-            gmdate('Y-m-d'), 'borrador', $opensAt, $closesAt, $createdBy, $now, $now,
+            $expectedParticipants, $enforceParticipantLimit ? 1 : 0, BVM_QUESTIONNAIRE_VERSION,
+            bvm_local_today(), 'borrador', $opensAt, $closesAt, $createdBy, $now, $now,
         ]);
         $family = self::findById((int)Database::pdo()->lastInsertId());
         return [$family, $accessCode];
@@ -79,7 +80,7 @@ final class FamilyRepository
 
     public static function update(int $id, array $fields): bool
     {
-        $allowed = ['family_name', 'expected_participants', 'status', 'opens_at', 'closes_at', 'report_date', 'archived_at'];
+        $allowed = ['family_name', 'expected_participants', 'enforce_participant_limit', 'status', 'opens_at', 'closes_at', 'report_date', 'archived_at'];
         $sets = [];
         $vals = [];
         foreach ($fields as $k => $v) {
@@ -125,19 +126,57 @@ final class FamilyRepository
         });
     }
 
-    /** ¿La familia acepta participación en este momento? */
+    /**
+     * ¿La familia acepta participación en este momento?
+     * Las fechas se interpretan en la zona configurada (America/Mexico_City):
+     * abre a las 00:00 locales de opens_at y acepta TODO el día de closes_at.
+     */
     public static function isOpenForParticipation(array $family): bool
     {
         if ($family['status'] !== 'abierta') {
             return false;
         }
-        $today = gmdate('Y-m-d');
-        if (!empty($family['opens_at']) && substr((string)$family['opens_at'], 0, 10) > $today) {
-            return false;
+        return bvm_local_date_is_open(
+            $family['opens_at'] !== null ? (string)$family['opens_at'] : null,
+            $family['closes_at'] !== null ? (string)$family['closes_at'] : null
+        );
+    }
+
+    /**
+     * Estado de cupo de una familia dado su número de registrados.
+     * mode : 'sin_limite' | 'limite' | 'referencia'
+     * state: 'sin_limite' | 'disponible' | 'cerca_del_limite' | 'completo' | 'excedido'
+     */
+    public static function capacity(array $family, int $registered): array
+    {
+        $expected = $family['expected_participants'] !== null ? (int)$family['expected_participants'] : null;
+        $enforce = (int)($family['enforce_participant_limit'] ?? 1) === 1;
+        if ($expected === null) {
+            return [
+                'expected' => null,
+                'registered' => $registered,
+                'enforce_participant_limit' => $enforce,
+                'mode' => 'sin_limite',
+                'state' => 'sin_limite',
+                'accepting_new' => true,
+            ];
         }
-        if (!empty($family['closes_at']) && substr((string)$family['closes_at'], 0, 10) < $today) {
-            return false;
+        if ($registered > $expected) {
+            $state = 'excedido';
+        } elseif ($registered >= $expected) {
+            $state = 'completo';
+        } elseif ($expected > 0 && $registered >= (int)ceil($expected * 0.8)) {
+            $state = 'cerca_del_limite';
+        } else {
+            $state = 'disponible';
         }
-        return true;
+        return [
+            'expected' => $expected,
+            'registered' => $registered,
+            'enforce_participant_limit' => $enforce,
+            'mode' => $enforce ? 'limite' : 'referencia',
+            'state' => $state,
+            'accepting_new' => !$enforce || $registered < $expected,
+        ];
     }
 }

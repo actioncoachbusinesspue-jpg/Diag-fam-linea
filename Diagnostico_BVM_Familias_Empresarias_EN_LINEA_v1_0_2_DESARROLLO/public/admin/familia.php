@@ -25,6 +25,7 @@ bvm_admin_header($user, (string)$family['family_name'], 'familias', [
 <section class="panel" aria-labelledby="resumen-t">
   <h2 id="resumen-t">Avance</h2>
   <div id="summary" class="hint">Cargando…</div>
+  <div id="capacity-note" aria-live="polite"></div>
 </section>
 
 <section class="panel" aria-labelledby="invitacion-t">
@@ -50,6 +51,13 @@ bvm_admin_header($user, (string)$family['family_name'], 'familias', [
         <input id="cfg-expected" type="number" min="1" max="500">
       </div>
     </div>
+    <label class="scale-option" style="margin-top:6px;">
+      <input type="checkbox" id="cfg-enforce-limit">
+      <span><span class="lbl">Cerrar nuevos registros al alcanzar el número esperado</span>
+      <span class="desc">Al activarlo, las personas ya registradas podrán continuar, pero no se aceptarán
+      nuevos participantes cuando se alcance el cupo. Si lo desactiva, el número esperado es solo una meta
+      y el excedente se muestra como referencia.</span></span>
+    </label>
     <div class="form-row">
       <div>
         <label for="cfg-opens">Fecha de apertura</label>
@@ -60,6 +68,8 @@ bvm_admin_header($user, (string)$family['family_name'], 'familias', [
         <input id="cfg-closes" type="date">
       </div>
     </div>
+    <p class="hint">Fechas interpretadas en hora de Ciudad de México. La familia abre a las 00:00 de la
+    fecha de apertura y acepta respuestas durante todo el día de la fecha de cierre.</p>
     <div class="form-row">
       <div>
         <label for="cfg-status">Estado</label>
@@ -152,6 +162,7 @@ function loadDetail() {
       document.getElementById('invite-url').textContent = f.invite_url;
       document.getElementById('cfg-name').value = f.family_name;
       document.getElementById('cfg-expected').value = f.expected_participants || '';
+      document.getElementById('cfg-enforce-limit').checked = !!f.enforce_participant_limit;
       document.getElementById('cfg-opens').value = f.opens_at ? f.opens_at.substring(0, 10) : '';
       document.getElementById('cfg-closes').value = f.closes_at ? f.closes_at.substring(0, 10) : '';
       document.getElementById('cfg-status').value = f.status;
@@ -160,12 +171,32 @@ function loadDetail() {
       var inProgress = f.registered_count - f.finished_count;
       var pctText = f.progress_pct == null ? '' :
         ' · ' + Math.min(100, f.progress_pct) + '% del objetivo';
+      var cap = f.capacity || {};
+      var capLabels = { disponible: 'Disponible', cerca_del_limite: 'Cerca del límite', completo: 'Completo', excedido: 'Excedido' };
+      var capChip = (cap.state && cap.state !== 'sin_limite')
+        ? ' <span class="status-chip cap-' + cap.state + '">' + (capLabels[cap.state] || cap.state) +
+          (cap.mode === 'referencia' ? ' · referencia' : '') + '</span>'
+        : '';
+      var registeredText = f.expected_participants
+        ? '<strong>' + f.registered_count + '</strong> registrados de <strong>' + f.expected_participants + '</strong> ' +
+          (cap.mode === 'referencia' ? 'esperados (referencia)' : 'autorizados')
+        : '<strong>' + f.registered_count + '</strong> registrados';
       document.getElementById('summary').innerHTML =
-        '<span class="status-chip status-' + f.status + '">' + statusLabel(f.status) + '</span> ' +
-        '<strong>' + f.registered_count + '</strong> registrados · ' +
+        '<span class="status-chip status-' + f.status + '">' + statusLabel(f.status) + '</span>' + capChip + ' ' +
+        registeredText + ' · ' +
         '<strong>' + inProgress + '</strong> en proceso · ' +
-        '<strong>' + f.finished_count + '</strong> finalizados' +
-        (f.expected_participants ? ' · esperados: ' + f.expected_participants + pctText : '');
+        '<strong>' + f.finished_count + '</strong> finalizados' + (f.expected_participants ? pctText : '');
+      var capMsg = '';
+      if (cap.state === 'completo' && cap.mode === 'limite') {
+        capMsg = 'El cupo autorizado está completo: no se aceptan nuevos registros. Las personas ya registradas pueden continuar y finalizar. Puede aumentar el número esperado o desactivar el límite.';
+      } else if (cap.state === 'cerca_del_limite') {
+        capMsg = 'La familia está cerca del cupo (' + cap.registered + ' de ' + cap.expected + ').';
+      } else if (cap.state === 'excedido') {
+        capMsg = 'El número esperado opera como referencia y ya fue superado (' + cap.registered + ' de ' + cap.expected + ').';
+      }
+      document.getElementById('capacity-note').innerHTML = capMsg
+        ? '<div class="alert alert-warning" role="status">' + BvmApi.escapeHtml(capMsg) + '</div>'
+        : '';
 
       var body = document.getElementById('participants-body');
       if (!d.participants.length) {
@@ -236,6 +267,7 @@ document.getElementById('config-form').addEventListener('submit', function (ev) 
     id: FAMILY_ID,
     family_name: document.getElementById('cfg-name').value,
     expected_participants: document.getElementById('cfg-expected').value || null,
+    enforce_participant_limit: document.getElementById('cfg-enforce-limit').checked,
     opens_at: document.getElementById('cfg-opens').value || null,
     closes_at: document.getElementById('cfg-closes').value || null,
     report_date: document.getElementById('cfg-report-date').value || null,

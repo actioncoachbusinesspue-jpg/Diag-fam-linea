@@ -2,13 +2,14 @@
     "familyId": "srv_fam_1",
     "familyName": "Familia Horizonte",
     "questionnaireVersion": "BVM-FE-1.2",
-    "createdAt": "2026-07-29T15:35:23.000Z",
+    "createdAt": "2026-07-29T17:20:46.000Z",
     "expectedParticipants": 5,
+    "enforceParticipantLimit": true,
     "reportDate": "2026-07-29",
     "archived": false,
     "participants": [
         {
-            "participantId": "p_a546e499d3bdddb2",
+            "participantId": "p_26ccb479bd421800",
             "participantName": "Ricardo Elizondo",
             "familyId": "srv_fam_1",
             "familyName": "Familia Horizonte",
@@ -43,12 +44,12 @@
             },
             "status": "finalizado",
             "currentIndex": 20,
-            "createdAt": "2026-07-29T15:35:24.000Z",
-            "updatedAt": "2026-07-29T15:35:27.000Z",
-            "completedAt": "2026-07-29T15:35:27.000Z"
+            "createdAt": "2026-07-29T17:20:47.000Z",
+            "updatedAt": "2026-07-29T17:20:52.000Z",
+            "completedAt": "2026-07-29T17:20:52.000Z"
         },
         {
-            "participantId": "p_5f4f23b8eddb5348",
+            "participantId": "p_85c419e2514522df",
             "participantName": "Mariana Elizondo",
             "familyId": "srv_fam_1",
             "familyName": "Familia Horizonte",
@@ -83,12 +84,12 @@
             },
             "status": "finalizado",
             "currentIndex": 20,
-            "createdAt": "2026-07-29T15:35:25.000Z",
-            "updatedAt": "2026-07-29T15:35:27.000Z",
-            "completedAt": "2026-07-29T15:35:27.000Z"
+            "createdAt": "2026-07-29T17:20:47.000Z",
+            "updatedAt": "2026-07-29T17:20:52.000Z",
+            "completedAt": "2026-07-29T17:20:52.000Z"
         },
         {
-            "participantId": "p_e0d4d3cca83b2576",
+            "participantId": "p_c4d2121ffe2c235b",
             "participantName": "Fernando Elizondo",
             "familyId": "srv_fam_1",
             "familyName": "Familia Horizonte",
@@ -123,12 +124,12 @@
             },
             "status": "finalizado",
             "currentIndex": 20,
-            "createdAt": "2026-07-29T15:35:25.000Z",
-            "updatedAt": "2026-07-29T15:35:27.000Z",
-            "completedAt": "2026-07-29T15:35:27.000Z"
+            "createdAt": "2026-07-29T17:20:47.000Z",
+            "updatedAt": "2026-07-29T17:20:52.000Z",
+            "completedAt": "2026-07-29T17:20:52.000Z"
         },
         {
-            "participantId": "p_c92733e25ae3c338",
+            "participantId": "p_1a81dc7b9c66329c",
             "participantName": "Camila Elizondo",
             "familyId": "srv_fam_1",
             "familyName": "Familia Horizonte",
@@ -163,12 +164,12 @@
             },
             "status": "finalizado",
             "currentIndex": 20,
-            "createdAt": "2026-07-29T15:35:25.000Z",
-            "updatedAt": "2026-07-29T15:35:27.000Z",
-            "completedAt": "2026-07-29T15:35:27.000Z"
+            "createdAt": "2026-07-29T17:20:48.000Z",
+            "updatedAt": "2026-07-29T17:20:52.000Z",
+            "completedAt": "2026-07-29T17:20:52.000Z"
         },
         {
-            "participantId": "p_4f30a5ac98796039",
+            "participantId": "p_6ccabec8a9f8a77e",
             "participantName": "Diego Elizondo",
             "familyId": "srv_fam_1",
             "familyName": "Familia Horizonte",
@@ -203,9 +204,9 @@
             },
             "status": "finalizado",
             "currentIndex": 20,
-            "createdAt": "2026-07-29T15:35:26.000Z",
-            "updatedAt": "2026-07-29T15:35:27.000Z",
-            "completedAt": "2026-07-29T15:35:27.000Z"
+            "createdAt": "2026-07-29T17:20:48.000Z",
+            "updatedAt": "2026-07-29T17:20:52.000Z",
+            "completedAt": "2026-07-29T17:20:52.000Z"
         }
     ]
 }

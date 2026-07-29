@@ -31,6 +31,12 @@ LoginAttemptRepository::clear($attemptKey);
 $open = FamilyRepository::isOpenForParticipation($family);
 $_SESSION['bvm_family_unlocked'] = (int)$family['id'];
 
+// Informativo para la interfaz: si el cupo ya se llenó, se avisa ANTES de
+// llenar el formulario. La validación definitiva ocurre al registrar
+// (transacción con bloqueo), nunca aquí.
+$registered = count(ParticipantRepository::listByFamily((int)$family['id']));
+$capacity = FamilyRepository::capacity($family, $registered);
+
 bvm_json_response([
     'ok' => true,
     'family' => [
@@ -38,5 +44,6 @@ bvm_json_response([
         'status' => $family['status'],
         'open_for_participation' => $open,
         'closes_at' => $family['closes_at'],
+        'accepting_new_registrations' => $open && $capacity['accepting_new'],
     ],
 ]);

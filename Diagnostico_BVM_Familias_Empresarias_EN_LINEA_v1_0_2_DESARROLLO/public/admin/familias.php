@@ -31,6 +31,13 @@ bvm_admin_header($user, 'Familias', 'familias', ['Familias' => null]);
         <input id="closes_at" type="date">
       </div>
     </div>
+    <p class="hint">Fechas interpretadas en hora de Ciudad de México.</p>
+    <label class="scale-option" style="margin-top:6px;">
+      <input type="checkbox" id="enforce_limit" checked>
+      <span><span class="lbl">Cerrar nuevos registros al alcanzar el número esperado</span>
+      <span class="desc">Al activarlo, las personas ya registradas podrán continuar, pero no se aceptarán
+      nuevos participantes cuando se alcance el cupo. Si lo desactiva, el número esperado es solo una meta.</span></span>
+    </label>
     <div class="form-actions">
       <button class="btn btn-primary" type="submit">Crear familia</button>
     </div>
@@ -85,6 +92,20 @@ function statusLabel(s) {
   return { borrador: 'Borrador', abierta: 'Abierta', cerrada: 'Cerrada', archivada: 'Archivada' }[s] || s;
 }
 
+function capacityChip(f) {
+  var c = f.capacity;
+  if (!c || c.state === 'sin_limite') { return ''; }
+  var labels = {
+    disponible: 'Disponible',
+    cerca_del_limite: 'Cerca del límite',
+    completo: 'Completo',
+    excedido: 'Excedido'
+  };
+  var label = labels[c.state] || c.state;
+  if (c.mode === 'referencia') { label += ' · referencia'; }
+  return ' <span class="status-chip cap-' + c.state + '">' + label + '</span>';
+}
+
 function fmtDate(v) {
   if (!v) { return '—'; }
   var d = new Date(v.replace(' ', 'T') + (v.indexOf('Z') === -1 ? 'Z' : ''));
@@ -109,12 +130,12 @@ function renderFamilies() {
   }
   body.innerHTML = rows.map(function (f) {
     var progress = f.expected_participants
-      ? f.finished_count + ' de ' + f.expected_participants + ' finalizados'
+      ? f.registered_count + ' registrados de ' + f.expected_participants + ' autorizados · ' + f.finished_count + ' finalizados'
       : f.finished_count + ' finalizados · ' + f.registered_count + ' registrados';
     var pct = f.progress_pct == null ? null : Math.min(100, f.progress_pct);
     return '<tr>' +
       '<td><strong>' + BvmApi.escapeHtml(f.family_name) + '</strong><br><span class="hint">Creada: ' + fmtDate(f.created_at) + '</span></td>' +
-      '<td><span class="status-chip status-' + f.status + '">' + statusLabel(f.status) + '</span></td>' +
+      '<td><span class="status-chip status-' + f.status + '">' + statusLabel(f.status) + '</span>' + capacityChip(f) + '</td>' +
       '<td>' + progress + (pct == null ? '' :
         '<div class="progress-track" role="img" aria-label="' + pct + ' por ciento"><div class="progress-fill" style="width:' + pct + '%"></div></div>') + '</td>' +
       '<td>' + fmtDate(f.last_activity_at) + '</td>' +
@@ -147,6 +168,7 @@ document.getElementById('create-form').addEventListener('submit', function (ev) 
   BvmApi.post('/api/families/create.php', {
     family_name: document.getElementById('family_name').value,
     expected_participants: document.getElementById('expected').value || null,
+    enforce_participant_limit: document.getElementById('enforce_limit').checked,
     opens_at: document.getElementById('opens_at').value || null,
     closes_at: document.getElementById('closes_at').value || null
   }).then(function (d) {

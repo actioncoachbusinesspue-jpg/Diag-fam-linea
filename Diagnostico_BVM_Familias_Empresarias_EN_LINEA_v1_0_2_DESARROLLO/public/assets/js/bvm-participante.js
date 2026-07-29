@@ -15,6 +15,7 @@
     stage: 'cover',        // cover | key | resume | register | code | question | review | external | final | locked | conflict
     familyName: '',
     openForParticipation: true,
+    acceptingNew: true,    // false cuando el cupo autorizado ya se llenó
     participant: null,     // { name, status, current_index, revision, answers, external_answers }
     answers: new Array(20).fill(null),
     externalAnswers: {},
@@ -121,10 +122,17 @@
     var roleOptions = QUESTIONNAIRE.participationRoles.map(function (r) {
       return '<option value="' + esc(r) + '">' + esc(r) + '</option>';
     }).join('');
+    var canRegister = state.openForParticipation && state.acceptingNew;
+    var blockNotice = '';
+    if (!state.openForParticipation) {
+      blockNotice = '<div class="alert alert-info">Esta familia no está aceptando nuevas participaciones en este momento.</div>';
+    } else if (!state.acceptingNew) {
+      blockNotice = '<div class="alert alert-info">Esta aplicación ya alcanzó el número de participantes autorizado. ' +
+        'Si ya se registró, utilice su código personal en «Continuar donde me quedé».</div>';
+    }
     return '<div class="question-card">' +
       '<h1>Registro individual</h1>' +
-      (state.openForParticipation ? '' :
-        '<div class="alert alert-info">Esta familia no está aceptando nuevas participaciones en este momento.</div>') +
+      blockNotice +
       '<div id="stage-msg"></div>' +
       '<p><strong>Aviso de privacidad.</strong> Sus respuestas individuales son confidenciales: se integran ' +
       'únicamente en resultados agregados de la familia. Su nombre se utiliza solo para administrar el avance ' +
@@ -139,7 +147,7 @@
       '<span><span class="lbl">He leído y acepto el aviso de privacidad</span>' +
       '<span class="desc">Acepto participar y que mis respuestas se integren en resultados agregados.</span></span></label>' +
       '<div class="form-actions">' +
-      '<button class="btn btn-primary" data-action="do-register"' + (state.openForParticipation ? '' : ' disabled') + '>Registrarme y comenzar</button>' +
+      '<button class="btn btn-primary" data-action="do-register"' + (canRegister ? '' : ' disabled') + '>Registrarme y comenzar</button>' +
       '<button class="btn btn-quiet" data-action="to-cover">Volver</button>' +
       '</div></div>';
   }
@@ -334,6 +342,7 @@
           if (!d.ok) { showStageMsg(d.error || 'Clave incorrecta.'); return; }
           state.familyName = d.family.family_name;
           state.openForParticipation = d.family.open_for_participation;
+          state.acceptingNew = d.family.accepting_new_registrations !== false;
           if (action === 'check-key') {
             state.stage = 'register';
             render();
@@ -356,7 +365,11 @@
           participation_role: document.getElementById('reg-role').value,
           consent: consent
         }).then(function (d) {
-          if (!d.ok) { showStageMsg(d.error || 'No fue posible registrarse.'); return; }
+          if (!d.ok) {
+            if (d.family_full) { state.acceptingNew = false; render(); }
+            showStageMsg(d.error || 'No fue posible registrarse.');
+            return;
+          }
           state.personalCode = d.personal_code;
           state.participant = d.participant;
           state.revision = 0;

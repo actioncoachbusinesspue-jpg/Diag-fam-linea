@@ -40,6 +40,12 @@ final class Database
         return $pdo;
     }
 
+    /** ¿El motor actual es MySQL/MariaDB? (SQLite solo en pruebas locales). */
+    public static function isMysql(): bool
+    {
+        return self::pdo()->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql';
+    }
+
     /** Ejecuta un bloque dentro de una transacción con rollback automático. */
     public static function transaction(callable $fn)
     {

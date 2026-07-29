@@ -48,7 +48,10 @@ final class FamilyDataService
             'questionnaireVersion' => (string)$family['questionnaire_version'],
             'createdAt' => self::iso((string)$family['created_at']),
             'expectedParticipants' => $family['expected_participants'] !== null ? (int)$family['expected_participants'] : null,
-            'reportDate' => $family['report_date'] ? substr((string)$family['report_date'], 0, 10) : gmdate('Y-m-d'),
+            // Extensión 1.0.2 (aditiva): la versión local ignora esta clave.
+            'enforceParticipantLimit' => (int)($family['enforce_participant_limit'] ?? 1) === 1,
+            // report_date es fecha editorial: se copia tal cual, sin conversión de zona.
+            'reportDate' => $family['report_date'] ? substr((string)$family['report_date'], 0, 10) : bvm_local_today(),
             'archived' => false,
             'participants' => $list,
         ];

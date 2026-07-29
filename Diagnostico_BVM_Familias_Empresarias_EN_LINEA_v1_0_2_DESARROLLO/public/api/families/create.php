@@ -17,6 +17,8 @@ if ($expected !== null && $expected !== '') {
 } else {
     $expected = null;
 }
+// true (predeterminado): el número esperado cierra nuevos registros al alcanzarse.
+$enforceLimit = filter_var($in['enforce_participant_limit'] ?? true, FILTER_VALIDATE_BOOLEAN);
 $opensAt = ($in['opens_at'] ?? '') !== '' ? (string)$in['opens_at'] : null;
 $closesAt = ($in['closes_at'] ?? '') !== '' ? (string)$in['closes_at'] : null;
 if ($opensAt !== null && !bvm_valid_date($opensAt)) {
@@ -29,7 +31,7 @@ if ($opensAt !== null && $closesAt !== null && $closesAt < $opensAt) {
     bvm_json_error('La fecha de cierre no puede ser anterior a la de apertura.');
 }
 
-[$family, $accessCode] = FamilyRepository::create($name, $expected, $opensAt, $closesAt, (int)$user['id']);
+[$family, $accessCode] = FamilyRepository::create($name, $expected, $opensAt, $closesAt, (int)$user['id'], $enforceLimit);
 AuditRepository::log('family-created', (int)$user['id'], (int)$family['id'], null, [
     'family_name' => $family['family_name'],
 ]);

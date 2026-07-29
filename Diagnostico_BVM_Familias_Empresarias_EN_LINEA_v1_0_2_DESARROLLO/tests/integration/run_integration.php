@@ -103,6 +103,83 @@ check('5 participantes registrados', count(ParticipantRepository::listByFamily((
 // Duplicado razonable: mismo nombre normalizado
 check('Duplicado detectado (normalización)', ParticipantRepository::findByNormalizedName((int)$family['id'], '  ricardo   ELIZONDO ') !== null);
 
+// 2b. Cupo de participantes (1.0.2) — sobre Familia B (esperados: 3, límite activo)
+FamilyRepository::update((int)$familyB['id'], ['status' => 'abierta']);
+$familyB = FamilyRepository::findById((int)$familyB['id']);
+check('Familia B con límite activo por defecto', (int)$familyB['enforce_participant_limit'] === 1);
+
+$bCodes = [];
+foreach (['Ana Robles', 'Luis Robles', 'Paula Robles'] as $i => $nameB) {
+    $r = ParticipantRepository::register((int)$familyB['id'], $nameB, 'Primera generación', 'Otro rol patrimonial');
+    check("Registro B" . ($i + 1) . " dentro del cupo", !empty($r['ok']));
+    if (!empty($r['ok'])) {
+        $bCodes[$nameB] = ['code' => $r['personal_code'], 'id' => (int)$r['participant']['id']];
+    }
+}
+$r = ParticipantRepository::register((int)$familyB['id'], 'Sofía Robles', 'Segunda generación', 'Otro rol patrimonial');
+check('Cuarto registro rechazado por cupo (family_full)', empty($r['ok']) && ($r['error'] ?? '') === 'family_full');
+
+// La reanudación NUNCA se bloquea por cupo lleno
+$ana = ParticipantRepository::findByPersonalCode((int)$familyB['id'], $bCodes['Ana Robles']['code']);
+check('Reanudación funciona con cupo lleno', $ana !== null && (int)$ana['id'] === $bCodes['Ana Robles']['id']);
+
+// Con cupo lleno, incluso un duplicado recibe family_full (el mensaje guía a reanudar)
+$r = ParticipantRepository::register((int)$familyB['id'], 'ana robles', 'Primera generación', 'Otro rol patrimonial');
+check('Duplicado con cupo lleno recibe family_full', empty($r['ok']) && ($r['error'] ?? '') === 'family_full');
+
+// Aumentar el cupo permite un registro más
+FamilyRepository::update((int)$familyB['id'], ['expected_participants' => 4]);
+
+// Duplicado con cupo disponible reporta duplicate y NO consume el lugar
+$r = ParticipantRepository::register((int)$familyB['id'], 'ana robles', 'Primera generación', 'Otro rol patrimonial');
+check('Duplicado reporta duplicate (no consume cupo)', empty($r['ok']) && ($r['error'] ?? '') === 'duplicate');
+check('Conteo intacto tras duplicado', count(ParticipantRepository::listByFamily((int)$familyB['id'])) === 3);
+$r = ParticipantRepository::register((int)$familyB['id'], 'Sofía Robles', 'Segunda generación', 'Otro rol patrimonial');
+check('Aumentar cupo permite nuevo registro', !empty($r['ok']));
+
+// Desactivar el límite permite excedente y lo marca como referencia
+FamilyRepository::update((int)$familyB['id'], ['enforce_participant_limit' => 0]);
+$r = ParticipantRepository::register((int)$familyB['id'], 'Elena Robles', 'Segunda generación', 'Otro rol patrimonial');
+check('Modo referencia permite excedente', !empty($r['ok']) && !empty($r['over_reference']));
+$familyB = FamilyRepository::findById((int)$familyB['id']);
+$capB = FamilyRepository::capacity($familyB, 5);
+check('Capacidad reporta excedido en modo referencia', $capB['state'] === 'excedido' && $capB['mode'] === 'referencia');
+
+// Familia cerrada no acepta registros
+FamilyRepository::update((int)$familyB['id'], ['status' => 'cerrada']);
+$r = ParticipantRepository::register((int)$familyB['id'], 'Otro Más', 'Primera generación', 'Otro rol patrimonial');
+check('Familia cerrada rechaza registro (not_open)', empty($r['ok']) && ($r['error'] ?? '') === 'not_open');
+FamilyRepository::update((int)$familyB['id'], ['status' => 'abierta']);
+
+// expected NULL → sin límite aunque enforce esté activo
+[$familyC] = FamilyRepository::create('Familia Cedros', null, null, null, $adminId);
+FamilyRepository::update((int)$familyC['id'], ['status' => 'abierta']);
+$okAll = true;
+for ($i = 1; $i <= 6; $i++) {
+    $r = ParticipantRepository::register((int)$familyC['id'], "Persona $i Cedros", 'Primera generación', 'Otro rol patrimonial');
+    $okAll = $okAll && !empty($r['ok']);
+}
+check('Sin expected no existe límite (6 registros)', $okAll);
+
+// 2c. Reanudación indexada por código personal (1.0.2)
+$anaRow = ParticipantRepository::findById($bCodes['Ana Robles']['id']);
+check('Participante nuevo tiene lookup hash', !empty($anaRow['resume_token_lookup_hash'])
+    && $anaRow['resume_token_lookup_hash'] === bvm_resume_token_lookup($bCodes['Ana Robles']['code']));
+check('Código incorrecto rechazado', ParticipantRepository::findByPersonalCode((int)$familyB['id'], 'ZZZZ-ZZZZ') === null);
+
+// Participante legado: lookup NULL → fallback acotado + backfill automático
+Database::pdo()->exec('UPDATE participants SET resume_token_lookup_hash = NULL WHERE id = ' . $bCodes['Luis Robles']['id']);
+$luis = ParticipantRepository::findByPersonalCode((int)$familyB['id'], $bCodes['Luis Robles']['code']);
+check('Token legacy (lookup NULL) sigue funcionando', $luis !== null && (int)$luis['id'] === $bCodes['Luis Robles']['id']);
+$luisRow = ParticipantRepository::findById($bCodes['Luis Robles']['id']);
+check('Tras el acierto legacy se completa el lookup', !empty($luisRow['resume_token_lookup_hash']));
+
+// Regenerar código invalida el anterior y actualiza el lookup
+$newCode = ParticipantRepository::regeneratePersonalCode($bCodes['Paula Robles']['id']);
+check('Código regenerado funciona', ParticipantRepository::findByPersonalCode((int)$familyB['id'], $newCode) !== null);
+check('Código anterior deja de funcionar',
+    ParticipantRepository::findByPersonalCode((int)$familyB['id'], $bCodes['Paula Robles']['code']) === null);
+
 // 3. Autosave respuesta por respuesta con control de revisión
 foreach ($horizonte as $i => [$name, $gen, $role, $answers, $ext]) {
     $pid = $participantIds[$i];

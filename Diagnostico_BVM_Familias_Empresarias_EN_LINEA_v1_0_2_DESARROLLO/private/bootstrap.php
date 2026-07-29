@@ -33,6 +33,8 @@ function bvm_config(string $path, $default = null)
 }
 
 // ---- Entorno / errores -----------------------------------------------------
+// Persistencia técnica SIEMPRE en UTC; las decisiones y la presentación local
+// usan la zona configurada (app.timezone) mediante los helpers de más abajo.
 date_default_timezone_set('UTC');
 $bvmEnv = bvm_config('app.env', 'production');
 if ($bvmEnv === 'development') {
@@ -81,7 +83,86 @@ function bvm_base_url(): string
     return $scheme . '://' . $host . $dir;
 }
 
-function bvm_now(): string
+// ---- Tiempo ----------------------------------------------------------------
+// Regla única de la aplicación:
+//   * Timestamps técnicos (created_at, updated_at, completed_at, last_login_at,
+//     locked_until, audit_events) se guardan en UTC → bvm_now_utc().
+//   * Las decisiones de apertura/cierre y la presentación administrativa usan
+//     la zona configurada (predeterminado America/Mexico_City).
+//   * report_date es una fecha editorial (DATE): nunca se convierte de zona.
+
+/** Zona horaria configurada y validada. Si es inválida, la aplicación no inicia en silencio. */
+function bvm_configured_timezone(): DateTimeZone
+{
+    static $tz = null;
+    if ($tz instanceof DateTimeZone) {
+        return $tz;
+    }
+    $name = (string)bvm_config('app.timezone', 'America/Mexico_City');
+    try {
+        $tz = new DateTimeZone($name);
+    } catch (Throwable $e) {
+        http_response_code(503);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo "Configuración inválida: app.timezone «{$name}» no es una zona horaria reconocida.\n";
+        echo "Use un identificador IANA, por ejemplo America/Mexico_City.\n";
+        exit;
+    }
+    return $tz;
+}
+
+/** Timestamp técnico en UTC (formato SQL). */
+function bvm_now_utc(): string
 {
     return gmdate('Y-m-d H:i:s');
+}
+
+/** Alias histórico: TODOS los timestamps técnicos persisten en UTC. */
+function bvm_now(): string
+{
+    return bvm_now_utc();
+}
+
+/** Fecha de "hoy" en la zona configurada (para apertura/cierre y fechas editoriales). */
+function bvm_local_today(): string
+{
+    return (new DateTimeImmutable('now', bvm_configured_timezone()))->format('Y-m-d');
+}
+
+/** Convierte un timestamp UTC de la base a la zona configurada. */
+function bvm_utc_to_local(?string $utcDateTime): ?DateTimeImmutable
+{
+    if ($utcDateTime === null || $utcDateTime === '') {
+        return null;
+    }
+    try {
+        $dt = new DateTimeImmutable($utcDateTime, new DateTimeZone('UTC'));
+    } catch (Throwable $e) {
+        return null;
+    }
+    return $dt->setTimezone(bvm_configured_timezone());
+}
+
+/** Presentación local legible de un timestamp UTC de la base ('' si es NULL). */
+function bvm_format_local(?string $utcDateTime, string $format = 'Y-m-d H:i'): string
+{
+    $local = bvm_utc_to_local($utcDateTime);
+    return $local === null ? '' : $local->format($format);
+}
+
+/**
+ * ¿"Hoy" local está dentro del rango [opensAt, closesAt]?
+ * opens_at abre a las 00:00:00 locales y closes_at incluye TODO su día
+ * (hasta 23:59:59 locales). Fechas NULL no restringen.
+ */
+function bvm_local_date_is_open(?string $opensAt, ?string $closesAt, ?string $todayLocal = null): bool
+{
+    $today = $todayLocal ?? bvm_local_today();
+    if ($opensAt !== null && $opensAt !== '' && substr($opensAt, 0, 10) > $today) {
+        return false;
+    }
+    if ($closesAt !== null && $closesAt !== '' && substr($closesAt, 0, 10) < $today) {
+        return false;
+    }
+    return true;
 }

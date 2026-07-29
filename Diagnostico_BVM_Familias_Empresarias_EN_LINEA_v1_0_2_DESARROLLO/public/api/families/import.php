@@ -115,6 +115,9 @@ if ($mode === 'replace') {
 try {
     $result = Database::transaction(function (PDO $pdo) use ($mode, $replaceId, $familyIn, $participantsIn, $user) {
         $now = bvm_now();
+        // Respaldos 1.0.2 incluyen enforceParticipantLimit; los de la versión
+        // local o de 1.0.1 no lo traen y conservan el predeterminado (límite activo).
+        $enforceLimit = filter_var($familyIn['enforceParticipantLimit'] ?? true, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
         if ($mode === 'replace') {
             // Elimina participaciones actuales (cascade borra respuestas) y conserva liga/clave.
             $st = $pdo->prepare('DELETE FROM participants WHERE family_id = ?');
@@ -124,6 +127,7 @@ try {
                 'family_name' => (string)$familyIn['familyName'],
                 'expected_participants' => isset($familyIn['expectedParticipants']) && $familyIn['expectedParticipants'] !== null
                     ? (int)$familyIn['expectedParticipants'] : null,
+                'enforce_participant_limit' => $enforceLimit,
                 'report_date' => isset($familyIn['reportDate']) && bvm_valid_date((string)$familyIn['reportDate'])
                     ? (string)$familyIn['reportDate'] : null,
             ]);
@@ -135,7 +139,8 @@ try {
                     ? (int)$familyIn['expectedParticipants'] : null,
                 null,
                 null,
-                (int)$user['id']
+                (int)$user['id'],
+                $enforceLimit === 1
             );
             $familyId = (int)$family['id'];
             FamilyRepository::update($familyId, [

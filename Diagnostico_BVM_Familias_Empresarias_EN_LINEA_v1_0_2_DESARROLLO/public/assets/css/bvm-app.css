@@ -150,6 +150,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .alert-error { background: #FBEAE8; color: #7B2D25; border: 1px solid #E6BFBA; }
 .alert-success { background: #EAF6EC; color: #1F5C28; border: 1px solid #BEDFC4; }
 .alert-info { background: var(--bvm-cream); color: var(--bvm-navy); border: 1px solid var(--bvm-divider); }
+.alert-warning { background: #FBF3DC; color: #7A5A12; border: 1px solid #E8D6A2; }
 
 /* ---- Encabezado administrativo ---- */
 .admin-header {
@@ -209,6 +210,13 @@ table.bvm-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .status-archivada { background: #F1F1F1; color: var(--bvm-soft-gray); }
 .status-finalizado { background: #EAF6EC; color: #1F5C28; }
 .status-en_proceso { background: var(--bvm-cream); color: var(--bvm-gold); }
+
+/* Estados de cupo (participantes esperados) — alerta sobria al 80% y 100%. */
+.cap-sin_limite { background: var(--bvm-blue-gray); color: var(--bvm-navy); }
+.cap-disponible { background: #EAF6EC; color: #1F5C28; border-color: #BEDFC4; }
+.cap-cerca_del_limite { background: #FBF3DC; color: #7A5A12; border-color: #E8D6A2; }
+.cap-completo { background: var(--bvm-cream); color: var(--bvm-gold); border-color: var(--bvm-divider); }
+.cap-excedido { background: #FBEAE8; color: #7B2D25; border-color: #E6BFBA; }
 
 .progress-track { background: var(--bvm-blue-gray); border-radius: 20px; height: 8px; min-width: 90px; overflow: hidden; }
 .progress-fill { background: var(--bvm-gold); height: 100%; border-radius: 20px; }

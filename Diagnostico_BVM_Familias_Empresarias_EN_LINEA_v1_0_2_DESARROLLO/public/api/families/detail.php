@@ -32,6 +32,7 @@ foreach ($participants as $p) {
 }
 
 $expected = $family['expected_participants'] !== null ? (int)$family['expected_participants'] : null;
+$capacity = FamilyRepository::capacity($family, count($participants));
 
 bvm_json_response([
     'ok' => true,
@@ -41,6 +42,8 @@ bvm_json_response([
         'public_slug' => $family['public_slug'],
         'status' => $family['status'],
         'expected_participants' => $expected,
+        'enforce_participant_limit' => $capacity['enforce_participant_limit'],
+        'capacity' => $capacity,
         'questionnaire_version' => $family['questionnaire_version'],
         'report_date' => $family['report_date'],
         'opens_at' => $family['opens_at'],

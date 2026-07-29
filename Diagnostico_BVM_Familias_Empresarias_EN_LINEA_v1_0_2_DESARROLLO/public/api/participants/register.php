@@ -17,9 +17,6 @@ $family = FamilyRepository::findById($familyId);
 if (!$family) {
     bvm_json_error('Familia no encontrada.', 404);
 }
-if (!FamilyRepository::isOpenForParticipation($family)) {
-    bvm_json_error('Esta familia no está aceptando nuevas participaciones en este momento.', 409);
-}
 
 $name = (string)($in['name'] ?? '');
 $generation = (string)($in['generation'] ?? '');
@@ -39,23 +36,47 @@ if (!bvm_valid_participation_role($role)) {
     bvm_json_error('Seleccione su rol patrimonial.', 422);
 }
 
-// Duplicados razonables: mismo nombre normalizado en la misma familia.
-$existing = ParticipantRepository::findByNormalizedName($familyId, $name);
-if ($existing) {
-    bvm_json_error(
-        'Ya existe una participación registrada con este nombre. ' .
-        'Si es usted, use su código personal en "Continuar donde me quedé". ' .
-        'Si es otra persona con el mismo nombre, agregue una distinción (por ejemplo, una inicial).',
-        409,
-        ['duplicate' => true]
-    );
-}
-
+// Estado, fechas, cupo y duplicados se validan DENTRO de la transacción con
+// la familia bloqueada (FOR UPDATE): dos registros simultáneos no pueden
+// exceder el cupo, y la reanudación de participantes existentes nunca se bloquea.
 try {
-    [$participant, $personalCode] = ParticipantRepository::create($familyId, $name, $generation, $role);
+    $result = ParticipantRepository::register($familyId, $name, $generation, $role);
 } catch (Throwable $e) {
     bvm_json_error('No fue posible completar el registro. Intente de nuevo.', 500);
 }
+
+if (empty($result['ok'])) {
+    switch ($result['error'] ?? '') {
+        case 'not_found':
+            bvm_json_error('Familia no encontrada.', 404);
+            break;
+        case 'not_open':
+            bvm_json_error('Esta familia no está aceptando nuevas participaciones en este momento.', 409);
+            break;
+        case 'family_full':
+            bvm_json_error(
+                'Esta aplicación ya alcanzó el número de participantes autorizado. ' .
+                'Si ya se registró, utilice su código personal para continuar.',
+                409,
+                ['family_full' => true]
+            );
+            break;
+        case 'duplicate':
+            bvm_json_error(
+                'Ya existe una participación registrada con este nombre. ' .
+                'Si es usted, use su código personal en "Continuar donde me quedé". ' .
+                'Si es otra persona con el mismo nombre, agregue una distinción (por ejemplo, una inicial).',
+                409,
+                ['duplicate' => true]
+            );
+            break;
+        default:
+            bvm_json_error('No fue posible completar el registro. Intente de nuevo.', 500);
+    }
+}
+
+$participant = $result['participant'];
+$personalCode = $result['personal_code'];
 
 bvm_participant_login((int)$participant['id'], $familyId);
 AuditRepository::log('participant-registered', null, $familyId, (int)$participant['id']);
@@ -63,6 +84,8 @@ AuditRepository::log('participant-registered', null, $familyId, (int)$participan
 bvm_json_response([
     'ok' => true,
     'personal_code' => $personalCode, // se muestra una sola vez
+    // true cuando el número esperado opera como referencia y este registro lo superó
+    'over_reference' => !empty($result['over_reference']),
     'participant' => [
         'name' => $participant['participant_name'],
         'status' => $participant['status'],

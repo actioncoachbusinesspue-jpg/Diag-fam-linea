@@ -1,0 +1,2 @@
+# La carpeta private NUNCA debe servirse por web.
+Require all denied

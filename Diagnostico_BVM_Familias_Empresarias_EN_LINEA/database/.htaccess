@@ -1,0 +1,2 @@
+# El SQL nunca debe exponerse por web.
+Require all denied

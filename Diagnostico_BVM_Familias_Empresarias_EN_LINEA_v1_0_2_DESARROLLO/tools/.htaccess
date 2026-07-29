@@ -1,0 +1,4 @@
+# Las herramientas de mantenimiento NUNCA deben servirse por web.
+# El health-check se ejecuta por terminal (php tools/health-check.php)
+# o mediante la página administrativa protegida admin/salud.php.
+Require all denied

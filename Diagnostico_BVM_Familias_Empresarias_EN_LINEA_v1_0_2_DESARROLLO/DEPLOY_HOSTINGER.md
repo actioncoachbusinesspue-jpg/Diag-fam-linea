@@ -1,4 +1,4 @@
-# Despliegue en Hostinger — Diagnóstico BVM en línea
+# Despliegue en Hostinger — Diagnóstico BVM en línea (versión 1.0.2)
 
 Instrucciones exactas para el encargado del hosting. No requieren Node.js:
 la aplicación publicada funciona solo con PHP y MySQL/MariaDB.
@@ -6,17 +6,80 @@ la aplicación publicada funciona solo con PHP y MySQL/MariaDB.
 ## 0. Reglas previas
 
 - **NO tocar** `public_html/diagnostico-bvm/` (versión temporal local).
-- Publicar primero en `public_html/diagnostico-bvm-online-dev/` (pruebas,
-  no indexada) y solo tras aprobación formal copiar a
-  `public_html/diagnostico-bvm-online/`.
+- Publicar primero en el ambiente de desarrollo
+  (`diagnostico-bvm-online-dev`) y solo tras aprobación formal repetir el
+  proceso en producción (`diagnostico-bvm-online`) con su PROPIA base de
+  datos.
+- Antes de actualizar una instalación 1.0.1 existente, siga
+  `docs/MIGRACION_1_0_1_A_1_0_2.md` (respaldos + migraciones 0003/0004).
 
-## 1. Crear la carpeta
+## 1. Arquitectura de carpetas
 
-En el Administrador de archivos de hPanel crear:
+### Opción A — RECOMENDADA PARA PRODUCCIÓN: `private/` fuera del área publicada
+
+El código resuelve `private/` como carpeta HERMANA de `public/`, por lo que
+la forma soportada (sin editar una sola línea) es subir el proyecto completo
+FUERA del área publicada y publicar únicamente `public/`:
 
 ```
-public_html/diagnostico-bvm-online-dev/
+/home/USUARIO/bvm-online/                  ← NO accesible por URL
+    private/                               ← config.php, bootstrap, repositorios,
+                                             servicios, reference-app
+    tools/                                 ← health-check por terminal
+    public/                                ← LO ÚNICO que se publica
+        index.php
+        participar.php
+        demostracion.php
+        acceso-bvm.php
+        instalar.php
+        admin/
+        api/
+        assets/
+        .htaccess
 ```
+
+Pasos:
+
+1. Suba la carpeta del proyecto a `/home/USUARIO/bvm-online/` (fuera de
+   `public_html`). No suba `tests/`, `qa-evidence/`, `reference/` ni
+   `database/`.
+2. En hPanel cree el subdominio o dominio de la aplicación y establezca su
+   **raíz del documento** (document root) en
+   `/home/USUARIO/bvm-online/public`.
+3. Resultado: `private/` y `tools/` quedan estructuralmente fuera del
+   alcance de cualquier URL, sin depender de `.htaccess`.
+
+Si su plan no permite elegir la raíz del documento, use la Opción B.
+
+### Opción B — Fallback en hosting compartido restringido
+
+Si el plan no permite carpetas fuera de `public_html` ni elegir la raíz de
+documento, mantenga:
+
+```
+public_html/diagnostico-bvm-online/
+  ├── (contenido de public/)
+  ├── private/     ← con su .htaccess "Require all denied" INTACTO
+  └── tools/       ← con su .htaccess "Require all denied" (o elimínela tras verificar)
+```
+
+En esta opción es OBLIGATORIO, antes de aprobar el ambiente:
+
+1. Abrir en ventana privada `https://SU-DOMINIO/diagnostico-bvm-online/private/config.php`
+   → debe responder **403** (o 404), nunca mostrar contenido ni descargarlo.
+2. Abrir `https://SU-DOMINIO/diagnostico-bvm-online/private/` → **403** y sin
+   listado de directorio.
+3. Abrir `https://SU-DOMINIO/diagnostico-bvm-online/database/schema.sql` (si
+   subió `database/`; lo recomendado es NO subirla) → **403/404**.
+4. Guardar capturas de las tres respuestas en la evidencia (qa-evidence).
+
+> Un `.htaccess` correcto en Apache/LiteSpeed (Hostinger lo respeta) bloquea
+> el acceso, pero **no equivale** a tener la carpeta fuera de `public_html`:
+> un error de configuración del servidor o una migración de plan puede
+> exponerla. Por eso la Opción A es la recomendada para producción.
+
+No subir nunca: `tests/`, `qa-evidence/`, `reference/`, `database/` (el SQL
+se importa por phpMyAdmin, no se sirve por web) ni archivos de desarrollo.
 
 ## 2. Crear la base de datos
 
@@ -31,28 +94,16 @@ Anotar en un lugar privado (nunca en documentación pública):
 ## 3. Importar el esquema
 
 hPanel → **phpMyAdmin** → seleccionar la base → pestaña **Importar** →
-subir `database/schema.sql` → Continuar. Deben crearse 7 tablas.
+subir `database/schema.sql` → Continuar. Deben crearse **8 tablas**
+(admin_users, families, participants, responses, external_responses,
+audit_events, login_attempts, family_assignments).
 
-## 4. Subir los archivos
+> Actualización desde 1.0.1: NO importe schema.sql; aplique en orden
+> `database/migrations/0003_enforce_participant_limit.sql` y
+> `database/migrations/0004_resume_token_lookup.sql`
+> (ver `docs/MIGRACION_1_0_1_A_1_0_2.md`).
 
-Estructura recomendada dentro de la carpeta creada:
-
-```
-diagnostico-bvm-online-dev/
-  ├── (contenido de public/  — index.php, participar.php, admin/, api/, assets/, .htaccess)
-  ├── private/               — con su .htaccess "Require all denied"
-  └── tools/
-```
-
-> Si su plan permite carpetas FUERA de `public_html`, coloque `private/` ahí
-> y ajuste las rutas `require` de `public/*.php` (una línea por archivo).
-> Con el `.htaccess` incluido, mantener `private/` dentro también es seguro
-> en Apache/LiteSpeed (Hostinger lo respeta).
-
-No subir: `tests/`, `qa-evidence/`, `reference/`, `database/` (el SQL ya se
-importó), ni archivos de desarrollo.
-
-## 5. Configurar credenciales
+## 4. Configurar credenciales
 
 1. Copiar `private/config.example.php` como `private/config.php`.
 2. Completar `db.host`, `db.name`, `db.user`, `db.pass`.
@@ -63,16 +114,24 @@ importó), ni archivos de desarrollo.
    y pegarla en `app.key`.
 4. Definir `app.base_url`, por ejemplo:
    `https://sudominio.com/diagnostico-bvm-online-dev`
-5. Definir un `app.install_token` temporal (una frase aleatoria larga).
+5. Verificar `app.timezone` (predeterminado `America/Mexico_City`):
+   las fechas de apertura y cierre se interpretan en esa zona.
+6. Configurar el aislamiento de sesiones según el ambiente:
+   - **Desarrollo**: `session_name = 'BVMDEVSESSID'`,
+     `session_cookie_path = '/diagnostico-bvm-online-dev/'`
+   - **Producción**: `session_name = 'BVMSESSID'`,
+     `session_cookie_path = '/diagnostico-bvm-online/'`
+   Nunca use la misma combinación en ambos ambientes.
+7. Definir un `app.install_token` temporal (una frase aleatoria larga).
 
-## 6. HTTPS y versión de PHP
+## 5. HTTPS y versión de PHP
 
 - hPanel → **SSL**: activar el certificado del dominio (la cookie de sesión
   se marca `Secure` automáticamente cuando hay HTTPS).
 - hPanel → **Configuración PHP**: seleccionar PHP 8.2 (o la 8.x estable
   disponible).
 
-## 7. Crear el primer administrador
+## 6. Crear el primer administrador
 
 1. Abrir `https://sudominio.com/diagnostico-bvm-online-dev/instalar.php`.
 2. Ingresar el token de instalación y crear la cuenta (contraseña de 12+
@@ -80,35 +139,57 @@ importó), ni archivos de desarrollo.
 3. Verificar que al recargar `instalar.php` aparece **"quedó bloqueado"**.
 4. **Borrar el valor de `install_token` en `private/config.php`.**
 
-## 8. Verificación (health-check)
+## 7. Verificación (health-check)
 
-Por terminal: `php tools/health-check.php` — debe terminar en
-`RESULTADO: TODO CORRECTO`. (Alternativa sin terminal: copiar el archivo a la
-carpeta pública, abrirlo en el navegador y **borrarlo inmediatamente**.)
+Por terminal (hPanel → Avanzado → Terminal):
 
-## 9. Prueba funcional completa
+```
+php tools/health-check.php
+```
+
+Debe terminar en `RESULTADO: TODO CORRECTO` (las advertencias se revisan una
+por una; cualquier FALLA detiene la publicación). Verifica PHP, PDO, driver
+MySQL, conexión, las 8 tablas, las columnas e índice de 1.0.2, InnoDB,
+utf8mb4, APP_KEY, zona horaria, base_url, sesión (nombre y ruta de cookie),
+token de instalación, motor de referencia, protección de `private/` y
+`database/`, versión de esquema, administrador y permisos de config.php.
+
+**Sin terminal**: inicie sesión BVM y abra `admin/salud.php` (misma
+verificación, protegida por sesión). **PROHIBIDO** copiar
+`tools/health-check.php` al área pública: ya no funciona por web y la
+práctica queda eliminada de esta guía.
+
+## 8. Prueba funcional completa
 
 1. Página pública carga con los tres caminos.
 2. La demostración abre a Familia Horizonte sin contraseña.
 3. Acceso BVM: login correcto e incorrecto (mensaje genérico).
-4. Crear una familia de prueba → copiar liga y clave.
+4. Crear una familia de prueba (cupo esperado 2, límite activado) → copiar
+   liga y clave (formato `PREFIJO-XXXXXX`).
 5. Desde un teléfono (red distinta si es posible): abrir la liga, ingresar
    clave, registrarse, responder 2–3 afirmaciones, cerrar el navegador.
 6. Desde otra computadora: misma liga + clave + código personal → las
    respuestas están ahí; terminar y finalizar.
-7. En Administración: el avance se refleja; abrir radiografía y reporte;
-   imprimir (Carta y A4, márgenes 0, fondos activados, encabezados del
-   navegador desactivados: 12 páginas exactas).
-8. Cerrar sesión.
-9. Eliminar la familia de prueba (doble confirmación).
+7. Registrar un segundo participante y verificar que un TERCER registro es
+   rechazado con el mensaje de cupo lleno; la reanudación del primero sigue
+   funcionando.
+8. En Administración: el avance muestra «X registrados de Y autorizados»;
+   abrir radiografía y reporte; imprimir (Carta y A4, márgenes 0, fondos
+   activados, encabezados del navegador desactivados: 12 páginas exactas).
+9. Probar URL directa a `private/` (ventana privada) → 403/404.
+10. Cerrar sesión y verificar que la cookie (`BVMDEVSESSID` o `BVMSESSID`)
+    desaparece.
+11. Eliminar la familia de prueba (doble confirmación).
 
-## 10. Publicación final
+## 9. Publicación final
 
-Solo con aprobación formal: repetir 1–9 sobre
+Solo con aprobación formal: repetir los pasos sobre
 `public_html/diagnostico-bvm-online/` con su propia base de datos NUEVA
-(no reutilizar la de desarrollo), y proteger o eliminar la carpeta `-dev`.
+(no reutilizar la de desarrollo), con `session_name = 'BVMSESSID'` y
+`session_cookie_path = '/diagnostico-bvm-online/'`, y proteger o eliminar
+la carpeta `-dev`.
 
-## 11. Respaldos y rollback
+## 10. Respaldos y rollback
 
 - **Respaldo de datos**: hPanel → phpMyAdmin → Exportar (formato SQL) →
   guardar con fecha. También por familia: Administración BVM → familia →
@@ -116,8 +197,8 @@ Solo con aprobación formal: repetir 1–9 sobre
 - **Respaldo de archivos**: descargar la carpeta completa desde el
   Administrador de archivos.
 - **Rollback**: restaurar los archivos del ZIP anterior y, si hubo cambios de
-  datos, importar el SQL respaldado desde phpMyAdmin. La carpeta
-  `diagnostico-bvm-online-dev/` siempre conserva la última versión aprobada
-  anterior mientras no se elimine.
+  datos, importar el SQL respaldado desde phpMyAdmin (las migraciones 0003 y
+  0004 son aditivas y reversibles: ver instrucciones de reversa dentro de
+  cada archivo).
 - Si una importación de familia falla, la transacción revierte sola: la base
   queda como estaba.

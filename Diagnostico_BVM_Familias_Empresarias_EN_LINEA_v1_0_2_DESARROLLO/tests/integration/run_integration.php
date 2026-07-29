@@ -17,9 +17,24 @@ $work = sys_get_temp_dir() . '/bvm_it_' . bin2hex(random_bytes(4));
 mkdir($work, 0770, true);
 $dbPath = $work . '/test.sqlite';
 
+// Motor: SQLite por defecto (rápido, local). Con BVM_IT_DRIVER=mysql la MISMA
+// suite corre contra MySQL/MariaDB real (tests/mysql/run_mysql.sh la invoca
+// sobre una base temporal ya creada con database/schema.sql).
+$itDriver = getenv('BVM_IT_DRIVER') ?: 'sqlite';
+$dbConfig = $itDriver === 'mysql'
+    ? [
+        'driver' => 'mysql',
+        'host' => getenv('BVM_IT_HOST') ?: '127.0.0.1',
+        'name' => getenv('BVM_IT_DB') ?: 'bvm_it',
+        'user' => getenv('BVM_IT_USER') ?: 'root',
+        'pass' => getenv('BVM_IT_PASS') ?: '',
+        'charset' => 'utf8mb4',
+      ]
+    : ['driver' => 'sqlite', 'sqlite_path' => $dbPath];
+
 $configFile = $work . '/config.php';
 file_put_contents($configFile, '<?php return ' . var_export([
-    'db' => ['driver' => 'sqlite', 'sqlite_path' => $dbPath],
+    'db' => $dbConfig,
     'app' => [
         'key' => bin2hex(random_bytes(16)),
         'env' => 'development',
@@ -35,7 +50,10 @@ putenv('BVM_CONFIG_FILE=' . $configFile);
 require_once $root . '/private/bootstrap.php';
 require_once BVM_PRIVATE_DIR . '/services/FamilyDataService.php';
 
-Database::pdo()->exec(file_get_contents($root . '/tests/fixtures/schema_sqlite.sql'));
+if ($itDriver === 'sqlite') {
+    Database::pdo()->exec(file_get_contents($root . '/tests/fixtures/schema_sqlite.sql'));
+}
+echo "[INFO]  Motor de base de datos: " . Database::pdo()->getAttribute(PDO::ATTR_DRIVER_NAME) . "\n";
 
 $failures = 0;
 function check(string $name, bool $cond, string $detail = ''): void
@@ -69,6 +87,14 @@ check('Crear administrador', $adminId > 0);
 $found = AdminUserRepository::findByUsername('bvm.pruebas');
 check('password_verify correcto', password_verify('clave-larga-de-prueba-123', $found['password_hash']));
 check('password_verify incorrecto rechazado', !password_verify('otra-clave', $found['password_hash']));
+
+// Opción A de roles (1.0.2): el rol consultor no puede crearse
+try {
+    AdminUserRepository::create('Consultor Prueba', 'consultor.prueba', 'clave-larga-de-prueba-123', 'consultor');
+    check('Rol consultor deshabilitado (Opción A)', false, 'permitió crear un consultor');
+} catch (InvalidArgumentException $e) {
+    check('Rol consultor deshabilitado (Opción A)', true);
+}
 
 [$family, $accessCode] = FamilyRepository::create('Familia Horizonte', 5, null, null, $adminId);
 check('Crear familia', $family !== null && $family['status'] === 'borrador');

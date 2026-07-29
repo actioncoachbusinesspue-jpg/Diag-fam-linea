@@ -26,6 +26,15 @@ if (!$user || !password_verify($password, (string)$user['password_hash'])) {
     bvm_json_error('Usuario o contraseña incorrectos.', 401);
 }
 
+// Versión 1.0.2 — Opción A de roles: el rol consultor no está habilitado.
+// Un usuario con ese rol (creado manualmente en la base) NO debe entrar:
+// sin filtro por family_assignments vería todas las familias y daría una
+// falsa sensación de aislamiento.
+if (($user['role'] ?? 'administrador') !== 'administrador') {
+    AuditRepository::log('login-role-disabled', (int)$user['id']);
+    bvm_json_error('Este perfil no está habilitado en la versión actual. Contacte al administrador BVM.', 403);
+}
+
 LoginAttemptRepository::clear($attemptKey);
 bvm_admin_login((int)$user['id']);
 AdminUserRepository::touchLogin((int)$user['id']);

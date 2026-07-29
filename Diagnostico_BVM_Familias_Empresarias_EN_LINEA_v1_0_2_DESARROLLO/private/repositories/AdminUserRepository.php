@@ -26,6 +26,15 @@ final class AdminUserRepository
 
     public static function create(string $name, string $username, string $password, string $role = 'administrador'): int
     {
+        // Versión 1.0.2 — Opción A de roles: SOLO existe el rol administrador.
+        // El rol consultor y family_assignments quedan preparados en el esquema
+        // pero deshabilitados: crear un consultor sin filtro por asignación
+        // daría una falsa sensación de aislamiento (vería todas las familias).
+        if ($role !== 'administrador') {
+            throw new InvalidArgumentException(
+                'El rol consultor no está habilitado en esta versión; solo pueden crearse administradores.'
+            );
+        }
         $st = Database::pdo()->prepare(
             'INSERT INTO admin_users (name, username, password_hash, role, active, created_at, updated_at)
              VALUES (?, ?, ?, ?, 1, ?, ?)'

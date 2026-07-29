@@ -82,7 +82,9 @@ function bvm_admin_user(): ?array
         return null;
     }
     $user = AdminUserRepository::findById($id);
-    if (!$user || !(int)$user['active']) {
+    // Opción A de roles (1.0.2): solo el rol administrador está habilitado.
+    // Defensa en profundidad además del bloqueo en login.php.
+    if (!$user || !(int)$user['active'] || ($user['role'] ?? 'administrador') !== 'administrador') {
         bvm_logout();
         return null;
     }

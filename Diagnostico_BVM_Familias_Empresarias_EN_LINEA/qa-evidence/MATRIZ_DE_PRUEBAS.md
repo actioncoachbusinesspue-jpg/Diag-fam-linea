@@ -73,9 +73,33 @@ manual de verificación en el hosting final (DEPLOY_HOSTINGER.md §9.7).
 (hash de claves, aislamiento, restricción 1-5 en base, conflicto de revisión,
 bloqueo tras finalizar, formato de exportación).
 
+## Evidencia de reporte (sección 19 del prompt maestro)
+
+Generada con `bash tests/evidence/run_evidence.sh` (Chromium + servidor PHP
+embebido). Cada documento se emitió **después** de que la auditoría geométrica
+del maestro (`prepareBvmPrint`) confirmara 12 páginas con `fits:true`; el
+script termina con error ante cualquier desviación.
+
+| Documento | Caso | Páginas | Auditoría | PDF | PNG | Hoja de contacto |
+|---|---|---|---|---|---|---|
+| demo_letter | Familia Horizonte (demo) | 12 | fits:true | `pdf/demo_letter.pdf` | `png/demo_letter/` | `contact-sheets/demo_letter_contacto.png` |
+| demo_a4 | Familia Horizonte (demo) | 12 | fits:true | `pdf/demo_a4.pdf` | `png/demo_a4/` | `contact-sheets/demo_a4_contacto.png` |
+| real_letter | Familia Robles (2 de 3 finalizados → lectura preliminar) | 12 | fits:true | `pdf/real_letter.pdf` | `png/real_letter/` | `contact-sheets/real_letter_contacto.png` |
+| real_a4 | Familia Robles | 12 | fits:true | `pdf/real_a4.pdf` | `png/real_a4/` | `contact-sheets/real_a4_contacto.png` |
+| stress_letter | Familia de estrés: 12 esperados, 10 registrados (8 finalizados, 2 incompletos), nombres largos, todos-altos, todos-bajos, patrón de empate, resultados mixtos | 12 | fits:true | `pdf/stress_letter.pdf` | `png/stress_letter/` | `contact-sheets/stress_letter_contacto.png` |
+| stress_a4 | Familia de estrés | 12 | fits:true | `pdf/stress_a4.pdf` | `png/stress_a4/` | `contact-sheets/stress_a4_contacto.png` |
+
+Las 72 páginas se renderizaron a PNG (`qa-evidence/png/`) y se inspeccionaron
+visualmente mediante las hojas de contacto: portadas correctas (incluida la
+leyenda "X de Y participaciones finalizadas"), etiqueta "CASO FICTICIO —
+DEMOSTRACIÓN BVM" persistente en la demo, cero páginas vacías, cero página 13,
+cero cortes ni colisiones de pie, páginas 8-11 completas y página 12 con el
+cierre premium intacto.
+
 ## No ejecutado en este entorno
 
 - Pruebas contra MySQL/MariaDB real (el esquema MySQL se entrega y la capa
   PDO es común; verificar con health-check en Hostinger).
-- Generación de PDFs de estrés y hojas de contacto de 72 páginas.
+- Impresión manual desde el diálogo del navegador en el hosting final
+  (DEPLOY_HOSTINGER.md §9.7) como confirmación adicional a la auditoría.
 - Revisión manual completa de accesibilidad con lector de pantalla.

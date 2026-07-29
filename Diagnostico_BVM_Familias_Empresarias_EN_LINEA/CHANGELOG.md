@@ -52,6 +52,17 @@ sobre el archivo maestro estable v1.6.11 sin modificarlo.
 - E2E de navegador (Chromium): demo en memoria sin errores de consola,
   reporte real con 12 páginas `fits:true`, móvil 390×844.
 
+### Hito 9-12 — Evidencia de reporte y entrega
+- Generador automatizado de evidencia (`tests/evidence/`): siembra una familia
+  real controlada y una familia de estrés (12 esperados, 10 registrados con
+  nombres largos, todos-altos, todos-bajos, empates e incompletos) contra la
+  API real y emite los 6 PDFs (`demo|real|stress` × `Carta|A4`) solo si la
+  auditoría del maestro confirma 12 páginas `fits:true`.
+- 72 páginas renderizadas a PNG + 6 hojas de contacto para inspección visual
+  (`qa-evidence/pdf/`, `qa-evidence/png/`, `qa-evidence/contact-sheets/`).
+- Resumen ejecutivo de entrega con recomendación GO/NO-GO
+  (`docs/RESUMEN_EJECUTIVO.md`).
+
 ### Metodología
 - Sin cambios: A1-A20, escala, fórmulas, ponderaciones, umbrales, matrices,
   narrativas y reporte permanecen exactamente como en v1.6.11.

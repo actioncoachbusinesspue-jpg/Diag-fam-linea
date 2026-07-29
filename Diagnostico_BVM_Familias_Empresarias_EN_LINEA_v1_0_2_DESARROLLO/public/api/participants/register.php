@@ -3,7 +3,7 @@
  * Registro de participante (tras validar la clave de familia).
  * Devuelve el código personal de continuidad UNA sola vez.
  */
-require_once dirname(__DIR__, 3) . '/private/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 bvm_require_method('POST');
 bvm_session_start();
 bvm_csrf_require();

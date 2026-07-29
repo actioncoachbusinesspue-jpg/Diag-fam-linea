@@ -1,6 +1,6 @@
 <?php
 /** Estado actual de la participación en sesión (para reanudar tras recargar). */
-require_once dirname(__DIR__, 3) . '/private/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 bvm_require_method('GET');
 $sess = bvm_require_participant_api(false);
 

@@ -4,7 +4,7 @@
  * Reutiliza el motor metodológico de referencia con los datos de MySQL:
  * fórmulas, interpretación y reporte de 12 páginas idénticos al maestro.
  */
-require_once dirname(__DIR__, 2) . '/private/bootstrap.php';
+require_once dirname(__DIR__) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 require_once BVM_PRIVATE_DIR . '/reference_renderer.php';
 require_once BVM_PRIVATE_DIR . '/services/FamilyDataService.php';
 

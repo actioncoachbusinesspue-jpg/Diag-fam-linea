@@ -1,4 +1,4 @@
-# Despliegue en Hostinger — Diagnóstico BVM en línea (versión 1.0.2)
+# Despliegue en Hostinger — Diagnóstico BVM en línea (versión 1.0.2.1)
 
 Instrucciones exactas para el encargado del hosting. No requieren Node.js:
 la aplicación publicada funciona solo con PHP y MySQL/MariaDB.
@@ -15,11 +15,18 @@ la aplicación publicada funciona solo con PHP y MySQL/MariaDB.
 
 ## 1. Arquitectura de carpetas
 
+Desde la versión 1.0.2.1 **todos** los puntos de entrada públicos resuelven
+la carpeta privada mediante un localizador único (`public/bvm_paths.php`),
+que soporta las DOS estructuras siguientes **sin editar ninguna ruta**.
+Ambas estructuras están probadas de extremo a extremo (página pública,
+login, administración, APIs, participante, demostración, reporte y
+health-check) por `tests/e2e/run_e2e.sh`, que las ejecuta las dos en cada
+corrida.
+
 ### Opción A — RECOMENDADA PARA PRODUCCIÓN: `private/` fuera del área publicada
 
-El código resuelve `private/` como carpeta HERMANA de `public/`, por lo que
-la forma soportada (sin editar una sola línea) es subir el proyecto completo
-FUERA del área publicada y publicar únicamente `public/`:
+Subir el proyecto completo FUERA del área publicada y publicar únicamente
+`public/`:
 
 ```
 /home/USUARIO/bvm-online/                  ← NO accesible por URL
@@ -32,6 +39,7 @@ FUERA del área publicada y publicar únicamente `public/`:
         demostracion.php
         acceso-bvm.php
         instalar.php
+        bvm_paths.php                      ← localizador (responde 404 por URL)
         admin/
         api/
         assets/
@@ -51,17 +59,27 @@ Pasos:
 
 Si su plan no permite elegir la raíz del documento, use la Opción B.
 
-### Opción B — Fallback en hosting compartido restringido
+### Opción B — Subcarpeta estándar de `public_html` (sin document root propio)
 
-Si el plan no permite carpetas fuera de `public_html` ni elegir la raíz de
-documento, mantenga:
+El **contenido** de `public/` se copia directamente a la carpeta de la
+instalación, y `private/` y `tools/` se copian DENTRO de esa misma carpeta:
 
 ```
 public_html/diagnostico-bvm-online/
-  ├── (contenido de public/)
+  ├── index.php, participar.php, demostracion.php, acceso-bvm.php,
+  │   instalar.php, bvm_paths.php          ← contenido de public/
+  ├── admin/
+  ├── api/
+  ├── assets/
+  ├── .htaccess                            ← el de public/
   ├── private/     ← con su .htaccess "Require all denied" INTACTO
-  └── tools/       ← con su .htaccess "Require all denied" (o elimínela tras verificar)
+  └── tools/       ← con su .htaccess "Require all denied" INTACTO
 ```
+
+El localizador detecta automáticamente que `private/` es subcarpeta de la
+instalación: no hay que editar ningún `require`. (En versiones anteriores a
+1.0.2.1 esta estructura NO funcionaba porque las rutas relativas buscaban
+`private/` un nivel arriba; quedó corregido y cubierto por pruebas.)
 
 En esta opción es OBLIGATORIO, antes de aprobar el ambiente:
 

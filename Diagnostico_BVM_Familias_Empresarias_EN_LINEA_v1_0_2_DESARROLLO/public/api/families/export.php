@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__, 3) . '/private/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 require_once BVM_PRIVATE_DIR . '/services/FamilyDataService.php';
 bvm_require_method('GET');
 $user = bvm_require_admin_api(false);

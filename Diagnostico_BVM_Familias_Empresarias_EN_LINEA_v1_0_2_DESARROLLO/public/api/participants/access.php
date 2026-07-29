@@ -3,7 +3,7 @@
  * Paso 1 del participante: validar liga (slug) + clave de familia.
  * Si es correcta, la sesión queda autorizada para registrarse o reanudar.
  */
-require_once dirname(__DIR__, 3) . '/private/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 bvm_require_method('POST');
 bvm_session_start();
 bvm_csrf_require();

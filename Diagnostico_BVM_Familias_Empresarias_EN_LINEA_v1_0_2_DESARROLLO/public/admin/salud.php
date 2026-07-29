@@ -8,7 +8,7 @@
  * archivo; el verificador por terminal (php tools/health-check.php) sigue
  * disponible.
  */
-require_once dirname(__DIR__, 2) . '/private/bootstrap.php';
+require_once dirname(__DIR__) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 require_once BVM_PRIVATE_DIR . '/admin_layout.php';
 require_once BVM_PRIVATE_DIR . '/health_checks.php';
 

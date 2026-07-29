@@ -1,4 +1,4 @@
-# Diagnóstico BVM para Familias Empresarias — versión en línea (1.0.2)
+# Diagnóstico BVM para Familias Empresarias — versión en línea (1.0.2.1)
 
 Plataforma web (PHP 8 + MySQL/MariaDB) del Diagnóstico BVM: permite a BVM
 administrar varias familias, invitarlas mediante una liga y una clave, recibir
@@ -21,6 +21,8 @@ centralizado, y generar la radiografía y el reporte integral de 12 páginas con
 
 ```
 public/                 ← único directorio expuesto al web
+  bvm_paths.php         localizador único de private/ (soporta ambas
+                        estructuras de despliegue; 404 por URL directa)
   index.php             página inicial (3 caminos)
   participar.php        flujo del participante (liga + clave + código personal)
   demostracion.php      demo pública Familia Horizonte (motor maestro, en memoria)

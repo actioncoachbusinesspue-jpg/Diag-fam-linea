@@ -3,7 +3,7 @@
  * Autosave: guarda UNA respuesta (1-20, valor 1-5) por operación,
  * en transacción, con control de revisión y bloqueo tras finalizar.
  */
-require_once dirname(__DIR__, 3) . '/private/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 bvm_require_method('POST');
 $sess = bvm_require_participant_api();
 

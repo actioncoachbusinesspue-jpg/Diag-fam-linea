@@ -1,5 +1,33 @@
 # CHANGELOG — Diagnóstico BVM en línea
 
+## 1.0.2.1 — 2026-07-29 (corrección de compatibilidad de despliegue)
+
+Corrección puntual sobre 1.0.2. Sin cambios de metodología, base de datos,
+reportes ni funciones: solo la resolución de rutas hacia `private/` y la
+guía de despliegue.
+
+- **Problema corregido:** la Opción B de `DEPLOY_HOSTINGER.md` (contenido de
+  `public/` copiado a una subcarpeta estándar de `public_html`, con
+  `private/` dentro) no funcionaba: los puntos de entrada usaban rutas del
+  tipo `dirname(__DIR__) . '/private/bootstrap.php'`, que en esa estructura
+  buscan `private/` un nivel arriba de la instalación.
+- **Estrategia única y centralizada:** nuevo `public/bvm_paths.php`.
+  Los 31 puntos de entrada públicos ahora requieren ese localizador por una
+  ruta relativa interna a la carpeta pública (idéntica en cualquier
+  despliegue) y el localizador resuelve `private/bootstrap.php` probando,
+  en orden: la variable de entorno `BVM_PRIVATE_DIR` (opcional),
+  `../private` (Estructura A, recomendada) y `./private` (Estructura B).
+  Accedido directamente por URL responde 404. `tools/` ya funcionaba en
+  ambas estructuras y no cambia.
+- **Pruebas:** `tests/e2e/run_e2e.sh` ahora ejecuta la suite completa DOS
+  veces — Estructura A (document root en `public/`) y Estructura B
+  (carpeta aplanada con `private/` y `tools/` dentro) — cubriendo página
+  pública, login, administración, APIs, participante, demostración,
+  reporte (navegador) y health-check por CLI en cada una. Resultado:
+  TODAS LAS PRUEBAS PASARON en ambas.
+- `DEPLOY_HOSTINGER.md` §1 reescrito con las dos estructuras exactas y
+  probadas.
+
 ## 1.0.2 — 2026-07-29 (endurecimiento controlado)
 
 Actualización puntual sobre 1.0.1: sin cambios de metodología, sin pérdida de

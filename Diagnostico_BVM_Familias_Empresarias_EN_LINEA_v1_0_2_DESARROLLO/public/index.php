@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__) . '/private/bootstrap.php';
+require_once __DIR__ . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 bvm_session_start();
 bvm_security_headers();
 ?><!doctype html>

@@ -1,0 +1,19 @@
+[OK]    Relaciones = 69/100
+[OK]    Gobierno = 56/100
+[OK]    Desarrollo = 58/100
+[OK]    Continuidad = 37/100
+[OK]    Índice general = 55/100 (Parcial)
+[OK]    Paridad: promedios por afirmación (20)
+[OK]    Paridad: promedios crudos por dimensión
+[OK]    Paridad: índices dimensionales 0-100
+[OK]    Paridad: índice general
+[OK]    Paridad: nivel de madurez
+[OK]    Paridad: promedios de preguntas externas
+[OK]    Paridad: dispersión por afirmación (20)
+[OK]    Paridad: dispersión por dimensión
+[OK]    Paridad: dispersión general y nivel
+[OK]    Paridad: alineación (interpretable, extremos)
+
+Evidencia escrita en qa-evidence/parity/parity_report.json
+
+PARIDAD: TODAS LAS PRUEBAS PASARON

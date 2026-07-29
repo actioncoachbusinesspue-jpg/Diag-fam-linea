@@ -1,0 +1,36 @@
+[OK]    Crear administrador
+[OK]    password_verify correcto
+[OK]    password_verify incorrecto rechazado
+[OK]    Crear familia
+[OK]    Slug aleatorio válido
+[OK]    Clave con formato legible
+[OK]    Clave no almacenada en claro
+[OK]    Clave verifica
+[OK]    Clave incorrecta rechazada
+[OK]    Clave de B no abre A
+[OK]    Familia abierta acepta participación
+[OK]    Código personal formato XXXX-XXXX
+[OK]    Código personal solo como hash
+[OK]    Reanudar con código correcto
+[OK]    Código no funciona en otra familia
+[OK]    5 participantes registrados
+[OK]    Duplicado detectado (normalización)
+[OK]    Respuestas guardadas (20 por participante)
+[OK]    Restricción 1-5 en base de datos
+[OK]    Conflicto multi-dispositivo detectado
+[OK]    Finalizar participante 1
+[OK]    Finalizar participante 2
+[OK]    Finalizar participante 3
+[OK]    Finalizar participante 4
+[OK]    Finalizar participante 5
+[OK]    Edición tras finalizar bloqueada
+[OK]    Doble finalización rechazada
+[OK]    Formato: 5 participantes finalizados
+[OK]    Formato: respuestas en orden
+[OK]    Formato: externas
+[OK]    Respaldo schemaVersion 5
+[OK]    Respaldo questionnaireVersion
+
+Objeto familia (vía base de datos) escrito en qa-evidence/parity/family_from_db.json
+
+INTEGRACIÓN: TODAS LAS PRUEBAS PASARON

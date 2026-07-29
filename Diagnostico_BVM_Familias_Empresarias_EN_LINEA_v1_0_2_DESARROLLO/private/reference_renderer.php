@@ -100,9 +100,13 @@ document.addEventListener('DOMContentLoaded', function(){
 HTML;
     }
 
-    // Inyecciones sin tocar el archivo en disco.
+    // Inyecciones sin tocar el archivo en disco. El parche de presentación
+    // (empates y textos editoriales 1.0.2) se inserta ANTES del arranque para
+    // que los envoltorios estén activos desde el primer render.
+    require_once BVM_PRIVATE_DIR . '/reference_presentation_patch.php';
+    $presentationPatch = bvm_reference_presentation_patch();
     $html = preg_replace('/<head>/', '<head>' . "\n" . $disableStorage, $html, 1);
-    $html = str_replace('</body></html>', $bootstrap . "\n</body></html>", $html);
+    $html = str_replace('</body></html>', $presentationPatch . "\n" . $bootstrap . "\n</body></html>", $html);
 
     bvm_security_headers(bvm_csp_reference_app(), true);
     header('Content-Type: text/html; charset=utf-8');

@@ -220,9 +220,35 @@ for (const spec of stressSpecs) {
   await runParticipant(stressSlug, stress.accessCode, spec);
 }
 
+// ---------- Familia de empates (1.0.2, Mejora 6) ----------
+// Diseñada para producir EMPATES EXACTOS de dispersión entre dimensiones:
+//   P1 y P2 responden todo 2; P3 responde 3 en A1–A10 (relaciones + gobierno)
+//   y 2 en A11–A20 (desarrollo + continuidad).
+//   → dispersión de relaciones = gobierno (empate de mayor diferencia)
+//   → dispersión de desarrollo = continuidad = 0 (empate de mayor coincidencia)
+// Además todas las dimensiones quedan en nivel bajo (≈25–33 de 100), con lo
+// que la evidencia de dimensión debe decir «Afirmaciones relativamente más
+// consolidadas» (mejora editorial, sin umbrales nuevos).
+console.log('[SEED] Familia de empates');
+const tie = await createFamily('Familia Empate Controlado', 3);
+const tieSlug = tie.family.invite_url.split('f=')[1];
+const half = (a, b) => Array.from({ length: 20 }, (_, i) => (i < 10 ? a : b));
+const tieSpecs = [
+  { name: 'Primo Empate Uno', generation: G.primera, role: R.direccion,
+    answers: half(2, 2), external: { ext1: 3, ext2: 3 }, finalize: true },
+  { name: 'Prima Empate Dos', generation: G.segunda, role: R.consejo,
+    answers: half(2, 2), external: { ext1: 3, ext2: 3 }, finalize: true },
+  { name: 'Primo Empate Tres', generation: G.tercera, role: R.heredero,
+    answers: half(3, 2), external: { ext1: 3, ext2: 3 }, finalize: true },
+];
+for (const spec of tieSpecs) {
+  await runParticipant(tieSlug, tie.accessCode, spec);
+}
+
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify({
   admin_user: ADMIN_USER, admin_pass: ADMIN_PASS,
   real_family_id: real.family.id, stress_family_id: stress.family.id,
+  tie_family_id: tie.family.id,
 }, null, 2));
 console.log('[SEED] Listo. IDs escritos en ' + OUT);

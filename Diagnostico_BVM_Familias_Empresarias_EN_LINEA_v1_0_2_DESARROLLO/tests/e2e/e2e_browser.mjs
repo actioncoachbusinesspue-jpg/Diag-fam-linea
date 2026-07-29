@@ -91,8 +91,8 @@ const browser = await chromium.launch({
     const fam = StorageAdapter.getActiveFamily();
     return fam ? { name: fam.familyName, participants: fam.participants.length } : null;
   });
-  check('Motor lee datos del servidor (2 participantes)',
-    fromServer && fromServer.name === 'Familia Robles' && fromServer.participants === 2,
+  check('Motor lee datos del servidor (3 participantes)',
+    fromServer && fromServer.name === 'Familia Robles' && fromServer.participants === 3,
     JSON.stringify(fromServer));
 
   // Auditoría de impresión del propio maestro: 12 páginas, todas fits:true.

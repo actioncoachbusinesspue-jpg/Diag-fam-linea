@@ -1,0 +1,67 @@
+[SEED] Administrador de evidencia creado
+[SEED] Familia real controlada
+[SEED]   Ana Robles Garza (finalizado)
+[SEED]   Luis Robles Garza (finalizado)
+[SEED] Familia de estrés
+[SEED]   María de los Ángeles Echeverría-Montemayor de la Garza y Villarreal (finalizado)
+[SEED]   Juan Pablo Maximiliano Echeverría-Montemayor y Fernández de Castro (finalizado)
+[SEED]   Guadalupe Fernanda Echeverría-Montemayor viuda de Iturriaga y Solórzano (finalizado)
+[SEED]   José Emiliano Echeverría-Montemayor Robledal de la Peña y Gorostiaga (finalizado)
+[SEED]   Ana Cristina de Todos los Santos Echeverría-Montemayor y Zambrano (finalizado)
+[SEED]   Rodrigo Sebastián Echeverría-Montemayor Iturriaga de los Robledales (finalizado)
+[SEED]   Valentina Isabel Echeverría-Montemayor y Solórzano de Gorostiaga (finalizado)
+[SEED]   Francisco Javier de la Santísima Trinidad Echeverría-Montemayor (finalizado)
+[SEED]   Renata Alejandra Echeverría-Montemayor Villarreal y de la Garza (incompleto)
+[SEED]   Diego Armando Echeverría-Montemayor Zambrano de los Robledales (incompleto)
+[SEED] Familia de empates
+[SEED]   Primo Empate Uno (finalizado)
+[SEED]   Prima Empate Dos (finalizado)
+[SEED]   Primo Empate Tres (finalizado)
+[SEED] Listo. IDs escritos en /tmp/tmp.9YKpeicT2V/evidence_ids.json
+[OK]    demo: 12 páginas auditadas
+[OK]    demo: todas caben (fits:true)
+[OK]    demo: sin errores JS
+[OK]    demo: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/demo_letter.pdf
+[OK]    demo: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/demo_a4.pdf
+[OK]    real: 12 páginas auditadas
+[OK]    real: todas caben (fits:true)
+[OK]    real: sin errores JS
+[OK]    real: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/real_letter.pdf
+[OK]    real: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/real_a4.pdf
+[OK]    stress: 12 páginas auditadas
+[OK]    stress: todas caben (fits:true)
+[OK]    stress: sin errores JS
+[OK]    stress: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/stress_letter.pdf
+[OK]    stress: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/stress_a4.pdf
+[OK]    tie: 12 páginas auditadas
+[OK]    tie: todas caben (fits:true)
+[OK]    tie: sin errores JS
+[OK]    tie: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/tie_letter.pdf
+[OK]    tie: escrito /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/pdf/tie_a4.pdf
+[OK]    tie: tarjeta en plural (mayor coincidencia)
+[OK]    tie: tarjeta en plural (mayor diferencia)
+[OK]    tie: empate de dos usa separador " / "
+[OK]    tie: nivel bajo usa «relativamente más consolidadas»
+[OK]    tie: empate de tres usa «Empate entre: …»
+[OK]    tie: empate de cuatro usa texto de equivalencia
+[OK]    tie: máximo único conserva la tarjeta original
+
+PDF: LOS 8 DOCUMENTOS PASARON LA AUDITORÍA
+[OK]    demo_a4.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/demo_a4
+[OK]    demo_letter.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/demo_letter
+[OK]    real_a4.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/real_a4
+[OK]    real_letter.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/real_letter
+[OK]    stress_a4.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/stress_a4
+[OK]    stress_letter.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/stress_letter
+[OK]    tie_a4.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/tie_a4
+[OK]    tie_letter.pdf → 12 PNG en /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/png/tie_letter
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/demo_a4_contacto.png
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/demo_letter_contacto.png
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/real_a4_contacto.png
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/real_letter_contacto.png
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/stress_a4_contacto.png
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/stress_letter_contacto.png
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/tie_a4_contacto.png
+[OK]    Hoja de contacto: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/qa-evidence/contact-sheets/tie_letter_contacto.png
+
+PNG: TODOS LOS DOCUMENTOS RENDERIZADOS (12/12 páginas)

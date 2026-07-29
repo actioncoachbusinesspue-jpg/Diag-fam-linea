@@ -144,8 +144,9 @@ let familyA, accessCodeA, familyB, accessCodeB;
   const a = await admin.postJson('/api/families/create.php', { family_name: 'Familia Robles', expected_participants: 3 }, admin.csrf);
   check('E09 crear familia', a.data.ok === true && a.data.family.family_name === 'Familia Robles');
   familyA = a.data.family; accessCodeA = a.data.access_code;
+  // 1.0.2: la clave usa 6 caracteres aleatorios (las de 4 previas siguen válidas).
   check('E10 liga y clave generadas', /participar\.php\?f=[a-z0-9]{12}$/.test(familyA.invite_url)
-    && /^ROBLES-[A-Z2-9]{4}$/.test(accessCodeA));
+    && /^ROBLES-[A-Z2-9]{6}$/.test(accessCodeA));
 
   const b = await admin.postJson('/api/families/create.php', { family_name: 'Familia Sierra' }, admin.csrf);
   familyB = b.data.family; accessCodeB = b.data.access_code;
@@ -274,6 +275,45 @@ const device2 = makeClient();
 }
 
 // ============================================================
+// E50-E53 (1.0.2) — cupo de participantes esperados por API
+// ============================================================
+{
+  const slugA = familyA.invite_url.split('f=')[1];
+  const device4 = makeClient();
+  const { csrf } = await device4.getPage('/participar.php?f=' + slugA);
+  await device4.postJson('/api/participants/access.php', { slug: slugA, access_code: accessCodeA }, csrf);
+  const reg3 = await device4.postJson('/api/participants/register.php', {
+    name: 'Marta Robles', generation: 'Segunda generación',
+    participation_role: 'Accionista o propietario sin rol operativo', consent: true,
+  }, csrf);
+  check('E50 tercer registro llena el cupo (3 de 3)', reg3.data.ok === true);
+
+  const device5 = makeClient();
+  const p5 = await device5.getPage('/participar.php?f=' + slugA);
+  const acc5 = await device5.postJson('/api/participants/access.php', { slug: slugA, access_code: accessCodeA }, p5.csrf);
+  check('E51 access reporta cupo cerrado a nuevos registros',
+    acc5.data.ok === true && acc5.data.family.accepting_new_registrations === false);
+  const reg4 = await device5.postJson('/api/participants/register.php', {
+    name: 'Cuarta Persona', generation: 'Primera generación',
+    participation_role: 'Otro rol patrimonial', consent: true,
+  }, p5.csrf);
+  check('E52 cuarto registro → 409 con family_full',
+    reg4.res.status === 409 && reg4.data.family_full === true
+    && /alcanzó el número de participantes autorizado/.test(reg4.data.error || ''));
+
+  // La reanudación no se bloquea con el cupo lleno (código personal de E14)
+  const deviceR = makeClient();
+  const pr = await deviceR.getPage('/participar.php?f=' + slugA);
+  await deviceR.postJson('/api/participants/access.php', { slug: slugA, access_code: accessCodeA }, pr.csrf);
+  const resume = await deviceR.postJson('/api/participants/resume.php', { personal_code: personalCode }, pr.csrf);
+  check('E53 reanudación funciona con cupo lleno', resume.data.ok === true);
+
+  // Restablecer el escenario: eliminar a la tercera participante vía admin no
+  // existe como API; ampliar el cupo mantiene el resto de la suite intacta.
+  await admin.postJson('/api/families/update.php', { id: familyA.id, expected_participants: 10 }, admin.csrf);
+}
+
+// ============================================================
 // E25 — XSS almacenado escapado en páginas admin
 // ============================================================
 {
@@ -326,7 +366,7 @@ const device2 = makeClient();
   const res = await admin.request('/api/families/export.php?id=' + familyA.id);
   const body = await res.json();
   check('E35 exportación de respaldo en línea', res.status === 200
-    && body.schemaVersion === 5 && body.family.participants.length === 2
+    && body.schemaVersion === 5 && body.family.participants.length === 3
     && String(res.headers.get('content-disposition')).includes('attachment'));
 }
 
@@ -339,11 +379,11 @@ const device2 = makeClient();
 
   const preview = await admin.postJson('/api/families/import.php', { phase: 'preview', backup }, admin.csrf);
   check('E34 vista previa de importación', preview.data.ok === true
-    && preview.data.preview.participants === 2 && preview.data.preview.finished === 1);
+    && preview.data.preview.participants === 3 && preview.data.preview.finished === 1);
 
   const commit = await admin.postJson('/api/families/import.php', { phase: 'commit', backup, mode: 'create' }, admin.csrf);
   check('E34b importación como familia nueva', commit.data.ok === true
-    && commit.data.imported_participants === 2 && /-/.test(commit.data.access_code || ''));
+    && commit.data.imported_participants === 3 && /-/.test(commit.data.access_code || ''));
 
   const badSchema = await admin.postJson('/api/families/import.php',
     { phase: 'preview', backup: { ...backup, schemaVersion: 99 } }, admin.csrf);

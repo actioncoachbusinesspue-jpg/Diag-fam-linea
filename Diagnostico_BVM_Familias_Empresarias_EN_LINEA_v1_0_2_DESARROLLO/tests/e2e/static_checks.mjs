@@ -40,6 +40,9 @@ function walk(dir) {
 {
   const files = [...walk(join(ROOT, 'public')), ...walk(join(ROOT, 'private'))]
     .filter((f) => !f.includes('reference-app'))
+    // health_checks.php contiene los literales 'localhost'/'127.0.0.1'
+    // precisamente para DETECTAR una base_url mal configurada; no son rutas.
+    .filter((f) => !f.endsWith('health_checks.php'))
     .filter((f) => /\.(php|js|css|html|htaccess)$/.test(f) || f.endsWith('.htaccess'));
   const offenders = [];
   for (const f of files) {

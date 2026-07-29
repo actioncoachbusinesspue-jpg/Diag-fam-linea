@@ -35,6 +35,10 @@
 [OK]    E23 Familia A no accede a Familia B
 [OK]    E24 ID inexistente → 404
 [OK]    E24b ID manipulado no filtra datos
+[OK]    E50 tercer registro llena el cupo (3 de 3)
+[OK]    E51 access reporta cupo cerrado a nuevos registros
+[OK]    E52 cuarto registro → 409 con family_full
+[OK]    E53 reanudación funciona con cupo lleno
 [OK]    Nombre con HTML aceptado como texto
 [OK]    E25 XSS escapado en admin
 [OK]    E27 reporte real 200 con datos inyectados
@@ -67,7 +71,7 @@ ESTÁTICAS: TODAS LAS PRUEBAS PASARON
 [OK]    Login de navegador llega a administración
 [OK]    Reporte carga con la familia real
 [OK]    Reporte sin errores de JavaScript
-[OK]    Motor lee datos del servidor (2 participantes)
+[OK]    Motor lee datos del servidor (3 participantes)
 [OK]    Reporte: 12 páginas auditadas
 [OK]    Reporte: todas las páginas caben (fits:true)
 [OK]    E31 móvil 390×844 sin desborde horizontal

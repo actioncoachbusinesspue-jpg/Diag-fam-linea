@@ -1,4 +1,6 @@
-[INFO]  Motor de base de datos: sqlite
+
+== [1/3] Instalación nueva (bvm_it_new_32280_23925): schema.sql + suite de integración ==
+[INFO]  Motor de base de datos: mysql
 [OK]    Crear administrador
 [OK]    password_verify correcto
 [OK]    password_verify incorrecto rechazado
@@ -77,3 +79,44 @@
 Objeto familia (vía base de datos) escrito en qa-evidence/parity/family_from_db.json
 
 INTEGRACIÓN: TODAS LAS PRUEBAS PASARON
+[OK]    ENUM rechaza estado inválido
+[OK]    CHECK rechaza valor 9
+[OK]    FK rechaza familia inexistente
+[OK]    UNIQUE rechaza nombre duplicado
+[OK]    UNIQUE del lookup por familia
+[OK]    Índice único admite múltiples NULL (datos legados)
+[OK]    utf8mb4 conserva caracteres de 4 bytes
+[OK]    Fechas DATE exactas
+[OK]    Rollback revierte la transacción
+[OK]    FOR UPDATE retiene el bloqueo de la fila
+[OK]    Cascada elimina participantes y respuestas
+
+MYSQL ESPECÍFICO: TODAS LAS PRUEBAS PASARON
+
+== [2/3] Migración (bvm_it_mig_32280_23925): 0001..0004 en orden y equivalencia con schema.sql ==
+[OK]    Equivalencia de tables (instalación nueva == migración 0001..0004)
+[OK]    Equivalencia de columns (instalación nueva == migración 0001..0004)
+[OK]    Equivalencia de indexes (instalación nueva == migración 0001..0004)
+
+EQUIVALENCIA DE ESQUEMA: PASA
+
+== [3/3] Concurrencia: dos registros disputan el último lugar ==
+[OK]    Ronda 1: exactamente un ganador
+[OK]    Ronda 1: el otro recibe family_full
+[OK]    Ronda 1: el conteo final es 3 (nunca 4)
+[OK]    Ronda 2: exactamente un ganador
+[OK]    Ronda 2: el otro recibe family_full
+[OK]    Ronda 2: el conteo final es 3 (nunca 4)
+[OK]    Ronda 3: exactamente un ganador
+[OK]    Ronda 3: el otro recibe family_full
+[OK]    Ronda 3: el conteo final es 3 (nunca 4)
+[OK]    Ronda 4: exactamente un ganador
+[OK]    Ronda 4: el otro recibe family_full
+[OK]    Ronda 4: el conteo final es 3 (nunca 4)
+[OK]    Ronda 5: exactamente un ganador
+[OK]    Ronda 5: el otro recibe family_full
+[OK]    Ronda 5: el conteo final es 3 (nunca 4)
+
+CONCURRENCIA: TODAS LAS RONDAS PASARON
+
+MYSQL: TODAS LAS SUITES PASARON

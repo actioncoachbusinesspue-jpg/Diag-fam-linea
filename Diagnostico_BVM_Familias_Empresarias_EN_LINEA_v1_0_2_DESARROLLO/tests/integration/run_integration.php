@@ -212,6 +212,22 @@ check('report_date conserva el día (sin conversión de zona)', $objB['reportDat
 // Timestamps técnicos siguen en UTC
 check('bvm_now() persiste en UTC', abs(strtotime(bvm_now() . ' UTC') - time()) < 5);
 
+// 2b-ter. Cookies de sesión aisladas (1.0.2)
+check('Sin configurar, la ruta de cookie cae a /', bvm_session_cookie_path() === '/');
+$GLOBALS['BVM_CONFIG']['app']['session_cookie_path'] = '/diagnostico-bvm-online-dev';
+check('La ruta se normaliza con diagonal final', bvm_session_cookie_path() === '/diagnostico-bvm-online-dev/');
+$GLOBALS['BVM_CONFIG']['app']['session_cookie_path'] = 'sin-diagonal-inicial/';
+check('Ruta inválida cae a /', bvm_session_cookie_path() === '/');
+$GLOBALS['BVM_CONFIG']['app']['session_cookie_path'] = '/diagnostico-bvm-online/';
+$sessParams = bvm_session_cookie_params();
+check('Cookie HttpOnly + SameSite=Lax + path configurado',
+    $sessParams['httponly'] === true && $sessParams['samesite'] === 'Lax'
+    && $sessParams['path'] === '/diagnostico-bvm-online/');
+$_SERVER['HTTPS'] = 'on';
+check('Cookie Secure bajo HTTPS', bvm_session_cookie_params()['secure'] === true);
+unset($_SERVER['HTTPS']);
+unset($GLOBALS['BVM_CONFIG']['app']['session_cookie_path']);
+
 // 2c. Reanudación indexada por código personal (1.0.2)
 $anaRow = ParticipantRepository::findById($bCodes['Ana Robles']['id']);
 check('Participante nuevo tiene lookup hash', !empty($anaRow['resume_token_lookup_hash'])

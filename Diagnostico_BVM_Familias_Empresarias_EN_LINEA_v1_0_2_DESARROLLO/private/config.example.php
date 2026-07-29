@@ -35,7 +35,18 @@ return [
         // guardan siempre en UTC. Si el valor es inválido, la aplicación NO
         // inicia (falla explícita, nunca silenciosa).
         'timezone'                 => 'America/Mexico_City',
+        // Aislamiento de sesiones entre ambientes bajo el MISMO dominio:
+        // cada instalación debe usar un nombre Y una ruta de cookie propios.
+        //   PRODUCCIÓN : session_name = 'BVMSESSID'
+        //                session_cookie_path = '/diagnostico-bvm-online/'
+        //   DESARROLLO : session_name = 'BVMDEVSESSID'
+        //                session_cookie_path = '/diagnostico-bvm-online-dev/'
+        // La ruta debe iniciar y terminar con '/' y coincidir con la carpeta
+        // pública de ESTA instalación (coherente con base_url). Un valor
+        // inválido cae a '/' (cookie visible en todo el dominio: solo
+        // aceptable si no conviven dos instalaciones).
         'session_name'             => 'BVMSESSID',
+        'session_cookie_path'      => '/diagnostico-bvm-online/',
         // Expiración de sesión administrativa por inactividad.
         'session_lifetime_minutes' => 45,
         // Token de instalación: requerido por instalar.php para crear el PRIMER administrador.

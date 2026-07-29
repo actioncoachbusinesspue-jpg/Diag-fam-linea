@@ -5,23 +5,48 @@ declare(strict_types=1);
  * auth.php — sesiones PHP seguras, autenticación BVM y sesión de participante.
  */
 
-function bvm_session_start(): void
+/**
+ * Ruta de la cookie de sesión (app.session_cookie_path).
+ * Aísla dev y producción bajo el mismo dominio: cada instalación limita su
+ * cookie a su propia carpeta. Normalización: siempre inicia y termina en '/';
+ * un valor vacío o inválido cae a '/'.
+ */
+function bvm_session_cookie_path(): string
 {
-    if (session_status() === PHP_SESSION_ACTIVE) {
-        return;
+    $path = trim((string)bvm_config('app.session_cookie_path', '/'));
+    if ($path === '' || $path[0] !== '/') {
+        return '/';
     }
+    if (!str_ends_with($path, '/')) {
+        $path .= '/';
+    }
+    return $path;
+}
+
+/** Atributos de la cookie de sesión — un solo lugar para crear Y eliminar. */
+function bvm_session_cookie_params(): array
+{
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-    session_name((string)bvm_config('app.session_name', 'BVMSESSID'));
-    session_set_cookie_params([
+    return [
         'lifetime' => 0,
-        'path'     => '/',
+        'path'     => bvm_session_cookie_path(),
+        'domain'   => '',
         'secure'   => $https,
         'httponly' => true,
         // Lax: los participantes llegan desde ligas compartidas (clic externo);
         // Strict rompería la primera navegación con sesión. Toda mutación va
         // protegida además por token CSRF.
         'samesite' => 'Lax',
-    ]);
+    ];
+}
+
+function bvm_session_start(): void
+{
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return;
+    }
+    session_name((string)bvm_config('app.session_name', 'BVMSESSID'));
+    session_set_cookie_params(bvm_session_cookie_params());
     session_start();
 
     // Expiración por inactividad.
@@ -93,8 +118,19 @@ function bvm_logout(): void
     bvm_session_start();
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
-        $p = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+        // Eliminar con EXACTAMENTE los mismos atributos con que se creó
+        // (nombre, path, secure, httponly, samesite); de lo contrario el
+        // navegador conservaría la cookie original.
+        $p = bvm_session_cookie_params();
+        $p['lifetime'] = 0;
+        setcookie(session_name(), '', [
+            'expires'  => time() - 42000,
+            'path'     => $p['path'],
+            'domain'   => $p['domain'],
+            'secure'   => $p['secure'],
+            'httponly' => $p['httponly'],
+            'samesite' => $p['samesite'],
+        ]);
     }
     session_destroy();
 }

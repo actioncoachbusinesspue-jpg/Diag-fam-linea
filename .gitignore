@@ -1,0 +1,6 @@
+# Secretos: la configuración real nunca se versiona
+Diagnostico_BVM_Familias_Empresarias_EN_LINEA/private/config.php
+
+# Artefactos locales
+node_modules/
+*.sqlite

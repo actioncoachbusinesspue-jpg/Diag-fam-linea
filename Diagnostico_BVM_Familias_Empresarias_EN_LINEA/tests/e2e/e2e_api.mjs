@@ -331,6 +331,34 @@ const device2 = makeClient();
 }
 
 // ============================================================
+// E34 — importación de respaldo local (vista previa + confirmación)
+// ============================================================
+{
+  const res = await admin.request('/api/families/export.php?id=' + familyA.id);
+  const backup = await res.json();
+
+  const preview = await admin.postJson('/api/families/import.php', { phase: 'preview', backup }, admin.csrf);
+  check('E34 vista previa de importación', preview.data.ok === true
+    && preview.data.preview.participants === 2 && preview.data.preview.finished === 1);
+
+  const commit = await admin.postJson('/api/families/import.php', { phase: 'commit', backup, mode: 'create' }, admin.csrf);
+  check('E34b importación como familia nueva', commit.data.ok === true
+    && commit.data.imported_participants === 2 && /-/.test(commit.data.access_code || ''));
+
+  const badSchema = await admin.postJson('/api/families/import.php',
+    { phase: 'preview', backup: { ...backup, schemaVersion: 99 } }, admin.csrf);
+  check('E34c schemaVersion futuro rechazado', badSchema.res.status === 422);
+
+  const demoBackup = await admin.postJson('/api/families/import.php',
+    { phase: 'preview', backup: { ...backup, backupType: 'demo-data' } }, admin.csrf);
+  check('E34d respaldo de demo rechazado', demoBackup.res.status === 422);
+
+  // Limpieza de la familia importada
+  await admin.postJson('/api/families/delete.php',
+    { id: commit.data.family_id, confirm_name: backup.family.familyName }, admin.csrf);
+}
+
+// ============================================================
 // E07 — cierre de sesión
 // ============================================================
 {

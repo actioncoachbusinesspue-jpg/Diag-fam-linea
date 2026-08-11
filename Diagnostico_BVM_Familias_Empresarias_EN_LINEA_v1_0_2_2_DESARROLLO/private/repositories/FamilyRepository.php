@@ -13,7 +13,9 @@ final class FamilyRepository
         ?string $opensAt,
         ?string $closesAt,
         int $createdBy,
-        bool $enforceParticipantLimit = true
+        // 1.0.2.2: el número esperado es una META por defecto. Solo se
+        // convierte en límite rígido si el administrador lo pide expresamente.
+        bool $enforceParticipantLimit = false
     ): array {
         $slug = self::uniqueSlug();
         $accessCode = bvm_family_access_code($familyName);
@@ -117,13 +119,76 @@ final class FamilyRepository
         return password_verify(strtoupper(trim($code)), (string)$family['access_code_hash']);
     }
 
-    /** Borrado definitivo (con doble confirmación en la interfaz). */
-    public static function hardDelete(int $id): bool
+    /**
+     * Conteo de datos dependientes de una familia (para la confirmación previa
+     * a la eliminación definitiva y para la auditoría).
+     */
+    public static function dependentCounts(int $id): array
     {
-        return (bool)Database::transaction(function (PDO $pdo) use ($id) {
-            $st = $pdo->prepare('UPDATE families SET deleted_at = ?, updated_at = ? WHERE id = ?');
-            return $st->execute([bvm_now(), bvm_now(), $id]);
+        $pdo = Database::pdo();
+        $one = function (string $sql) use ($pdo, $id): int {
+            $st = $pdo->prepare($sql);
+            $st->execute([$id]);
+            return (int)$st->fetchColumn();
+        };
+        return [
+            'participants' => $one('SELECT COUNT(*) FROM participants WHERE family_id = ?'),
+            'responses' => $one(
+                'SELECT COUNT(*) FROM responses r
+                   JOIN participants p ON p.id = r.participant_id
+                  WHERE p.family_id = ?'
+            ),
+            'external_responses' => $one(
+                'SELECT COUNT(*) FROM external_responses e
+                   JOIN participants p ON p.id = e.participant_id
+                  WHERE p.family_id = ?'
+            ),
+        ];
+    }
+
+    /**
+     * ARCHIVAR — conservación. Mantiene la familia y TODOS sus datos; solo deja
+     * de aceptar participación y se filtra bajo «Archivada».
+     */
+    public static function archive(int $id): bool
+    {
+        return self::update($id, ['status' => 'archivada', 'archived_at' => bvm_now()]);
+    }
+
+    /**
+     * ELIMINAR DEFINITIVAMENTE — acción destructiva REAL (1.0.2.2, Hallazgo 8).
+     *
+     * Hasta 1.0.2.1 esta operación solo escribía `deleted_at`: la familia
+     * desaparecía de la interfaz pero participaciones y respuestas seguían en la
+     * base, contradiciendo el texto del botón y de su ayuda.
+     *
+     * Ahora borra en UNA transacción la familia y todos sus datos dependientes.
+     * El esquema ya define ON DELETE CASCADE (participants→families,
+     * responses/external_responses→participants, family_assignments→families) en
+     * MySQL/MariaDB y en el fixture SQLite (con PRAGMA foreign_keys = ON), pero
+     * el borrado de hijos es EXPLÍCITO y en orden para no depender de que el
+     * motor tenga las claves activas: el resultado es el mismo en ambos y nunca
+     * quedan participaciones ni respuestas huérfanas.
+     *
+     * No requiere ningún cambio de esquema.
+     *
+     * Devuelve el conteo de lo eliminado.
+     */
+    public static function hardDelete(int $id): array
+    {
+        $counts = self::dependentCounts($id);
+        Database::transaction(function (PDO $pdo) use ($id) {
+            $exec = function (string $sql) use ($pdo, $id): void {
+                $st = $pdo->prepare($sql);
+                $st->execute([$id]);
+            };
+            $exec('DELETE FROM responses WHERE participant_id IN (SELECT id FROM participants WHERE family_id = ?)');
+            $exec('DELETE FROM external_responses WHERE participant_id IN (SELECT id FROM participants WHERE family_id = ?)');
+            $exec('DELETE FROM participants WHERE family_id = ?');
+            $exec('DELETE FROM family_assignments WHERE family_id = ?');
+            $exec('DELETE FROM families WHERE id = ?');
         });
+        return $counts;
     }
 
     /**

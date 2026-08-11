@@ -123,7 +123,8 @@ check('Clave regenerada verifica', FamilyRepository::verifyAccessCode($family, $
 check('Longitud aleatoria validada al rango [6,10]', bvm_family_access_random_length() === 6);
 
 // Familia B para aislamiento
-[$familyB, $codeB] = FamilyRepository::create('Familia Robles', 3, null, null, $adminId);
+// Límite ACTIVO pedido expresamente (desde 1.0.2.2 el predeterminado es referencia).
+[$familyB, $codeB] = FamilyRepository::create('Familia Robles', 3, null, null, $adminId, true);
 check('Clave de B no abre A', !FamilyRepository::verifyAccessCode($family, $codeB));
 
 // 2. Apertura y participantes
@@ -150,7 +151,7 @@ check('Duplicado detectado (normalización)', ParticipantRepository::findByNorma
 // 2b. Cupo de participantes (1.0.2) — sobre Familia B (esperados: 3, límite activo)
 FamilyRepository::update((int)$familyB['id'], ['status' => 'abierta']);
 $familyB = FamilyRepository::findById((int)$familyB['id']);
-check('Familia B con límite activo por defecto', (int)$familyB['enforce_participant_limit'] === 1);
+check('Familia B con límite activo por solicitud expresa', (int)$familyB['enforce_participant_limit'] === 1);
 
 $bCodes = [];
 foreach (['Ana Robles', 'Luis Robles', 'Paula Robles'] as $i => $nameB) {

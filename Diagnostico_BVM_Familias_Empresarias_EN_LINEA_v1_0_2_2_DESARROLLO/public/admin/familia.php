@@ -26,13 +26,20 @@ bvm_admin_header($user, (string)$family['family_name'], 'familias', [
   <h2 id="resumen-t">Avance</h2>
   <div id="summary" class="hint">Cargando…</div>
   <div id="capacity-note" aria-live="polite"></div>
+  <!-- Acción principal del ciclo de vida: abrir la participación (Borrador →
+       Abierta) o cerrarla. Se calcula en loadDetail() según el estado real. -->
+  <div class="form-actions" id="lifecycle-actions"></div>
 </section>
 
 <section class="panel" aria-labelledby="invitacion-t">
   <h2 id="invitacion-t">Invitación</h2>
+  <!-- 1.0.2.2 — Hallazgo 2: se distingue «guardar datos de invitación» (permitido
+       siempre) de «enviar invitación» (solo cuando la familia ya está Abierta). -->
+  <div id="invite-state"></div>
   <p>Liga pública de esta familia:</p>
   <p><code id="invite-url"></code>
      <button type="button" class="btn btn-quiet" id="copy-url">Copiar liga</button></p>
+  <div class="form-actions" id="invite-actions"></div>
   <p class="hint">La clave de acceso solo se muestra al crearla o regenerarla. Si la familia la perdió, regenérela y compártala de nuevo (la anterior deja de funcionar).</p>
   <button type="button" class="btn btn-secondary" id="regen-key">Regenerar clave de acceso</button>
   <div id="key-result"></div>
@@ -112,17 +119,31 @@ bvm_admin_header($user, (string)$family['family_name'], 'familias', [
 
 <section class="panel" aria-labelledby="acciones-t">
   <h2 id="acciones-t">Resultados y respaldos</h2>
-  <div class="form-actions" style="margin-top:0;">
-    <a class="btn btn-primary" href="reporte.php?id=<?= (int)$family['id'] ?>">Abrir radiografía y reporte</a>
-    <a class="btn btn-secondary" href="<?= e(bvm_base_url()) ?>/api/families/export.php?id=<?= (int)$family['id'] ?>">Exportar respaldo JSON</a>
-  </div>
+  <!-- 1.0.2.2 — Hallazgo 10: nunca se invita a abrir un reporte definitivo
+       cuando no existe ninguna participación finalizada. -->
+  <div id="report-note"></div>
+  <div class="form-actions" style="margin-top:0;" id="report-actions"></div>
+  <p class="hint">La demostración con la Familia Horizonte (datos ficticios) está siempre disponible en
+     <a href="<?= e(bvm_base_url()) ?>/demostracion.php">la portada pública</a>.</p>
 </section>
 
 <section class="panel" aria-labelledby="peligro-t">
   <h2 id="peligro-t">Zona de cuidado</h2>
-  <p class="hint">Eliminar una familia borra definitivamente sus participaciones y respuestas. Esta acción requiere doble confirmación y no puede deshacerse.</p>
+
+  <h3>Archivar</h3>
+  <p class="hint">Archivar <strong>conserva</strong> la familia, sus participaciones y sus respuestas.
+     La aplicación deja de aceptar participación y la familia aparece en el filtro «Archivada».
+     Es una acción reversible desde el estado de la configuración.</p>
+  <button type="button" class="btn btn-secondary" id="archive-btn">Archivar familia (conserva los datos)</button>
+
+  <hr style="border:none;border-top:1px solid var(--bvm-divider);margin:22px 0;">
+
+  <h3>Eliminar definitivamente</h3>
+  <p class="hint">Elimina de la base de datos la familia y <strong>todos</strong> sus datos dependientes:
+     participaciones, respuestas y respuestas externas. No es archivar y no puede deshacerse.</p>
   <button type="button" class="btn btn-danger" id="delete-btn">Eliminar familia definitivamente</button>
   <div id="delete-confirm" hidden style="margin-top:12px;">
+    <div id="delete-preview"></div>
     <label for="delete-name">Escriba el nombre exacto de la familia para confirmar</label>
     <input id="delete-name" type="text" autocomplete="off">
     <div class="form-actions">
@@ -154,12 +175,131 @@ function setMsg(kind, text) {
   if (text) { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 
+var LAST_FAMILY = null;
+
+/** Cambia el estado de la familia con confirmación explícita. */
+function setStatus(newStatus, confirmText, okText) {
+  if (!window.confirm(confirmText)) { return; }
+  BvmApi.post('/api/families/update.php', { id: FAMILY_ID, status: newStatus }).then(function (d) {
+    if (d.ok) { setMsg('success', okText); loadDetail(); }
+    else { setMsg('error', d.error || 'No fue posible cambiar el estado.'); }
+  });
+}
+
+/**
+ * Acción principal del ciclo de vida (Hallazgo 2). Una familia en Borrador NO
+ * ofrece un botón que sugiera que ya puede enviarse la invitación: ofrece
+ * «Revisar configuración y abrir participación», que cambia el estado de forma
+ * explícita y confirmada.
+ */
+function renderLifecycle(f) {
+  var box = document.getElementById('lifecycle-actions');
+  if (f.status === 'borrador') {
+    box.innerHTML = '<button type="button" class="btn btn-primary" id="open-participation">' +
+      'Configurar y abrir participación</button>' +
+      '<span class="hint">Revise el nombre, las fechas y el cupo antes de abrir.</span>';
+    document.getElementById('open-participation').addEventListener('click', function () {
+      setStatus('abierta',
+        'La familia "' + f.family_name + '" pasará a estado Abierta y comenzará a aceptar participantes ' +
+        'según sus fechas y su cupo. ¿Desea abrir la participación?',
+        'Lista para recibir participantes. Ya puede compartir la liga y la clave.');
+    });
+  } else if (f.status === 'abierta') {
+    box.innerHTML = '<button type="button" class="btn btn-secondary" id="close-participation">' +
+      'Cerrar la aplicación</button>' +
+      '<span class="hint">Al cerrarla dejará de recibir respuestas nuevas y cambios.</span>';
+    document.getElementById('close-participation').addEventListener('click', function () {
+      setStatus('cerrada',
+        '¿Cerrar la aplicación de "' + f.family_name + '"? Los participantes ya no podrán responder ' +
+        'ni finalizar. Podrá reabrirla más adelante si lo necesita.',
+        'Aplicación cerrada.');
+    });
+  } else if (f.status === 'cerrada') {
+    box.innerHTML = '<button type="button" class="btn btn-secondary" id="reopen-participation">' +
+      'Reabrir participación</button>' +
+      '<span class="hint">Los participantes con respuestas incompletas podrán continuar.</span>';
+    document.getElementById('reopen-participation').addEventListener('click', function () {
+      setStatus('abierta',
+        '¿Reabrir la participación de "' + f.family_name + '"? Se aceptarán respuestas de nuevo ' +
+        'si las fechas lo permiten.',
+        'Participación reabierta.');
+    });
+  } else {
+    box.innerHTML = '<span class="hint">Familia archivada: no admite participación. ' +
+      'Puede reactivarla cambiando el estado en la configuración.</span>';
+  }
+}
+
+/** Diferencia resguardar los datos de invitación de ENVIAR la invitación. */
+function renderInvitation(f) {
+  var stateBox = document.getElementById('invite-state');
+  var actions = document.getElementById('invite-actions');
+  var abierta = f.status === 'abierta';
+  stateBox.innerHTML = abierta
+    ? '<div class="alert alert-success" role="status">Lista para recibir participantes.</div>'
+    : (f.status === 'borrador'
+        ? '<div class="alert alert-warning" role="status"><strong>No envíe todavía esta invitación:</strong> ' +
+          'la familia permanece en Borrador y no aceptará registros ni respuestas.</div>'
+        : '<div class="alert alert-info" role="status">Esta aplicación no está aceptando participación ' +
+          '(estado: ' + statusLabel(f.status) + ').</div>');
+  actions.innerHTML = '<button type="button" class="btn ' + (abierta ? 'btn-primary' : 'btn-quiet') + '" id="copy-invite-text">' +
+    (abierta ? 'Copiar invitación para enviar' : 'Guardar datos de invitación (resguardo)') + '</button>';
+  document.getElementById('copy-invite-text').addEventListener('click', function () {
+    var btn = document.getElementById('copy-invite-text');
+    var text = abierta
+      ? 'Le invitamos a responder el Diagnóstico BVM.\nLiga: ' + f.invite_url +
+        '\nClave de la familia: (la clave que BVM le compartió)'
+      : 'Diagnóstico BVM — datos de invitación (resguardo interno)\nFamilia: ' + f.family_name +
+        '\nEstado: ' + statusLabel(f.status) + ' (no acepta participantes)\nLiga: ' + f.invite_url;
+    navigator.clipboard.writeText(text).then(function () {
+      btn.textContent = abierta ? 'Invitación copiada' : 'Datos copiados para resguardo';
+    });
+  });
+}
+
+/**
+ * Acceso al reporte según participaciones finalizadas (Hallazgo 10):
+ *   0 finalizados      → sin reporte definitivo.
+ *   parcial            → «Abrir lectura preliminar».
+ *   todos los esperados→ «Abrir radiografía y reporte».
+ * No cambia ningún cálculo del reporte.
+ */
+function renderReportAccess(f) {
+  var note = document.getElementById('report-note');
+  var actions = document.getElementById('report-actions');
+  var exportBtn = '<a class="btn btn-secondary" href="' + BvmApi.base() +
+    '/api/families/export.php?id=' + FAMILY_ID + '">Exportar respaldo JSON</a>';
+
+  if (!f.finished_count) {
+    note.innerHTML = '<div class="alert alert-info" role="status">' +
+      'Reporte disponible cuando exista al menos una participación finalizada.</div>';
+    actions.innerHTML = '<button type="button" class="btn btn-primary" disabled ' +
+      'aria-disabled="true">Abrir radiografía y reporte</button>' + exportBtn;
+    return;
+  }
+  var expected = f.expected_participants;
+  var complete = expected != null && f.finished_count >= expected;
+  if (complete || expected == null) {
+    note.innerHTML = expected == null
+      ? '<p class="hint">' + f.finished_count + ' participaciones finalizadas.</p>'
+      : '<p class="hint">Las ' + expected + ' participaciones esperadas están finalizadas.</p>';
+    actions.innerHTML = '<a class="btn btn-primary" href="reporte.php?id=' + FAMILY_ID + '">' +
+      'Abrir radiografía y reporte</a>' + exportBtn;
+    return;
+  }
+  note.innerHTML = '<div class="alert alert-warning" role="status">Lectura preliminar: ' +
+    f.finished_count + ' de ' + expected + ' participaciones finalizadas.</div>';
+  actions.innerHTML = '<a class="btn btn-primary" href="reporte.php?id=' + FAMILY_ID + '">' +
+    'Abrir lectura preliminar</a>' + exportBtn;
+}
+
 function loadDetail() {
   fetch(BvmApi.base() + '/api/families/detail.php?id=' + FAMILY_ID, { credentials: 'same-origin' })
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (!d.ok) { throw new Error(d.error); }
       var f = d.family;
+      f.dependents = d.dependents || null;
       document.getElementById('invite-url').textContent = f.invite_url;
       document.getElementById('cfg-name').value = f.family_name;
       document.getElementById('cfg-expected').value = f.expected_participants || '';
@@ -169,15 +309,28 @@ function loadDetail() {
       document.getElementById('cfg-status').value = f.status;
       document.getElementById('cfg-report-date').value = f.report_date ? f.report_date.substring(0, 10) : '';
 
+      LAST_FAMILY = f;
       var inProgress = f.registered_count - f.finished_count;
       var pctText = f.progress_pct == null ? '' :
         ' · ' + Math.min(100, f.progress_pct) + '% del objetivo';
       var cap = f.capacity || {};
       var capLabels = { disponible: 'Disponible', cerca_del_limite: 'Cerca del límite', completo: 'Completo', excedido: 'Excedido' };
-      var capChip = (cap.state && cap.state !== 'sin_limite')
-        ? ' <span class="status-chip cap-' + cap.state + '">' + (capLabels[cap.state] || cap.state) +
-          (cap.mode === 'referencia' ? ' · referencia' : '') + '</span>'
-        : '';
+      // El estado de la aplicación gobierna; el cupo es SIEMPRE secundario y
+      // nunca puede leerse como «acepta participantes» si no es así (Hallazgo 11).
+      var capChip;
+      if (f.status !== 'abierta') {
+        capChip = ' <span class="meta-chip">· ' + (cap.state === 'sin_limite'
+          ? 'Cupo sin límite'
+          : (cap.mode === 'referencia' ? 'Cupo en modo referencia' : 'Cupo con límite activo')) + '</span>';
+      } else if (cap.state && cap.state !== 'sin_limite') {
+        capChip = ' <span class="status-chip cap-' + cap.state + '">' + (capLabels[cap.state] || cap.state) +
+          (cap.mode === 'referencia' ? ' (referencia)' : '') + '</span>';
+      } else {
+        capChip = ' <span class="meta-chip">· Cupo sin límite</span>';
+      }
+      renderLifecycle(f);
+      renderInvitation(f);
+      renderReportAccess(f);
       var registeredText = f.expected_participants
         ? '<strong>' + f.registered_count + '</strong> registrados de <strong>' + f.expected_participants + '</strong> ' +
           (cap.mode === 'referencia' ? 'esperados (referencia)' : 'autorizados')
@@ -282,14 +435,35 @@ document.getElementById('config-form').addEventListener('submit', function (ev) 
   });
 });
 
+document.getElementById('archive-btn').addEventListener('click', function () {
+  var name = LAST_FAMILY ? LAST_FAMILY.family_name : 'esta familia';
+  setStatus('archivada',
+    '¿Archivar "' + name + '"? Se conservan la familia, sus participaciones y todas sus respuestas; ' +
+    'únicamente deja de aceptar participación.',
+    'Familia archivada. Sus datos se conservan.');
+});
+
+// Primer paso de la doble confirmación: mostrar el alcance EXACTO de la
+// eliminación (participaciones, respuestas y respuestas externas reales).
 document.getElementById('delete-btn').addEventListener('click', function () {
+  var dep = (LAST_FAMILY && LAST_FAMILY.dependents) || { participants: 0, responses: 0, external_responses: 0 };
+  document.getElementById('delete-preview').innerHTML =
+    '<div class="alert alert-error" role="alert">' +
+    'Se eliminarán de la base de datos:<br>' +
+    '<strong>' + dep.participants + '</strong> participantes<br>' +
+    '<strong>' + dep.responses + '</strong> respuestas<br>' +
+    '<strong>' + dep.external_responses + '</strong> respuestas externas<br>' +
+    '<strong>Esta acción no puede deshacerse.</strong></div>';
   document.getElementById('delete-confirm').hidden = false;
+  document.getElementById('delete-name').focus();
 });
 document.getElementById('delete-cancel').addEventListener('click', function () {
   document.getElementById('delete-confirm').hidden = true;
   document.getElementById('delete-name').value = '';
 });
 document.getElementById('delete-final').addEventListener('click', function () {
+  // Segunda confirmación explícita, además del nombre exacto escrito.
+  if (!window.confirm('Esta acción elimina definitivamente la familia y todos sus datos. No puede deshacerse. ¿Continuar?')) { return; }
   BvmApi.post('/api/families/delete.php', {
     id: FAMILY_ID,
     confirm_name: document.getElementById('delete-name').value

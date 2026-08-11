@@ -115,9 +115,11 @@ if ($mode === 'replace') {
 try {
     $result = Database::transaction(function (PDO $pdo) use ($mode, $replaceId, $familyIn, $participantsIn, $user) {
         $now = bvm_now();
-        // Respaldos 1.0.2 incluyen enforceParticipantLimit; los de la versión
-        // local o de 1.0.1 no lo traen y conservan el predeterminado (límite activo).
-        $enforceLimit = filter_var($familyIn['enforceParticipantLimit'] ?? true, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        // Respaldos 1.0.2+ incluyen enforceParticipantLimit y se respeta tal cual.
+        // Los respaldos de la versión local o de 1.0.1 no lo traen: desde 1.0.2.2
+        // se restauran en modo REFERENCIA (nunca se activa un límite que el
+        // administrador no pidió expresamente).
+        $enforceLimit = filter_var($familyIn['enforceParticipantLimit'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
         if ($mode === 'replace') {
             // Elimina participaciones actuales (cascade borra respuestas) y conserva liga/clave.
             $st = $pdo->prepare('DELETE FROM participants WHERE family_id = ?');

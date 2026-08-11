@@ -34,11 +34,15 @@ function bvm_reference_app_html(): string
 }
 
 /**
- * @param string     $mode      'demo' | 'report'
- * @param array|null $familyData objeto familia (formato StorageAdapter) para 'report'
- * @param string     $returnUrl  a dónde regresa el botón "salir"
+ * @param string      $mode         'demo' | 'report'
+ * @param array|null  $familyData   objeto familia (formato StorageAdapter) para 'report'
+ * @param string      $returnUrl    a dónde regresa el botón "salir"
+ * @param string|null $screenNotice aviso EN PANTALLA sobre el reporte (1.0.2.2).
+ *        Se usa para declarar una lectura preliminar. Se oculta al imprimir:
+ *        el reporte impreso/PDF conserva exactamente sus 12 páginas y su
+ *        paridad numérica con el maestro.
  */
-function bvm_render_reference_app(string $mode, ?array $familyData, string $returnUrl): void
+function bvm_render_reference_app(string $mode, ?array $familyData, string $returnUrl, ?string $screenNotice = null): void
 {
     $html = bvm_reference_app_html();
 
@@ -105,8 +109,27 @@ HTML;
     // que los envoltorios estén activos desde el primer render.
     require_once BVM_PRIVATE_DIR . '/reference_presentation_patch.php';
     $presentationPatch = bvm_reference_presentation_patch();
+
+    // Aviso de lectura preliminar (1.0.2.2): banda fija SOLO en pantalla.
+    // No entra en el flujo del documento ni se imprime, así que el reporte
+    // impreso mantiene sus 12 páginas y su paridad numérica intactas.
+    $notice = '';
+    if ($screenNotice !== null && $screenNotice !== '') {
+        $noticeText = htmlspecialchars($screenNotice, ENT_QUOTES, 'UTF-8');
+        $notice = <<<HTML
+<style>
+.bvm-online-notice{position:fixed;left:0;right:0;bottom:0;z-index:9999;
+  background:#FBF3DC;color:#7A5A12;border-top:1px solid #E8D6A2;
+  font:600 13px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  padding:10px 16px;text-align:center;}
+@media print{.bvm-online-notice{display:none !important;}}
+</style>
+<div class="bvm-online-notice" role="status">$noticeText</div>
+HTML;
+    }
+
     $html = preg_replace('/<head>/', '<head>' . "\n" . $disableStorage, $html, 1);
-    $html = str_replace('</body></html>', $presentationPatch . "\n" . $bootstrap . "\n</body></html>", $html);
+    $html = str_replace('</body></html>', $notice . "\n" . $presentationPatch . "\n" . $bootstrap . "\n</body></html>", $html);
 
     bvm_security_headers(bvm_csp_reference_app(), true);
     header('Content-Type: text/html; charset=utf-8');

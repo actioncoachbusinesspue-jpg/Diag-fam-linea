@@ -53,7 +53,7 @@ $adminId = AdminUserRepository::create('Admin Concurrencia', 'admin.conc.' . bin
 const ROUNDS = 5;
 for ($round = 1; $round <= ROUNDS; $round++) {
     // Familia nueva por ronda: esperados 3, dos lugares ya ocupados.
-    [$family] = FamilyRepository::create("Familia Disputa $round " . bin2hex(random_bytes(3)), 3, null, null, $adminId);
+    [$family] = FamilyRepository::create("Familia Disputa $round " . bin2hex(random_bytes(3)), 3, null, null, $adminId, true);
     $familyId = (int)$family['id'];
     FamilyRepository::update($familyId, ['status' => 'abierta']);
     ParticipantRepository::register($familyId, "Ocupante Uno R$round", 'Primera generación', 'Otro rol patrimonial');

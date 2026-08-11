@@ -55,4 +55,7 @@ bvm_json_response([
         'progress_pct' => $expected ? (int)round(100 * $finished / max(1, $expected)) : null,
     ],
     'participants' => $list,
+    // Alcance exacto de una eliminación definitiva (se muestra ANTES de
+    // confirmarla). No incluye ninguna respuesta individual, solo conteos.
+    'dependents' => FamilyRepository::dependentCounts($id),
 ]);

@@ -17,18 +17,22 @@ if ($expected !== null && $expected !== '') {
 } else {
     $expected = null;
 }
-// true (predeterminado): el número esperado cierra nuevos registros al alcanzarse.
-$enforceLimit = filter_var($in['enforce_participant_limit'] ?? true, FILTER_VALIDATE_BOOLEAN);
+// 1.0.2.2 — Hallazgo 3: «participantes esperados» es una META/REFERENCIA.
+// El predeterminado es FALSE: escribir un número esperado NO activa por sí solo
+// el límite. Solo lo activa la casilla expresa «Cerrar nuevos registros al
+// alcanzar el número esperado». El backend guarda exactamente lo enviado.
+$enforceLimit = filter_var($in['enforce_participant_limit'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $opensAt = ($in['opens_at'] ?? '') !== '' ? (string)$in['opens_at'] : null;
 $closesAt = ($in['closes_at'] ?? '') !== '' ? (string)$in['closes_at'] : null;
+// Mismas reglas de fecha que en la edición (1.0.2.2): 422 y mensaje claro.
 if ($opensAt !== null && !bvm_valid_date($opensAt)) {
-    bvm_json_error('Fecha de apertura no válida.');
+    bvm_json_error('Fecha de apertura no válida (formato AAAA-MM-DD).', 422);
 }
 if ($closesAt !== null && !bvm_valid_date($closesAt)) {
-    bvm_json_error('Fecha de cierre no válida.');
+    bvm_json_error('Fecha de cierre no válida (formato AAAA-MM-DD).', 422);
 }
 if ($opensAt !== null && $closesAt !== null && $closesAt < $opensAt) {
-    bvm_json_error('La fecha de cierre no puede ser anterior a la de apertura.');
+    bvm_json_error('La fecha de cierre no puede ser anterior a la de apertura.', 422);
 }
 
 [$family, $accessCode] = FamilyRepository::create($name, $expected, $opensAt, $closesAt, (int)$user['id'], $enforceLimit);
@@ -43,6 +47,11 @@ bvm_json_response([
         'family_name' => $family['family_name'],
         'public_slug' => $family['public_slug'],
         'status' => $family['status'],
+        'expected_participants' => $expected,
+        // La interfaz confirma expresamente el modo de cupo guardado
+        // («Cupo: referencia» / «Cupo: límite activo»), tal como se envió.
+        'enforce_participant_limit' => (int)$family['enforce_participant_limit'] === 1,
+        'accepts_participants' => false, // nace en Borrador
         'invite_url' => bvm_base_url() . '/participar.php?f=' . $family['public_slug'],
     ],
     // La clave se muestra UNA sola vez; solo se guarda su hash.

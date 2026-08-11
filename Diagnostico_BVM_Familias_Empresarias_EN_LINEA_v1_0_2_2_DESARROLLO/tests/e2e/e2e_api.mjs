@@ -141,7 +141,11 @@ const admin = makeClient();
 // ============================================================
 let familyA, accessCodeA, familyB, accessCodeB;
 {
-  const a = await admin.postJson('/api/families/create.php', { family_name: 'Familia Robles', expected_participants: 3 }, admin.csrf);
+  // 1.0.2.2: el límite por cupo debe pedirse EXPRESAMENTE (el predeterminado
+  // es referencia). Esta familia lo activa porque las pruebas E50-E53 miden
+  // justamente el bloqueo por cupo.
+  const a = await admin.postJson('/api/families/create.php',
+    { family_name: 'Familia Robles', expected_participants: 3, enforce_participant_limit: true }, admin.csrf);
   check('E09 crear familia', a.data.ok === true && a.data.family.family_name === 'Familia Robles');
   familyA = a.data.family; accessCodeA = a.data.access_code;
   // 1.0.2: la clave usa 6 caracteres aleatorios (las de 4 previas siguen válidas).

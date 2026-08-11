@@ -23,10 +23,29 @@ bvm_security_headers();
     <section class="path-card primary" aria-labelledby="p1">
       <span class="tag">Para participantes</span>
       <h2 id="p1">Responder el diagnóstico</h2>
-      <p>Si su familia le compartió una invitación, ingrese con la liga y la clave que recibió.
-         Responderá 20 afirmaciones de manera individual. No existen respuestas correctas o incorrectas.</p>
+      <p>Para responder, utilice la liga de invitación que BVM le compartió para su familia.
+         Cada familia cuenta con una liga y una clave propias.</p>
       <p class="meta">Duración aproximada: 15 a 20 minutos. Puede pausar y continuar después.</p>
-      <a class="btn btn-primary" href="participar.php">Comenzar o continuar</a>
+      <!-- 1.0.2.2: esta página NO conoce la familia, así que nunca envía al
+           participante a participar.php sin liga (pantalla de error). -->
+      <button type="button" class="btn btn-primary" id="invite-help-open"
+              aria-expanded="false" aria-controls="invite-help">Ya recibí una invitación</button>
+      <p class="meta" style="margin-top:10px;">
+        <a href="demostracion.php">Conocer primero la demostración</a>
+      </p>
+
+      <div id="invite-help" class="invite-help" role="group" aria-labelledby="invite-help-t" hidden>
+        <h3 id="invite-help-t" tabindex="-1">Abra la liga completa que recibió</h3>
+        <p>La participación solo puede iniciarse desde la liga propia de su familia.
+           Búsquela en el correo o mensaje que le envió BVM y ábrala tal como se la
+           compartieron: tiene esta forma.</p>
+        <p><code><?= e(bvm_base_url()) ?>/participar.php?f=<span aria-hidden="true">…</span></code></p>
+        <p>Al abrirla se le pedirá la <strong>clave de la familia</strong> que acompaña a la
+           invitación. Con ella podrá registrarse o continuar donde se quedó.</p>
+        <p class="meta">Si no encuentra la liga o la clave, solicítelas a su contacto en BVM:
+           por seguridad, esta página no puede buscarlas ni enviarlas.</p>
+        <button type="button" class="btn btn-quiet" id="invite-help-close">Entendido</button>
+      </div>
     </section>
 
     <section class="path-card" aria-labelledby="p2">
@@ -57,5 +76,24 @@ bvm_security_headers();
     La demostración utiliza exclusivamente información ficticia.
   </div>
 </footer>
+<script>
+(function () {
+  'use strict';
+  var open = document.getElementById('invite-help-open');
+  var close = document.getElementById('invite-help-close');
+  var panel = document.getElementById('invite-help');
+  if (!open || !panel) { return; }
+  function setOpen(isOpen) {
+    panel.hidden = !isOpen;
+    open.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (isOpen) { panel.querySelector('h3').focus(); } else { open.focus(); }
+  }
+  open.addEventListener('click', function () { setOpen(panel.hidden); });
+  if (close) { close.addEventListener('click', function () { setOpen(false); }); }
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && !panel.hidden) { setOpen(false); }
+  });
+})();
+</script>
 </body>
 </html>

@@ -8,6 +8,19 @@ bvm_admin_header($user, 'Familias', 'familias', ['Familias' => null]);
 <h1>Familias y empresas</h1>
 <p class="hint">Cree una familia, comparta su liga y clave, y consulte el avance en tiempo real.</p>
 
+<section class="panel guide-panel" aria-labelledby="guia-t">
+  <h2 id="guia-t">Cómo se opera una aplicación</h2>
+  <ol class="guide-steps">
+    <li>Cree la familia (nace en <strong>Borrador</strong>: todavía no acepta participantes).</li>
+    <li>Revise fechas y cupo.</li>
+    <li>Cambie el estado a <strong>Abierta</strong>.</li>
+    <li>Comparta la liga y la clave con la familia.</li>
+    <li>Consulte los avances.</li>
+    <li>Cierre la aplicación.</li>
+    <li>Genere el reporte.</li>
+  </ol>
+</section>
+
 <section class="panel" aria-labelledby="nueva-familia-t">
   <h2 id="nueva-familia-t">Crear familia o empresa</h2>
   <form id="create-form">
@@ -32,11 +45,17 @@ bvm_admin_header($user, 'Familias', 'familias', ['Familias' => null]);
       </div>
     </div>
     <p class="hint">Fechas interpretadas en hora de Ciudad de México.</p>
-    <label class="scale-option" style="margin-top:6px;">
-      <input type="checkbox" id="enforce_limit" checked>
-      <span><span class="lbl">Cerrar nuevos registros al alcanzar el número esperado</span>
-      <span class="desc">Al activarlo, las personas ya registradas podrán continuar, pero no se aceptarán
-      nuevos participantes cuando se alcance el cupo. Si lo desactiva, el número esperado es solo una meta.</span></span>
+    <!-- 1.0.2.2 — Hallazgo 3: «participantes esperados» es una meta de
+         referencia. La casilla nace DESMARCADA: escribir un número no activa
+         por sí solo el límite. -->
+    <label class="consent-option" for="enforce_limit">
+      <input type="checkbox" id="enforce_limit">
+      <span class="consent-text">
+        <span class="lbl">Cerrar nuevos registros al alcanzar el número esperado</span>
+        <span class="desc">Predeterminado: <strong>desactivado</strong>. El número esperado es una meta de
+        referencia y no bloquea a nadie. Si activa esta casilla, al alcanzarse el número no se aceptarán
+        participantes nuevos (las personas ya registradas siempre pueden continuar y finalizar).</span>
+      </span>
     </label>
     <div class="form-actions">
       <button class="btn btn-primary" type="submit">Crear familia</button>
@@ -92,9 +111,25 @@ function statusLabel(s) {
   return { borrador: 'Borrador', abierta: 'Abierta', cerrada: 'Cerrada', archivada: 'Archivada' }[s] || s;
 }
 
+/**
+ * Etiqueta SECUNDARIA de cupo (1.0.2.2 — Hallazgo 11).
+ * La etiqueta primaria es SIEMPRE el estado de la aplicación y es la que
+ * gobierna la participación. El cupo nunca puede contradecirla: una familia en
+ * Borrador jamás se muestra como «Disponible», porque no acepta registros.
+ */
 function capacityChip(f) {
-  var c = f.capacity;
-  if (!c || c.state === 'sin_limite') { return ''; }
+  var c = f.capacity || {};
+  if (f.status === 'cerrada') {
+    return ' <span class="meta-chip">· ' + f.finished_count + ' finalizados</span>';
+  }
+  if (f.status !== 'abierta') {
+    // Borrador / Archivada: solo se describe la CONFIGURACIÓN del cupo.
+    var cfg = c.state === 'sin_limite'
+      ? 'Cupo sin límite'
+      : (c.mode === 'referencia' ? 'Cupo en modo referencia' : 'Cupo con límite activo');
+    return ' <span class="meta-chip">· ' + cfg + '</span>';
+  }
+  if (c.state === 'sin_limite') { return ' <span class="meta-chip">· Cupo sin límite</span>'; }
   var labels = {
     disponible: 'Disponible',
     cerca_del_limite: 'Cerca del límite',
@@ -102,7 +137,7 @@ function capacityChip(f) {
     excedido: 'Excedido'
   };
   var label = labels[c.state] || c.state;
-  if (c.mode === 'referencia') { label += ' · referencia'; }
+  if (c.mode === 'referencia') { label += ' (referencia)'; }
   return ' <span class="status-chip cap-' + c.state + '">' + label + '</span>';
 }
 
@@ -177,21 +212,42 @@ document.getElementById('create-form').addEventListener('submit', function (ev) 
       out.innerHTML = '<div class="alert alert-error">' + BvmApi.escapeHtml(d.error || 'No fue posible crear la familia.') + '</div>';
       return;
     }
+    // El formulario se limpia por completo y la casilla de límite vuelve
+    // explícitamente a DESMARCADA: nunca debe confundirse el estado del
+    // formulario con la configuración de la familia recién creada.
     document.getElementById('create-form').reset();
+    document.getElementById('enforce_limit').checked = false;
+
+    var capText = d.family.expected_participants
+      ? (d.family.enforce_participant_limit
+          ? 'Cupo: límite activo (' + d.family.expected_participants + ' participantes)'
+          : 'Cupo: referencia (' + d.family.expected_participants + ' participantes esperados)')
+      : 'Cupo: sin límite';
+
     out.innerHTML =
-      '<div class="alert alert-success" role="status">' +
-      '<strong>' + BvmApi.escapeHtml(d.family.family_name) + '</strong> creada correctamente.<br>' +
-      'Liga de invitación: <code>' + BvmApi.escapeHtml(d.family.invite_url) + '</code><br>' +
-      'Clave de acceso (guárdela ahora — no volverá a mostrarse): ' +
-      '<span class="code-badge">' + BvmApi.escapeHtml(d.access_code) + '</span><br>' +
-      '<button type="button" class="btn btn-secondary" id="copy-invite">Copiar invitación</button> ' +
-      '<a class="btn btn-primary" href="familia.php?id=' + d.family.id + '">Abrir familia</a>' +
-      '</div>';
+      '<div class="alert alert-success created-box" role="status">' +
+      '<p class="created-title"><strong>Familia creada correctamente</strong></p>' +
+      '<p>' + BvmApi.escapeHtml(d.family.family_name) + '<br>' +
+      'Estado: <span class="status-chip status-borrador">Borrador</span> ' +
+      '<span class="meta-chip">· ' + BvmApi.escapeHtml(capText) + '</span></p>' +
+      '<p class="created-warning"><strong>Todavía no acepta participantes.</strong> ' +
+      'No envíe todavía esta invitación: la familia permanece en Borrador.</p>' +
+      '<p class="hint">Guarde ahora estos datos para su resguardo interno: la clave solo se muestra una vez.</p>' +
+      '<p>Liga de invitación: <code>' + BvmApi.escapeHtml(d.family.invite_url) + '</code><br>' +
+      'Clave de acceso: <span class="code-badge">' + BvmApi.escapeHtml(d.access_code) + '</span></p>' +
+      '<div class="form-actions">' +
+      '<a class="btn btn-primary" href="familia.php?id=' + d.family.id + '#config-t">Revisar configuración y abrir</a>' +
+      '<button type="button" class="btn btn-quiet" id="copy-invite">Guardar datos de invitación</button>' +
+      '</div></div>';
     document.getElementById('copy-invite').addEventListener('click', function () {
-      var text = 'Le invitamos a responder el Diagnóstico BVM.\n' +
+      // Resguardo interno: NO es el envío de la invitación (la familia sigue
+      // en Borrador y no aceptaría a nadie).
+      var text = 'Diagnóstico BVM — datos de invitación (resguardo interno)\n' +
+        'Familia: ' + d.family.family_name + '\n' +
+        'Estado al generarse: Borrador (no acepta participantes todavía)\n' +
         'Liga: ' + d.family.invite_url + '\nClave de la familia: ' + d.access_code;
       navigator.clipboard.writeText(text).then(function () {
-        document.getElementById('copy-invite').textContent = 'Invitación copiada';
+        document.getElementById('copy-invite').textContent = 'Datos copiados para resguardo';
       });
     });
     loadFamilies();

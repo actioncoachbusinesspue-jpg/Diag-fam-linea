@@ -31,6 +31,8 @@ if (array_key_exists('expected_participants', $in)) {
 if (array_key_exists('enforce_participant_limit', $in)) {
     $fields['enforce_participant_limit'] = filter_var($in['enforce_participant_limit'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
 }
+// 1.0.2.2 — Hallazgo 7: las fechas se validan SIEMPRE en el servidor, también
+// al editar. La validación HTML del navegador no es una garantía.
 foreach (['opens_at', 'closes_at', 'report_date'] as $dateField) {
     if (array_key_exists($dateField, $in)) {
         $v = $in[$dateField];
@@ -39,9 +41,25 @@ foreach (['opens_at', 'closes_at', 'report_date'] as $dateField) {
         } elseif (bvm_valid_date($v)) {
             $fields[$dateField] = $v;
         } else {
-            bvm_json_error('Fecha no válida en ' . $dateField . '.');
+            bvm_json_error('Fecha no válida en ' . $dateField . ' (formato AAAA-MM-DD).', 422);
         }
     }
+}
+
+// Coherencia del periodo: cierre >= apertura. Se compara el resultado FINAL de
+// la edición, combinando lo enviado con lo ya guardado (editar solo una de las
+// dos fechas no puede dejar un periodo imposible).
+//   · apertura sin cierre: válido      · cierre sin apertura: válido
+//   · mismo día: válido                · cierre anterior a apertura: 422
+// report_date es una fecha editorial y NO interviene en esta regla.
+$finalOpens = array_key_exists('opens_at', $fields)
+    ? $fields['opens_at']
+    : ($family['opens_at'] !== null ? substr((string)$family['opens_at'], 0, 10) : null);
+$finalCloses = array_key_exists('closes_at', $fields)
+    ? $fields['closes_at']
+    : ($family['closes_at'] !== null ? substr((string)$family['closes_at'], 0, 10) : null);
+if ($finalOpens !== null && $finalCloses !== null && $finalCloses < $finalOpens) {
+    bvm_json_error('La fecha de cierre no puede ser anterior a la de apertura.', 422);
 }
 if (array_key_exists('status', $in)) {
     if (!bvm_valid_family_status($in['status'])) {

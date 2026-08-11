@@ -1,0 +1,170 @@
+
+================ ESTRUCTURA A — docroot: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_DESARROLLO/public ================
+[OK]    E01 carga pública (200, tres caminos)
+[OK]    E02 demostración sin login
+[OK]    E03 admin redirige a login sin sesión
+[OK]    E03b reporte protegido
+[OK]    API admin sin sesión → 401
+[OK]    Instalador crea administrador
+[OK]    Instalador queda bloqueado
+[OK]    E04 login incorrecto → 401 mensaje genérico
+[OK]    E08 CSRF ausente rechazado (403)
+[OK]    E05 bloqueo por intentos (429)
+[OK]    E06 login correcto
+[OK]    E09 crear familia
+[OK]    E10 liga y clave generadas
+[OK]    Abrir familia A
+[OK]    E11 liga abre desde otro contexto
+[OK]    E12 clave incorrecta rechazada
+[OK]    Clave correcta aceptada
+[OK]    E13 registro de participante
+[OK]    E14 código personal generado
+[OK]    Duplicado advertido (409)
+[OK]    E15 autosave de 20 respuestas
+[OK]    Valor fuera de 1-5 rechazado
+[OK]    E26 inyección SQL rechazada por validación
+[OK]    E17 reanudar desde otro dispositivo
+[OK]    Dispositivo 2 guarda
+[OK]    E39 conflicto entre dispositivos detectado (409)
+[OK]    Preguntas externas guardadas
+[OK]    E18 finalizar participación
+[OK]    E19 editar tras finalizar → 423 bloqueado
+[OK]    E20 segundo participante desde otro equipo
+[OK]    E21 administrador ve avance actualizado
+[OK]    Privacidad: detalle sin respuestas individuales
+[OK]    E22 participante no accede a API admin
+[OK]    E22b participante no accede al reporte
+[OK]    E23 Familia A no accede a Familia B
+[OK]    E24 ID inexistente → 404
+[OK]    E24b ID manipulado no filtra datos
+[OK]    E50 tercer registro llena el cupo (3 de 3)
+[OK]    E51 access reporta cupo cerrado a nuevos registros
+[OK]    E52 cuarto registro → 409 con family_full
+[OK]    E53 reanudación funciona con cupo lleno
+[OK]    Nombre con HTML aceptado como texto
+[OK]    E25 XSS escapado en admin
+[OK]    E27 reporte real 200 con datos inyectados
+[OK]    Reporte usa almacenamiento en memoria
+[OK]    E38 demo no modifica datos reales
+[OK]    E36 familia cerrada no acepta registros (409)
+[OK]    E35 exportación de respaldo en línea
+[OK]    E34 vista previa de importación
+[OK]    E34b importación como familia nueva
+[OK]    E34c schemaVersion futuro rechazado
+[OK]    E34d respaldo de demo rechazado
+[OK]    E07 cierre de sesión
+[OK]    Sesión invalidada tras logout
+
+E2E: TODAS LAS PRUEBAS PASARON
+[OK]    E47 código desplegable sin rutas con localhost/127.0.0.1
+[OK]    E49 assets propios sin contraseñas ni PIN embebidos
+[OK]    E48 demo servida neutraliza AppModeManager.enterAdmin
+[OK]    E47b demo servida sin la redirección 127.0.0.1:8099 de la entrega anterior
+[OK]    E49b demo servida con PIN local deshabilitado y vacío
+[OK]    E46 errores de API sin trazas PHP/SQL ni rutas internas
+
+ESTÁTICAS: TODAS LAS PRUEBAS PASARON
+[OK]    health-check CLI en estructura A (correcto con advertencias)
+[OK]    Demo entra directo al modo comercial (Familia Horizonte)
+[OK]    Demo sin errores de JavaScript
+[OK]    Demo: localStorage deshabilitado (modo memoria)
+[OK]    Demo: StorageAdapter en memoria
+[OK]    Demo: índice general Horizonte = 55
+[OK]    E48 demo: enterAdmin() desde consola queda neutralizado
+[OK]    Login de navegador llega a administración
+[OK]    Reporte carga con la familia real
+[OK]    Reporte sin errores de JavaScript
+[OK]    Motor lee datos del servidor (3 participantes)
+[OK]    Reporte: 12 páginas auditadas
+[OK]    Reporte: todas las páginas caben (fits:true)
+[OK]    E31 móvil 390×844 sin desborde horizontal
+[OK]    E31b acciones visibles en móvil
+[OK]    E32 móvil 375×667 sin desborde horizontal
+
+NAVEGADOR: TODAS LAS PRUEBAS PASARON
+
+================ ESTRUCTURA B — docroot: /tmp/tmp.BM3jfwfH2G/diagnostico-bvm-online ================
+[OK]    E01 carga pública (200, tres caminos)
+[OK]    E02 demostración sin login
+[OK]    E03 admin redirige a login sin sesión
+[OK]    E03b reporte protegido
+[OK]    API admin sin sesión → 401
+[OK]    Instalador crea administrador
+[OK]    Instalador queda bloqueado
+[OK]    E04 login incorrecto → 401 mensaje genérico
+[OK]    E08 CSRF ausente rechazado (403)
+[OK]    E05 bloqueo por intentos (429)
+[OK]    E06 login correcto
+[OK]    E09 crear familia
+[OK]    E10 liga y clave generadas
+[OK]    Abrir familia A
+[OK]    E11 liga abre desde otro contexto
+[OK]    E12 clave incorrecta rechazada
+[OK]    Clave correcta aceptada
+[OK]    E13 registro de participante
+[OK]    E14 código personal generado
+[OK]    Duplicado advertido (409)
+[OK]    E15 autosave de 20 respuestas
+[OK]    Valor fuera de 1-5 rechazado
+[OK]    E26 inyección SQL rechazada por validación
+[OK]    E17 reanudar desde otro dispositivo
+[OK]    Dispositivo 2 guarda
+[OK]    E39 conflicto entre dispositivos detectado (409)
+[OK]    Preguntas externas guardadas
+[OK]    E18 finalizar participación
+[OK]    E19 editar tras finalizar → 423 bloqueado
+[OK]    E20 segundo participante desde otro equipo
+[OK]    E21 administrador ve avance actualizado
+[OK]    Privacidad: detalle sin respuestas individuales
+[OK]    E22 participante no accede a API admin
+[OK]    E22b participante no accede al reporte
+[OK]    E23 Familia A no accede a Familia B
+[OK]    E24 ID inexistente → 404
+[OK]    E24b ID manipulado no filtra datos
+[OK]    E50 tercer registro llena el cupo (3 de 3)
+[OK]    E51 access reporta cupo cerrado a nuevos registros
+[OK]    E52 cuarto registro → 409 con family_full
+[OK]    E53 reanudación funciona con cupo lleno
+[OK]    Nombre con HTML aceptado como texto
+[OK]    E25 XSS escapado en admin
+[OK]    E27 reporte real 200 con datos inyectados
+[OK]    Reporte usa almacenamiento en memoria
+[OK]    E38 demo no modifica datos reales
+[OK]    E36 familia cerrada no acepta registros (409)
+[OK]    E35 exportación de respaldo en línea
+[OK]    E34 vista previa de importación
+[OK]    E34b importación como familia nueva
+[OK]    E34c schemaVersion futuro rechazado
+[OK]    E34d respaldo de demo rechazado
+[OK]    E07 cierre de sesión
+[OK]    Sesión invalidada tras logout
+
+E2E: TODAS LAS PRUEBAS PASARON
+[OK]    E47 código desplegable sin rutas con localhost/127.0.0.1
+[OK]    E49 assets propios sin contraseñas ni PIN embebidos
+[OK]    E48 demo servida neutraliza AppModeManager.enterAdmin
+[OK]    E47b demo servida sin la redirección 127.0.0.1:8099 de la entrega anterior
+[OK]    E49b demo servida con PIN local deshabilitado y vacío
+[OK]    E46 errores de API sin trazas PHP/SQL ni rutas internas
+
+ESTÁTICAS: TODAS LAS PRUEBAS PASARON
+[OK]    health-check CLI en estructura B (correcto con advertencias)
+[OK]    Demo entra directo al modo comercial (Familia Horizonte)
+[OK]    Demo sin errores de JavaScript
+[OK]    Demo: localStorage deshabilitado (modo memoria)
+[OK]    Demo: StorageAdapter en memoria
+[OK]    Demo: índice general Horizonte = 55
+[OK]    E48 demo: enterAdmin() desde consola queda neutralizado
+[OK]    Login de navegador llega a administración
+[OK]    Reporte carga con la familia real
+[OK]    Reporte sin errores de JavaScript
+[OK]    Motor lee datos del servidor (3 participantes)
+[OK]    Reporte: 12 páginas auditadas
+[OK]    Reporte: todas las páginas caben (fits:true)
+[OK]    E31 móvil 390×844 sin desborde horizontal
+[OK]    E31b acciones visibles en móvil
+[OK]    E32 móvil 375×667 sin desborde horizontal
+
+NAVEGADOR: TODAS LAS PRUEBAS PASARON
+
+E2E EN AMBAS ESTRUCTURAS (A y B): TODAS LAS PRUEBAS PASARON

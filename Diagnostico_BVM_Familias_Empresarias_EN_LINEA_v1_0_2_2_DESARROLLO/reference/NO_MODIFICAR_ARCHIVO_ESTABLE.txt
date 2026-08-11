@@ -1,0 +1,1 @@
+Esta carpeta contiene la referencia funcional de la versión local validada. No debe sustituirse, sobrescribirse ni publicarse como la versión en línea.

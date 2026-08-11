@@ -1,5 +1,133 @@
 # CHANGELOG — Diagnóstico BVM en línea
 
+## 1.0.2.2 — 2026-08-11 (corrección funcional y de experiencia)
+
+Corrección de los hallazgos detectados tras la instalación real en Hostinger.
+**Sin cambios de metodología, sin cambios de esquema y sin pérdida de datos:**
+la base de datos de 1.0.2.1 se conserva exactamente como está. Paridad numérica
+verificada con diferencia 0 y hash del motor metodológico sin cambios.
+
+### Hallazgo 1 — La portada llevaba a una liga inválida
+- El CTA «Comenzar o continuar» abría `participar.php` sin familia, de modo que
+  el participante caía en «Liga de invitación no válida».
+- Ahora la tarjeta explica que se requiere la liga propia de la familia y el
+  botón «Ya recibí una invitación» abre un panel accesible (teclado, `Escape`,
+  `aria-expanded`) que indica cómo localizarla. No busca familias por nombre, no
+  las enumera y no expone ninguna liga.
+- Enlace secundario «Conocer primero la demostración».
+- `participar.php` sin liga responde con una guía —no con un error seco— y
+  sigue siendo seguro.
+
+### Hallazgo 2 — El flujo Borrador → Abierta → Invitación era confuso
+- La regla de seguridad NO cambia: Borrador sigue sin aceptar registros ni
+  respuestas.
+- Al crear una familia se confirma «Familia creada correctamente / Estado:
+  Borrador / Todavía no acepta participantes», con la advertencia «No envíe
+  todavía esta invitación».
+- Se distingue **guardar datos de invitación** (resguardo interno, disponible
+  siempre) de **copiar la invitación para enviar** (solo con la familia
+  Abierta).
+- Acción primaria «Configurar y abrir participación», con confirmación
+  explícita; al abrir, la familia declara «Lista para recibir participantes».
+- Guía contextual de 7 pasos en el panel de familias.
+
+### Hallazgo 3 — «Participantes esperados» activaba el límite por sí solo
+- El número esperado es una **meta de referencia**. La casilla «Cerrar nuevos
+  registros al alcanzar el número esperado» nace DESMARCADA al crear una familia
+  y al importar respaldos antiguos.
+- El backend guarda exactamente la decisión enviada y la confirmación declara
+  «Cupo: referencia» o «Cupo: límite activo».
+- El formulario se reinicia con la casilla desmarcada, sin confundir su estado
+  con el de la familia recién creada.
+- Las familias existentes conservan su configuración actual.
+
+### Hallazgo 4 — El estado de la familia solo se comprobaba al registrar
+- Nueva clase `ParticipationPolicy` (`private/services/`): **fuente única de
+  verdad** de estado + fechas + cupo, aplicada por `register`, `resume`,
+  `state`, `save`, `external` y `finalize`.
+- Códigos de motivo estructurados: `family_draft`, `not_started`, `ended`,
+  `family_closed`, `family_archived`, `capacity_reached`, `family_not_found`.
+- Borrador, Cerrada, Archivada y fuera de fechas: sin registro, sin reanudar
+  para responder, sin guardar y sin finalizar. Cupo lleno: solo se bloquean los
+  registros NUEVOS; quien ya está registrado continúa y finaliza. Al reabrir una
+  familia, los participantes incompletos continúan sin ningún paso adicional.
+- `FamilyRepository::isOpenForParticipation()` y `bvm_local_date_is_open()`
+  delegan en la política: la regla existe una sola vez en el código.
+
+### Hallazgo 5 — Mensajes genéricos y formulario visible cuando no procedía
+- Cada bloqueo tiene su mensaje específico, con la fecha en DD/MM/AAAA cuando
+  corresponde.
+- Si un participante NUEVO no puede registrarse, el formulario **no se
+  renderiza**: ni nombre, ni generación, ni rol, ni consentimiento, ni botón.
+- «Continuar donde me quedé» permanece visible solo cuando el bloqueo es de
+  cupo y la familia sigue Abierta y dentro de fechas.
+
+### Hallazgo 6 — Sesión de participante entre familias
+- La sesión queda vinculada a participante + familia + liga pública.
+- Abrir la liga de otra familia limpia automáticamente la sesión anterior; en
+  ningún caso se restauran datos de la Familia A dentro del flujo de la B.
+- Nuevo `api/participants/logout.php` y botón «Salir de esta participación»:
+  cierre real (destruye identidad, familia, liga y clave validada, y renueva el
+  identificador de sesión). **No cierra la sesión administrativa BVM.**
+
+### Hallazgo 7 — Validación de fechas al editar
+- `closes_at >= opens_at` se valida en el servidor también al actualizar,
+  combinando lo enviado con lo ya guardado (editar una sola fecha tampoco puede
+  dejar un periodo imposible). Respuesta 422 con mensaje claro.
+- Apertura sin cierre, cierre sin apertura y mismo día siguen siendo válidos.
+  `report_date` continúa siendo una fecha editorial.
+
+### Hallazgo 8 — «Eliminar definitivamente» no eliminaba
+- Antes solo escribía `deleted_at`: los datos permanecían en la base.
+- Ahora una transacción elimina respuestas, respuestas externas, participantes,
+  asignaciones y la familia. Sin huérfanos, verificado en SQLite y en MariaDB.
+- **Sin cambios de esquema**: el modelo ya definía `ON DELETE CASCADE`.
+- Se separa de **Archivar**, que conserva todo y solo impide participar.
+- Antes de confirmar se muestran los conteos exactos (participantes, respuestas
+  y respuestas externas) y se exige escribir el nombre completo más una
+  confirmación adicional. La auditoría guarda solo metadatos no sensibles.
+
+### Hallazgo 9 — Aviso de privacidad empalmado
+- Casilla y textos en bloques separados (`.consent-option`), label completo
+  clicable, `aria-describedby`, foco de teclado visible y casilla de 20 px.
+- Verificado midiendo la geometría real en 1280×900, 390×844 y 375×667.
+- El contenido legal no cambió.
+
+### Hallazgo 10 — Reporte sin participaciones finalizadas
+- Con 0 finalizados no se ofrece ni se sirve el reporte definitivo: la
+  administración muestra «Reporte disponible cuando exista al menos una
+  participación finalizada» y `admin/reporte.php` responde con ese aviso aunque
+  se escriba la URL a mano. La demostración sigue disponible aparte.
+- Con avance parcial: «Abrir lectura preliminar», y el reporte declara en
+  pantalla «Lectura preliminar con X de Y participaciones finalizadas».
+  El aviso se oculta al imprimir: el PDF conserva sus 12 páginas y su paridad.
+- Con todas las participaciones esperadas finalizadas: «Abrir radiografía y
+  reporte». Sin número esperado no se afirma «todas»: se informa el número de
+  finalizados. Ningún cálculo cambió.
+
+### Hallazgo 11 — Estados contradictorios en administración
+- La etiqueta primaria es siempre el estado de la aplicación y es la que
+  gobierna la participación; el cupo es secundario:
+  «Borrador · Cupo en modo referencia», «Abierta · Disponible»,
+  «Abierta · Excedido (referencia)», «Cerrada · N finalizados».
+- Nunca se muestra «Borrador» junto a «Disponible».
+
+### Pruebas
+- E2E en las dos estructuras de despliegue: 396 comprobaciones, 0 fallas
+  (incluye la batería nueva de la sección 18 y las pruebas de navegador).
+- Integración: 98 comprobaciones, 0 fallas. MySQL/MariaDB real: 127, 0 fallas.
+- Paridad metodológica: diferencia 0. Los 8 PDF (demo/real/estrés/empates ×
+  Carta/A4) auditan 12 páginas.
+- Sin warnings ni notices de PHP y sin errores de JavaScript.
+- Detalle y límites en `docs/QA_V1_0_2_2.md`.
+
+### Archivos nuevos
+- `private/services/ParticipationPolicy.php`
+- `public/api/participants/logout.php`
+- `docs/QA_V1_0_2_2.md`, `docs/DEPLOY_1_0_2_2_DESDE_1_0_2_1.md`,
+  `docs/ROLLBACK_1_0_2_2.md`
+- `tests/e2e/e2e_v1022.mjs`, `tests/e2e/browser_v1022.mjs`
+
 ## 1.0.2.1 — 2026-07-29 (corrección de compatibilidad de despliegue)
 
 Corrección puntual sobre 1.0.2. Sin cambios de metodología, base de datos,

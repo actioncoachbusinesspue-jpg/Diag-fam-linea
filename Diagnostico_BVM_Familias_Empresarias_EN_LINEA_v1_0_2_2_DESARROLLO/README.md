@@ -1,4 +1,4 @@
-# Diagnóstico BVM para Familias Empresarias — versión en línea (1.0.2.1)
+# Diagnóstico BVM para Familias Empresarias — versión en línea (1.0.2.2)
 
 Plataforma web (PHP 8 + MySQL/MariaDB) del Diagnóstico BVM: permite a BVM
 administrar varias familias, invitarlas mediante una liga y una clave, recibir
@@ -33,6 +33,8 @@ public/                 ← único directorio expuesto al web
   assets/               CSS/JS propios, sin CDNs
 private/                configuración, seguridad, repositorios, motor de referencia,
                         parche de presentación 1.0.2 (empates) y health_checks
+private/services/       ParticipationPolicy: fuente ÚNICA de verdad del ciclo de
+                        vida de la participación (1.0.2.2)
 database/schema.sql     esquema MySQL/MariaDB (estado 1.0.2)
 database/migrations/    migraciones numeradas 0001-0004 (ver su README)
 tools/                  health-check (solo CLI), importación CLI
@@ -65,6 +67,23 @@ Decisiones clave:
 - **Tiempo con una sola regla (1.0.2).** Persistencia técnica en UTC;
   apertura/cierre y presentación administrativa en `app.timezone`
   (predeterminado America/Mexico_City), con cierre inclusivo todo el día.
+- **Una sola política de participación (1.0.2.2).** `ParticipationPolicy`
+  decide, para CUALQUIER punto del ciclo (registrar, reanudar, consultar
+  estado, guardar, responder las externas, finalizar), si la acción procede y
+  por qué no: `family_draft`, `not_started`, `ended`, `family_closed`,
+  `family_archived`, `capacity_reached`. Ningún endpoint reimplementa la regla
+  y la interfaz traduce los códigos a mensajes específicos.
+- **Cupo como meta, no como muro (1.0.2.2).** «Participantes esperados» es una
+  referencia; solo bloquea registros si el administrador marca expresamente
+  «Cerrar nuevos registros al alcanzar el número esperado». El cupo lleno nunca
+  impide continuar a quien ya está registrado.
+- **Sesión de participante por familia (1.0.2.2).** Vinculada a participante +
+  familia + liga: abrir la liga de otra familia limpia la sesión anterior y
+  «Salir de esta participación» hace un cierre real que no toca la sesión
+  administrativa BVM.
+- **Eliminar es eliminar (1.0.2.2).** «Archivar» conserva; «Eliminar
+  definitivamente» borra en transacción familia, participaciones y respuestas,
+  sin huérfanos y sin cambios de esquema.
 
 ## Instalación
 
@@ -94,6 +113,9 @@ PLAYWRIGHT_MODULE=/ruta/a/playwright-core \
   bash tests/e2e/run_e2e.sh                 # + E2E de navegador (demo, reporte 12 págs, móvil)
 PLAYWRIGHT_MODULE=... PDF2PNG_MODULE=... \
   bash tests/evidence/run_evidence.sh       # evidencia: 8 PDFs auditados (incl. empates) + PNGs + hojas de contacto
+#   run_e2e.sh incluye además la batería correctiva 1.0.2.2 (tests/e2e/e2e_v1022.mjs)
+#   y, con PLAYWRIGHT_MODULE, las pruebas de navegador de portada y privacidad
+#   (tests/e2e/browser_v1022.mjs), en las estructuras de despliegue A y B.
 bash tests/mysql/run_mysql.sh               # suite sobre MySQL/MariaDB REAL (servidor propio via
                                             # BVM_MYSQL_HOST/PORT/USER/PASS, o Docker local)
 ```
@@ -109,4 +131,8 @@ cualquier diferencia distinta de 0 detiene la entrega.
 - `docs/SEGURIDAD_Y_PRIVACIDAD.md` — modelo de amenazas y decisiones.
 - `docs/MIGRACION_DESDE_VERSION_LOCAL.md` — importación de respaldos locales.
 - `docs/MIGRACION_1_0_1_A_1_0_2.md` — actualización 1.0.1 → 1.0.2 paso a paso.
-- `docs/RESUMEN_EJECUTIVO.md` — resumen de entrega y recomendación GO/NO-GO.
+- `docs/RESUMEN_EJECUTIVO.md` — resumen de entrega 1.0.2 y recomendación GO/NO-GO.
+- `docs/RESUMEN_EJECUTIVO_1_0_2_2.md` — resumen de la corrección 1.0.2.2.
+- `docs/QA_V1_0_2_2.md` — qué se probó en 1.0.2.2, con resultados y límites.
+- `docs/DEPLOY_1_0_2_2_DESDE_1_0_2_1.md` — actualización paso a paso (sin migración).
+- `docs/ROLLBACK_1_0_2_2.md` — vuelta atrás a 1.0.2.1.

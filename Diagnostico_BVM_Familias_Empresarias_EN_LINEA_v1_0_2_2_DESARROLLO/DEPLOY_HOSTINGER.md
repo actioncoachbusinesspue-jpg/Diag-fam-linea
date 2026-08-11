@@ -1,4 +1,4 @@
-# Despliegue en Hostinger — Diagnóstico BVM en línea (versión 1.0.2.1)
+# Despliegue en Hostinger — Diagnóstico BVM en línea (versión 1.0.2.2)
 
 Instrucciones exactas para el encargado del hosting. No requieren Node.js:
 la aplicación publicada funciona solo con PHP y MySQL/MariaDB.

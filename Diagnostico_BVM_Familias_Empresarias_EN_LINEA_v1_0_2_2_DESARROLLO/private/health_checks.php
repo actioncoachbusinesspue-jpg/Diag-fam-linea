@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * health_checks.php — verificaciones de instalación (versión 1.0.2).
+ * health_checks.php — verificaciones de instalación (versión 1.0.2.2).
  *
  * Biblioteca compartida por:
  *   - tools/health-check.php   (CLI: php tools/health-check.php)
@@ -22,6 +22,13 @@ function bvm_health_run(): array
     $checks = [];
     $env = (string)bvm_config('app.env', 'production');
     $isProduction = $env === 'production';
+
+    // 0. Versión instalada: permite confirmar en segundos qué código está
+    //    publicado tras una actualización (1.0.2.2).
+    $checks['app_version'] = [
+        'status' => 'ok',
+        'detail' => 'Diagnóstico BVM en línea ' . (defined('BVM_APP_VERSION') ? BVM_APP_VERSION : 'sin versión'),
+    ];
 
     // 1. PHP mínimo
     $checks['php_version'] = [

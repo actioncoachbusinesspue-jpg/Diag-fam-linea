@@ -104,5 +104,33 @@ function walk(dir) {
   check('E46 errores de API sin trazas PHP/SQL ni rutas internas', leaks.length === 0, leaks.join(' | '));
 }
 
+// ---------- 1.0.2.2: referencia metodológica congelada y casilla de cupo ----------
+{
+  const { createHash } = await import('node:crypto');
+  const { readFileSync } = await import('node:fs');
+  const { dirname, join } = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+  const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  // Hash registrado en qa-evidence/v1.0.2.2/CONGELAMIENTO_HASHES.md al abrir la
+  // versión. Si cambia, el motor metodológico se editó en disco: falla la suite.
+  const FROZEN = '5a89db7793c264e1b7ab930d5490b72b8f8d96e320c9b404e9c1a8d1104346bf';
+  const sha = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
+  const refA = sha(join(root, 'reference', 'Diagnostico_BVM_Familias_Empresarias_EN_LINEA_DESARROLLO.html'));
+  const refB = sha(join(root, 'private', 'reference-app', 'referencia_app.html'));
+  check('E-REF referencia metodológica congelada (SHA-256 sin cambios)',
+    refA === FROZEN && refB === FROZEN, refA + ' / ' + refB);
+
+  const familias = readFileSync(join(root, 'public', 'admin', 'familias.php'), 'utf8');
+  const checkboxTag = (familias.match(/<input type="checkbox" id="enforce_limit"[^>]*>/) || [''])[0];
+  check('E24 la casilla de límite de cupo nace DESMARCADA en el formulario',
+    checkboxTag !== '' && !/checked/.test(checkboxTag), checkboxTag);
+  check('E25 al reiniciar el formulario la casilla queda desmarcada explícitamente',
+    /getElementById\('enforce_limit'\)\.checked = false;/.test(familias));
+
+  const createApi = readFileSync(join(root, 'public', 'api', 'families', 'create.php'), 'utf8');
+  check('E24b el backend guarda «referencia» cuando la casilla no viaja',
+    /enforce_participant_limit'\] \?\? false/.test(createApi));
+}
+
 console.log(failures === 0 ? '\nESTÁTICAS: TODAS LAS PRUEBAS PASARON' : `\nESTÁTICAS: ${failures} FALLAS`);
 process.exit(failures === 0 ? 0 : 1);

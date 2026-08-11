@@ -104,6 +104,18 @@ PHP
     fi
   fi
 
+  # E79/E80 — el registro del servidor no debe contener errores, warnings,
+  # notices ni deprecations de PHP durante TODA la corrida.
+  if [ $STATUS -eq 0 ]; then
+    if grep -Eq "PHP (Warning|Notice|Fatal error|Parse error|Deprecated)" "$WORK/server.log"; then
+      echo "[FALLA] E80 el registro de PHP contiene warnings/notices en estructura $LAYOUT"
+      grep -E "PHP (Warning|Notice|Fatal error|Parse error|Deprecated)" "$WORK/server.log" | head -10
+      STATUS=1
+    else
+      echo "[OK]    E79/E80 sin errores ni warnings de PHP en el registro (estructura $LAYOUT)"
+    fi
+  fi
+
   if [ $STATUS -ne 0 ]; then
     echo "--- server.log (últimas líneas) ---"
     tail -30 "$WORK/server.log"

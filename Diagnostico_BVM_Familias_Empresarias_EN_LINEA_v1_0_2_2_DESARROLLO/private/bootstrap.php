@@ -5,6 +5,9 @@
  */
 declare(strict_types=1);
 
+/** Versión de la aplicación en línea (visible en el health-check). */
+define('BVM_APP_VERSION', '1.0.2.2');
+
 define('BVM_PRIVATE_DIR', __DIR__);
 define('BVM_ROOT_DIR', dirname(__DIR__));
 

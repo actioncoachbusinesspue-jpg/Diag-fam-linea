@@ -141,6 +141,10 @@ BATERÍA 1.0.2.2: TODAS LAS PRUEBAS PASARON
 [OK]    E47b demo servida sin la redirección 127.0.0.1:8099 de la entrega anterior
 [OK]    E49b demo servida con PIN local deshabilitado y vacío
 [OK]    E46 errores de API sin trazas PHP/SQL ni rutas internas
+[OK]    E-REF referencia metodológica congelada (SHA-256 sin cambios)
+[OK]    E24 la casilla de límite de cupo nace DESMARCADA en el formulario
+[OK]    E25 al reiniciar el formulario la casilla queda desmarcada explícitamente
+[OK]    E24b el backend guarda «referencia» cuando la casilla no viaja
 
 ESTÁTICAS: TODAS LAS PRUEBAS PASARON
 [OK]    health-check CLI en estructura A (correcto con advertencias)
@@ -203,8 +207,9 @@ NAVEGADOR: TODAS LAS PRUEBAS PASARON
 [OK]    E38d con cupo lleno tampoco se muestra el formulario de registro
 
 NAVEGADOR 1.0.2.2: TODAS LAS PRUEBAS PASARON
+[OK]    E79/E80 sin errores ni warnings de PHP en el registro (estructura A)
 
-================ ESTRUCTURA B — docroot: /tmp/tmp.CJvpzpiY7c/diagnostico-bvm-online ================
+================ ESTRUCTURA B — docroot: /tmp/tmp.iiBbUhwwwi/diagnostico-bvm-online ================
 [OK]    E01 carga pública (200, tres caminos)
 [OK]    E02 demostración sin login
 [OK]    E03 admin redirige a login sin sesión
@@ -346,6 +351,10 @@ BATERÍA 1.0.2.2: TODAS LAS PRUEBAS PASARON
 [OK]    E47b demo servida sin la redirección 127.0.0.1:8099 de la entrega anterior
 [OK]    E49b demo servida con PIN local deshabilitado y vacío
 [OK]    E46 errores de API sin trazas PHP/SQL ni rutas internas
+[OK]    E-REF referencia metodológica congelada (SHA-256 sin cambios)
+[OK]    E24 la casilla de límite de cupo nace DESMARCADA en el formulario
+[OK]    E25 al reiniciar el formulario la casilla queda desmarcada explícitamente
+[OK]    E24b el backend guarda «referencia» cuando la casilla no viaja
 
 ESTÁTICAS: TODAS LAS PRUEBAS PASARON
 [OK]    health-check CLI en estructura B (correcto con advertencias)
@@ -408,5 +417,6 @@ NAVEGADOR: TODAS LAS PRUEBAS PASARON
 [OK]    E38d con cupo lleno tampoco se muestra el formulario de registro
 
 NAVEGADOR 1.0.2.2: TODAS LAS PRUEBAS PASARON
+[OK]    E79/E80 sin errores ni warnings de PHP en el registro (estructura B)
 
 E2E EN AMBAS ESTRUCTURAS (A y B): TODAS LAS PRUEBAS PASARON

@@ -1,0 +1,23 @@
+[OK   ] php_version              PHP 8.4.19 (mínimo requerido: 8.1)
+[OK   ] pdo_extension            Extensión PDO disponible
+[OK   ] mysql_driver             Driver MySQL/MariaDB configurado y pdo_mysql cargado
+[OK   ] db_connection            Conexión establecida (mysql)
+[OK   ] db_tables                Las 8 tablas existen (incluida family_assignments)
+[OK   ] schema_columns_102       Columnas 1.0.2 presentes (enforce_participant_limit, resume_token_lookup_hash)
+[OK   ] schema_index_102         Índice único de reanudación presente (family_id, resume_token_lookup_hash)
+[OK   ] db_engine                Todas las tablas usan InnoDB
+[OK   ] db_charset               Todas las tablas usan utf8mb4
+[OK   ] admin_account            Administradores registrados: 1 (instalador bloqueado)
+[OK   ] app_key                  APP_KEY configurada con longitud suficiente
+[OK   ] timezone                 Zona horaria: America/Mexico_City
+[OK   ] base_url                 base_url configurada con https
+[OK   ] session_name             session_name: BVMDEVSESSID
+[OK   ] session_cookie_path      Ruta de cookie: /diagnostico-bvm-online-dev/
+[OK   ] install_token_removed    Token de instalación no activo
+[OK   ] reference_app            Motor de referencia disponible
+[OK   ] private_protected        private/ está fuera de la carpeta pública del proyecto y además tiene .htaccess de bloqueo. Verifique también por URL directa (debe responder 403/404).
+[OK   ] database_protected       database/ está fuera de la carpeta pública del proyecto y además tiene .htaccess de bloqueo. Verifique también por URL directa (debe responder 403/404).
+[OK   ] schema_version           Esquema: 1.0.2 (migraciones 0001–0004)
+[OK   ] config_permissions       Permisos de config.php: 644
+
+RESULTADO: TODO CORRECTO

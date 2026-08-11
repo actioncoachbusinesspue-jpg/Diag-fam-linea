@@ -1,0 +1,412 @@
+
+================ ESTRUCTURA A — docroot: /home/user/Diag-fam-linea/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_2_DESARROLLO/public ================
+[OK]    E01 carga pública (200, tres caminos)
+[OK]    E02 demostración sin login
+[OK]    E03 admin redirige a login sin sesión
+[OK]    E03b reporte protegido
+[OK]    API admin sin sesión → 401
+[OK]    Instalador crea administrador
+[OK]    Instalador queda bloqueado
+[OK]    E04 login incorrecto → 401 mensaje genérico
+[OK]    E08 CSRF ausente rechazado (403)
+[OK]    E05 bloqueo por intentos (429)
+[OK]    E06 login correcto
+[OK]    E09 crear familia
+[OK]    E10 liga y clave generadas
+[OK]    Abrir familia A
+[OK]    E11 liga abre desde otro contexto
+[OK]    E12 clave incorrecta rechazada
+[OK]    Clave correcta aceptada
+[OK]    E13 registro de participante
+[OK]    E14 código personal generado
+[OK]    Duplicado advertido (409)
+[OK]    E15 autosave de 20 respuestas
+[OK]    Valor fuera de 1-5 rechazado
+[OK]    E26 inyección SQL rechazada por validación
+[OK]    E17 reanudar desde otro dispositivo
+[OK]    Dispositivo 2 guarda
+[OK]    E39 conflicto entre dispositivos detectado (409)
+[OK]    Preguntas externas guardadas
+[OK]    E18 finalizar participación
+[OK]    E19 editar tras finalizar → 423 bloqueado
+[OK]    E20 segundo participante desde otro equipo
+[OK]    E21 administrador ve avance actualizado
+[OK]    Privacidad: detalle sin respuestas individuales
+[OK]    E22 participante no accede a API admin
+[OK]    E22b participante no accede al reporte
+[OK]    E23 Familia A no accede a Familia B
+[OK]    E24 ID inexistente → 404
+[OK]    E24b ID manipulado no filtra datos
+[OK]    E50 tercer registro llena el cupo (3 de 3)
+[OK]    E51 access reporta cupo cerrado a nuevos registros
+[OK]    E52 cuarto registro → 409 con capacity_reached
+[OK]    E53 reanudación funciona con cupo lleno
+[OK]    Nombre con HTML aceptado como texto
+[OK]    E25 XSS escapado en admin
+[OK]    E27 reporte real 200 con datos inyectados
+[OK]    Reporte usa almacenamiento en memoria
+[OK]    E38 demo no modifica datos reales
+[OK]    E36 familia cerrada no acepta registros (409)
+[OK]    E35 exportación de respaldo en línea
+[OK]    E34 vista previa de importación
+[OK]    E34b importación como familia nueva
+[OK]    E34c schemaVersion futuro rechazado
+[OK]    E34d respaldo de demo rechazado
+[OK]    E07 cierre de sesión
+[OK]    Sesión invalidada tras logout
+
+E2E: TODAS LAS PRUEBAS PASARON
+[OK]    E01 portada pública carga
+[OK]    E02 el CTA de participantes NO enlaza a participar.php sin liga
+[OK]    E03 el panel de ayuda explica que se requiere la liga específica
+[OK]    E03b la portada no enumera familias ni expone ligas reales
+[OK]    E04 la demostración abre desde la portada
+[OK]    E05 Acceso BVM abre
+[OK]    E02b participar.php sin liga responde con guía, no con error seco
+[OK]    E02c liga inexistente sigue siendo segura
+[OK]    E06 la familia nueva nace en Borrador
+[OK]    E33 Borrador informa motivo family_draft
+[OK]    E33b mensaje exacto de Borrador
+[OK]    E07 Borrador no acepta registros
+[OK]    E09 abrir la familia habilita el registro
+[OK]    E09b con la familia Abierta se guarda
+[OK]    E08 Borrador no guarda respuestas
+[OK]    E08b Borrador no guarda preguntas externas
+[OK]    E08c Borrador no finaliza
+[OK]    E11 Cerrada no guarda
+[OK]    E36 mensaje exacto de Cerrada
+[OK]    E12 Cerrada no finaliza cambios
+[OK]    E10 Cerrada no acepta registros
+[OK]    E10b Cerrada no permite reanudar para editar
+[OK]    E38 la interfaz recibe can_register=false y can_resume=false
+[OK]    E13 reabrir restaura el flujo del participante incompleto
+[OK]    E13b tras reabrir se vuelve a guardar
+[OK]    E14 Archivada no admite participación
+[OK]    E14b Archivada rechaza registros
+[OK]    E15 antes de la apertura la participación está bloqueada
+[OK]    E34 mensaje específico de «aún no inicia» con fecha DD/MM/AAAA
+[OK]    E16/E17 el día de apertura y de cierre acepta participación
+[OK]    E17b registro válido dentro del periodo
+[OK]    E18 después del cierre la participación está bloqueada
+[OK]    E35 mensaje específico de periodo concluido con fecha
+[OK]    E19 cierre anterior a la apertura → 422
+[OK]    E20 mismo día de apertura y cierre → válido
+[OK]    E19b editar solo el cierre también valida contra la apertura guardada
+[OK]    E19c formato de fecha inválido → 422
+[OK]    E19d report_date es editorial y no altera apertura/cierre
+[OK]    E24 sin casilla expresa el cupo se guarda como REFERENCIA
+[OK]    E21 expected=3 con límite desactivado: el cuarto participante entra
+[OK]    E21b el cuarto registro se marca como excedente de referencia
+[OK]    E26 la configuración guardada coincide con lo enviado (referencia)
+[OK]    E26b el límite activo se guarda tal como se pidió
+[OK]    E22a con límite activo entran los tres esperados
+[OK]    E22 el cuarto recibe 409 capacity_reached
+[OK]    E37 mensaje exacto de cupo completo
+[OK]    E23 el cupo lleno no bloquea a quienes ya están registrados
+[OK]    E23b con cupo lleno la política sigue permitiendo continuidad
+[OK]    E23c reanudar con cupo lleno funciona
+[OK]    E-cupo sin número esperado nunca bloquea
+[OK]    E27 participar en la Familia A
+[OK]    E27b el estado de A responde con los datos de A
+[OK]    E28 la liga de B abre en el mismo navegador
+[OK]    E29 en B no aparece ningún dato de A
+[OK]    E28b B funciona correctamente tras el cambio
+[OK]    E28c se puede participar en B con normalidad
+[OK]    E31 volver a A requiere código de continuidad
+[OK]    E31b con el código personal se recupera la participación de A
+[OK]    E30 «Salir de esta participación» responde ok
+[OK]    E30b tras salir no queda sesión de participante
+[OK]    E30c tras salir no se puede guardar
+[OK]    E30d la salida exige CSRF
+[OK]    E32a la salida del participante responde ok en sesión mixta
+[OK]    E32 la sesión administrativa BVM sobrevive a la salida del participante
+[OK]    E43 con 0 finalizados NO se presenta un reporte definitivo
+[OK]    E44 con avance parcial el reporte declara lectura preliminar
+[OK]    E44b el aviso preliminar no se imprime (PDF intacto)
+[OK]    E45 con todos los esperados finalizados el reporte va sin aviso preliminar
+[OK]    E45b el detalle informa finalizados y esperados para el CTA
+[OK]    E53a archivar responde ok
+[OK]    E53 archivar CONSERVA familia, participaciones y respuestas
+[OK]    E54a antes de eliminar se conoce el alcance exacto
+[OK]    E54 eliminar exige el nombre exacto (doble confirmación)
+[OK]    E55 la eliminación definitiva informa lo eliminado
+[OK]    E55b la familia deja de resolverse en administración
+[OK]    E57 la liga eliminada deja de funcionar
+[OK]    E56 los datos de otras familias quedan intactos
+
+BATERÍA 1.0.2.2: TODAS LAS PRUEBAS PASARON
+[OK]    E47 código desplegable sin rutas con localhost/127.0.0.1
+[OK]    E49 assets propios sin contraseñas ni PIN embebidos
+[OK]    E48 demo servida neutraliza AppModeManager.enterAdmin
+[OK]    E47b demo servida sin la redirección 127.0.0.1:8099 de la entrega anterior
+[OK]    E49b demo servida con PIN local deshabilitado y vacío
+[OK]    E46 errores de API sin trazas PHP/SQL ni rutas internas
+
+ESTÁTICAS: TODAS LAS PRUEBAS PASARON
+[OK]    health-check CLI en estructura A (correcto con advertencias)
+[OK]    Demo entra directo al modo comercial (Familia Horizonte)
+[OK]    Demo sin errores de JavaScript
+[OK]    Demo: localStorage deshabilitado (modo memoria)
+[OK]    Demo: StorageAdapter en memoria
+[OK]    Demo: índice general Horizonte = 55
+[OK]    E48 demo: enterAdmin() desde consola queda neutralizado
+[OK]    Login de navegador llega a administración
+[OK]    Reporte carga con la familia real
+[OK]    Reporte sin errores de JavaScript
+[OK]    Motor lee datos del servidor (3 participantes)
+[OK]    Reporte: 12 páginas auditadas
+[OK]    Reporte: todas las páginas caben (fits:true)
+[OK]    E31 móvil 390×844 sin desborde horizontal
+[OK]    E31b acciones visibles en móvil
+[OK]    E32 móvil 375×667 sin desborde horizontal
+
+NAVEGADOR: TODAS LAS PRUEBAS PASARON
+[OK]    E02 el CTA de participantes NO navega a una liga inválida
+[OK]    E03 el CTA abre un panel de ayuda accesible
+[OK]    E03b el panel explica que debe abrirse la liga completa
+[OK]    E03c el CTA declara su estado con aria-expanded
+[OK]    E03d el panel se cierra con Escape
+[OK]    E78 portada sin errores de JavaScript
+[OK]    E39_escritorio_1280x900: el texto del aviso NO se empalma con el de participación
+[OK]    E39_escritorio_1280x900: la casilla queda junto a su etiqueta
+[OK]    E39_escritorio_1280x900: la casilla tiene tamaño usable (>=18px)
+[OK]    E39_escritorio_1280x900: sin desbordamiento horizontal
+[OK]    E39_escritorio_1280x900 (E42): al pulsar el texto del label se marca la casilla
+[OK]    E39_escritorio_1280x900 (E42b): el label completo alterna la casilla
+[OK]    E39_escritorio_1280x900 (E42c): la casilla declara su descripción accesible
+[OK]    E39_escritorio_1280x900: el foco de teclado es visible
+[OK]    E39_escritorio_1280x900: sin errores de JavaScript
+[OK]    E40_movil_390x844: el texto del aviso NO se empalma con el de participación
+[OK]    E40_movil_390x844: la casilla queda junto a su etiqueta
+[OK]    E40_movil_390x844: la casilla tiene tamaño usable (>=18px)
+[OK]    E40_movil_390x844: sin desbordamiento horizontal
+[OK]    E40_movil_390x844 (E42): al pulsar el texto del label se marca la casilla
+[OK]    E40_movil_390x844 (E42b): el label completo alterna la casilla
+[OK]    E40_movil_390x844 (E42c): la casilla declara su descripción accesible
+[OK]    E40_movil_390x844: el foco de teclado es visible
+[OK]    E40_movil_390x844: sin errores de JavaScript
+[OK]    E41_movil_375x667: el texto del aviso NO se empalma con el de participación
+[OK]    E41_movil_375x667: la casilla queda junto a su etiqueta
+[OK]    E41_movil_375x667: la casilla tiene tamaño usable (>=18px)
+[OK]    E41_movil_375x667: sin desbordamiento horizontal
+[OK]    E41_movil_375x667 (E42): al pulsar el texto del label se marca la casilla
+[OK]    E41_movil_375x667 (E42b): el label completo alterna la casilla
+[OK]    E41_movil_375x667 (E42c): la casilla declara su descripción accesible
+[OK]    E41_movil_375x667: el foco de teclado es visible
+[OK]    E41_movil_375x667: sin errores de JavaScript
+[OK]    E38 en Borrador no se muestran nombre, generación, rol ni consentimiento
+[OK]    E38b tampoco se muestra el botón «Registrarme»
+[OK]    E33 el motivo mostrado es el específico de Borrador
+[OK]    E38c en Borrador no se ofrece «Continuar donde me quedé»
+[OK]    E37 con el cupo lleno el mensaje es el específico
+[OK]    E37b se conserva «Continuar donde me quedé» (la familia sigue abierta)
+[OK]    E38d con cupo lleno tampoco se muestra el formulario de registro
+
+NAVEGADOR 1.0.2.2: TODAS LAS PRUEBAS PASARON
+
+================ ESTRUCTURA B — docroot: /tmp/tmp.CJvpzpiY7c/diagnostico-bvm-online ================
+[OK]    E01 carga pública (200, tres caminos)
+[OK]    E02 demostración sin login
+[OK]    E03 admin redirige a login sin sesión
+[OK]    E03b reporte protegido
+[OK]    API admin sin sesión → 401
+[OK]    Instalador crea administrador
+[OK]    Instalador queda bloqueado
+[OK]    E04 login incorrecto → 401 mensaje genérico
+[OK]    E08 CSRF ausente rechazado (403)
+[OK]    E05 bloqueo por intentos (429)
+[OK]    E06 login correcto
+[OK]    E09 crear familia
+[OK]    E10 liga y clave generadas
+[OK]    Abrir familia A
+[OK]    E11 liga abre desde otro contexto
+[OK]    E12 clave incorrecta rechazada
+[OK]    Clave correcta aceptada
+[OK]    E13 registro de participante
+[OK]    E14 código personal generado
+[OK]    Duplicado advertido (409)
+[OK]    E15 autosave de 20 respuestas
+[OK]    Valor fuera de 1-5 rechazado
+[OK]    E26 inyección SQL rechazada por validación
+[OK]    E17 reanudar desde otro dispositivo
+[OK]    Dispositivo 2 guarda
+[OK]    E39 conflicto entre dispositivos detectado (409)
+[OK]    Preguntas externas guardadas
+[OK]    E18 finalizar participación
+[OK]    E19 editar tras finalizar → 423 bloqueado
+[OK]    E20 segundo participante desde otro equipo
+[OK]    E21 administrador ve avance actualizado
+[OK]    Privacidad: detalle sin respuestas individuales
+[OK]    E22 participante no accede a API admin
+[OK]    E22b participante no accede al reporte
+[OK]    E23 Familia A no accede a Familia B
+[OK]    E24 ID inexistente → 404
+[OK]    E24b ID manipulado no filtra datos
+[OK]    E50 tercer registro llena el cupo (3 de 3)
+[OK]    E51 access reporta cupo cerrado a nuevos registros
+[OK]    E52 cuarto registro → 409 con capacity_reached
+[OK]    E53 reanudación funciona con cupo lleno
+[OK]    Nombre con HTML aceptado como texto
+[OK]    E25 XSS escapado en admin
+[OK]    E27 reporte real 200 con datos inyectados
+[OK]    Reporte usa almacenamiento en memoria
+[OK]    E38 demo no modifica datos reales
+[OK]    E36 familia cerrada no acepta registros (409)
+[OK]    E35 exportación de respaldo en línea
+[OK]    E34 vista previa de importación
+[OK]    E34b importación como familia nueva
+[OK]    E34c schemaVersion futuro rechazado
+[OK]    E34d respaldo de demo rechazado
+[OK]    E07 cierre de sesión
+[OK]    Sesión invalidada tras logout
+
+E2E: TODAS LAS PRUEBAS PASARON
+[OK]    E01 portada pública carga
+[OK]    E02 el CTA de participantes NO enlaza a participar.php sin liga
+[OK]    E03 el panel de ayuda explica que se requiere la liga específica
+[OK]    E03b la portada no enumera familias ni expone ligas reales
+[OK]    E04 la demostración abre desde la portada
+[OK]    E05 Acceso BVM abre
+[OK]    E02b participar.php sin liga responde con guía, no con error seco
+[OK]    E02c liga inexistente sigue siendo segura
+[OK]    E06 la familia nueva nace en Borrador
+[OK]    E33 Borrador informa motivo family_draft
+[OK]    E33b mensaje exacto de Borrador
+[OK]    E07 Borrador no acepta registros
+[OK]    E09 abrir la familia habilita el registro
+[OK]    E09b con la familia Abierta se guarda
+[OK]    E08 Borrador no guarda respuestas
+[OK]    E08b Borrador no guarda preguntas externas
+[OK]    E08c Borrador no finaliza
+[OK]    E11 Cerrada no guarda
+[OK]    E36 mensaje exacto de Cerrada
+[OK]    E12 Cerrada no finaliza cambios
+[OK]    E10 Cerrada no acepta registros
+[OK]    E10b Cerrada no permite reanudar para editar
+[OK]    E38 la interfaz recibe can_register=false y can_resume=false
+[OK]    E13 reabrir restaura el flujo del participante incompleto
+[OK]    E13b tras reabrir se vuelve a guardar
+[OK]    E14 Archivada no admite participación
+[OK]    E14b Archivada rechaza registros
+[OK]    E15 antes de la apertura la participación está bloqueada
+[OK]    E34 mensaje específico de «aún no inicia» con fecha DD/MM/AAAA
+[OK]    E16/E17 el día de apertura y de cierre acepta participación
+[OK]    E17b registro válido dentro del periodo
+[OK]    E18 después del cierre la participación está bloqueada
+[OK]    E35 mensaje específico de periodo concluido con fecha
+[OK]    E19 cierre anterior a la apertura → 422
+[OK]    E20 mismo día de apertura y cierre → válido
+[OK]    E19b editar solo el cierre también valida contra la apertura guardada
+[OK]    E19c formato de fecha inválido → 422
+[OK]    E19d report_date es editorial y no altera apertura/cierre
+[OK]    E24 sin casilla expresa el cupo se guarda como REFERENCIA
+[OK]    E21 expected=3 con límite desactivado: el cuarto participante entra
+[OK]    E21b el cuarto registro se marca como excedente de referencia
+[OK]    E26 la configuración guardada coincide con lo enviado (referencia)
+[OK]    E26b el límite activo se guarda tal como se pidió
+[OK]    E22a con límite activo entran los tres esperados
+[OK]    E22 el cuarto recibe 409 capacity_reached
+[OK]    E37 mensaje exacto de cupo completo
+[OK]    E23 el cupo lleno no bloquea a quienes ya están registrados
+[OK]    E23b con cupo lleno la política sigue permitiendo continuidad
+[OK]    E23c reanudar con cupo lleno funciona
+[OK]    E-cupo sin número esperado nunca bloquea
+[OK]    E27 participar en la Familia A
+[OK]    E27b el estado de A responde con los datos de A
+[OK]    E28 la liga de B abre en el mismo navegador
+[OK]    E29 en B no aparece ningún dato de A
+[OK]    E28b B funciona correctamente tras el cambio
+[OK]    E28c se puede participar en B con normalidad
+[OK]    E31 volver a A requiere código de continuidad
+[OK]    E31b con el código personal se recupera la participación de A
+[OK]    E30 «Salir de esta participación» responde ok
+[OK]    E30b tras salir no queda sesión de participante
+[OK]    E30c tras salir no se puede guardar
+[OK]    E30d la salida exige CSRF
+[OK]    E32a la salida del participante responde ok en sesión mixta
+[OK]    E32 la sesión administrativa BVM sobrevive a la salida del participante
+[OK]    E43 con 0 finalizados NO se presenta un reporte definitivo
+[OK]    E44 con avance parcial el reporte declara lectura preliminar
+[OK]    E44b el aviso preliminar no se imprime (PDF intacto)
+[OK]    E45 con todos los esperados finalizados el reporte va sin aviso preliminar
+[OK]    E45b el detalle informa finalizados y esperados para el CTA
+[OK]    E53a archivar responde ok
+[OK]    E53 archivar CONSERVA familia, participaciones y respuestas
+[OK]    E54a antes de eliminar se conoce el alcance exacto
+[OK]    E54 eliminar exige el nombre exacto (doble confirmación)
+[OK]    E55 la eliminación definitiva informa lo eliminado
+[OK]    E55b la familia deja de resolverse en administración
+[OK]    E57 la liga eliminada deja de funcionar
+[OK]    E56 los datos de otras familias quedan intactos
+
+BATERÍA 1.0.2.2: TODAS LAS PRUEBAS PASARON
+[OK]    E47 código desplegable sin rutas con localhost/127.0.0.1
+[OK]    E49 assets propios sin contraseñas ni PIN embebidos
+[OK]    E48 demo servida neutraliza AppModeManager.enterAdmin
+[OK]    E47b demo servida sin la redirección 127.0.0.1:8099 de la entrega anterior
+[OK]    E49b demo servida con PIN local deshabilitado y vacío
+[OK]    E46 errores de API sin trazas PHP/SQL ni rutas internas
+
+ESTÁTICAS: TODAS LAS PRUEBAS PASARON
+[OK]    health-check CLI en estructura B (correcto con advertencias)
+[OK]    Demo entra directo al modo comercial (Familia Horizonte)
+[OK]    Demo sin errores de JavaScript
+[OK]    Demo: localStorage deshabilitado (modo memoria)
+[OK]    Demo: StorageAdapter en memoria
+[OK]    Demo: índice general Horizonte = 55
+[OK]    E48 demo: enterAdmin() desde consola queda neutralizado
+[OK]    Login de navegador llega a administración
+[OK]    Reporte carga con la familia real
+[OK]    Reporte sin errores de JavaScript
+[OK]    Motor lee datos del servidor (3 participantes)
+[OK]    Reporte: 12 páginas auditadas
+[OK]    Reporte: todas las páginas caben (fits:true)
+[OK]    E31 móvil 390×844 sin desborde horizontal
+[OK]    E31b acciones visibles en móvil
+[OK]    E32 móvil 375×667 sin desborde horizontal
+
+NAVEGADOR: TODAS LAS PRUEBAS PASARON
+[OK]    E02 el CTA de participantes NO navega a una liga inválida
+[OK]    E03 el CTA abre un panel de ayuda accesible
+[OK]    E03b el panel explica que debe abrirse la liga completa
+[OK]    E03c el CTA declara su estado con aria-expanded
+[OK]    E03d el panel se cierra con Escape
+[OK]    E78 portada sin errores de JavaScript
+[OK]    E39_escritorio_1280x900: el texto del aviso NO se empalma con el de participación
+[OK]    E39_escritorio_1280x900: la casilla queda junto a su etiqueta
+[OK]    E39_escritorio_1280x900: la casilla tiene tamaño usable (>=18px)
+[OK]    E39_escritorio_1280x900: sin desbordamiento horizontal
+[OK]    E39_escritorio_1280x900 (E42): al pulsar el texto del label se marca la casilla
+[OK]    E39_escritorio_1280x900 (E42b): el label completo alterna la casilla
+[OK]    E39_escritorio_1280x900 (E42c): la casilla declara su descripción accesible
+[OK]    E39_escritorio_1280x900: el foco de teclado es visible
+[OK]    E39_escritorio_1280x900: sin errores de JavaScript
+[OK]    E40_movil_390x844: el texto del aviso NO se empalma con el de participación
+[OK]    E40_movil_390x844: la casilla queda junto a su etiqueta
+[OK]    E40_movil_390x844: la casilla tiene tamaño usable (>=18px)
+[OK]    E40_movil_390x844: sin desbordamiento horizontal
+[OK]    E40_movil_390x844 (E42): al pulsar el texto del label se marca la casilla
+[OK]    E40_movil_390x844 (E42b): el label completo alterna la casilla
+[OK]    E40_movil_390x844 (E42c): la casilla declara su descripción accesible
+[OK]    E40_movil_390x844: el foco de teclado es visible
+[OK]    E40_movil_390x844: sin errores de JavaScript
+[OK]    E41_movil_375x667: el texto del aviso NO se empalma con el de participación
+[OK]    E41_movil_375x667: la casilla queda junto a su etiqueta
+[OK]    E41_movil_375x667: la casilla tiene tamaño usable (>=18px)
+[OK]    E41_movil_375x667: sin desbordamiento horizontal
+[OK]    E41_movil_375x667 (E42): al pulsar el texto del label se marca la casilla
+[OK]    E41_movil_375x667 (E42b): el label completo alterna la casilla
+[OK]    E41_movil_375x667 (E42c): la casilla declara su descripción accesible
+[OK]    E41_movil_375x667: el foco de teclado es visible
+[OK]    E41_movil_375x667: sin errores de JavaScript
+[OK]    E38 en Borrador no se muestran nombre, generación, rol ni consentimiento
+[OK]    E38b tampoco se muestra el botón «Registrarme»
+[OK]    E33 el motivo mostrado es el específico de Borrador
+[OK]    E38c en Borrador no se ofrece «Continuar donde me quedé»
+[OK]    E37 con el cupo lleno el mensaje es el específico
+[OK]    E37b se conserva «Continuar donde me quedé» (la familia sigue abierta)
+[OK]    E38d con cupo lleno tampoco se muestra el formulario de registro
+
+NAVEGADOR 1.0.2.2: TODAS LAS PRUEBAS PASARON
+
+E2E EN AMBAS ESTRUCTURAS (A y B): TODAS LAS PRUEBAS PASARON

@@ -342,6 +342,183 @@ if (!is_dir($outDir)) {
 file_put_contents($outDir . '/family_from_db.json', json_encode($familyObject, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 echo "\nObjeto familia (vía base de datos) escrito en qa-evidence/parity/family_from_db.json\n";
 
+// ============================================================
+// 1.0.2.2 — Política central de participación (Hallazgo 4)
+// ============================================================
+echo "\n--- Política de participación (fuente única de verdad) ---\n";
+
+[$famPol] = FamilyRepository::create('Familia Politica', 3, null, null, $adminId);
+$reload = fn() => FamilyRepository::findById((int)$famPol['id']);
+
+// BORRADOR: nada permitido.
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Borrador: no registra, no reanuda, no guarda, no finaliza',
+    !$pol->canRegisterNewParticipant() && !$pol->canResumeParticipant()
+    && !$pol->canSaveResponses() && !$pol->canFinalize());
+check('Borrador: motivo family_draft', $pol->reasonCode('register') === ParticipationPolicy::FAMILY_DRAFT);
+check('Borrador: mensaje exacto del prompt maestro',
+    $pol->message(ParticipationPolicy::FAMILY_DRAFT) === 'Esta aplicación aún no ha sido habilitada por BVM.');
+
+// ABIERTA dentro de fechas: todo permitido.
+FamilyRepository::update((int)$famPol['id'], ['status' => 'abierta']);
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Abierta: todo permitido',
+    $pol->canRegisterNewParticipant() && $pol->canResumeParticipant()
+    && $pol->canSaveResponses() && $pol->canFinalize());
+
+// ABIERTA con cupo lleno: solo se bloquean los registros NUEVOS.
+FamilyRepository::update((int)$famPol['id'], ['enforce_participant_limit' => 1]);
+$pol = ParticipationPolicy::forFamily($reload(), 3);
+check('Abierta con cupo lleno: no registra pero sí continúa',
+    !$pol->canRegisterNewParticipant() && $pol->canResumeParticipant()
+    && $pol->canSaveResponses() && $pol->canFinalize());
+check('Cupo lleno: motivo capacity_reached',
+    $pol->reasonCode('register') === ParticipationPolicy::CAPACITY_REACHED);
+check('Cupo lleno: el motivo de continuidad sigue siendo OK',
+    $pol->reasonCode('resume') === ParticipationPolicy::OK);
+check('Cupo lleno: mensaje exacto',
+    $pol->message(ParticipationPolicy::CAPACITY_REACHED) === 'Se alcanzó el número autorizado de participantes.');
+
+// Modo referencia: el número esperado NUNCA bloquea por sí solo.
+FamilyRepository::update((int)$famPol['id'], ['enforce_participant_limit' => 0]);
+$pol = ParticipationPolicy::forFamily($reload(), 9);
+check('Referencia: excedente no bloquea registros', $pol->canRegisterNewParticipant());
+
+// Fechas.
+FamilyRepository::update((int)$famPol['id'], [
+    'opens_at' => (new DateTimeImmutable('+3 days', bvm_configured_timezone()))->format('Y-m-d'),
+    'closes_at' => (new DateTimeImmutable('+9 days', bvm_configured_timezone()))->format('Y-m-d'),
+]);
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Antes de la apertura: motivo not_started y nada permitido',
+    $pol->reasonCode('register') === ParticipationPolicy::NOT_STARTED
+    && !$pol->canResumeParticipant() && !$pol->canSaveResponses() && !$pol->canFinalize());
+FamilyRepository::update((int)$famPol['id'], [
+    'opens_at' => (new DateTimeImmutable('-9 days', bvm_configured_timezone()))->format('Y-m-d'),
+    'closes_at' => (new DateTimeImmutable('-1 day', bvm_configured_timezone()))->format('Y-m-d'),
+]);
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Después del cierre: motivo ended y nada permitido',
+    $pol->reasonCode('register') === ParticipationPolicy::ENDED
+    && !$pol->canSaveResponses() && !$pol->canFinalize());
+$closesHuman = (new DateTimeImmutable('-1 day', bvm_configured_timezone()))->format('d/m/Y');
+check('Mensaje de periodo concluido con la fecha en DD/MM/AAAA',
+    $pol->message(ParticipationPolicy::ENDED) === 'El periodo de participación concluyó el ' . $closesHuman . '.');
+
+// Mismo día de apertura y cierre: válido.
+$hoy = bvm_local_today();
+FamilyRepository::update((int)$famPol['id'], ['opens_at' => $hoy, 'closes_at' => $hoy]);
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Apertura y cierre el mismo día: participación abierta', $pol->canRegisterNewParticipant());
+
+// CERRADA y ARCHIVADA.
+FamilyRepository::update((int)$famPol['id'], ['status' => 'cerrada']);
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Cerrada: nada permitido y motivo family_closed',
+    $pol->reasonCode('register') === ParticipationPolicy::FAMILY_CLOSED
+    && !$pol->canResumeParticipant() && !$pol->canSaveResponses() && !$pol->canFinalize());
+FamilyRepository::update((int)$famPol['id'], ['status' => 'archivada']);
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Archivada: nada permitido y motivo family_archived',
+    $pol->reasonCode('register') === ParticipationPolicy::FAMILY_ARCHIVED
+    && !$pol->canResumeParticipant());
+
+// Reapertura: al volver a Abierta dentro de fechas, se recupera todo.
+FamilyRepository::update((int)$famPol['id'], ['status' => 'abierta']);
+$pol = ParticipationPolicy::forFamily($reload(), 0);
+check('Reapertura: los participantes incompletos pueden continuar',
+    $pol->canResumeParticipant() && $pol->canSaveResponses() && $pol->canFinalize());
+
+// ============================================================
+// 1.0.2.2 — Archivar conserva / eliminar definitivamente elimina (Hallazgo 8)
+// ============================================================
+echo "\n--- Archivar vs eliminación definitiva ---\n";
+
+$pdo = Database::pdo();
+$countFor = function (int $familyId) use ($pdo): array {
+    $q = function (string $sql) use ($pdo, $familyId): int {
+        $st = $pdo->prepare($sql);
+        $st->execute([$familyId]);
+        return (int)$st->fetchColumn();
+    };
+    return [
+        'families' => $q('SELECT COUNT(*) FROM families WHERE id = ?'),
+        'participants' => $q('SELECT COUNT(*) FROM participants WHERE family_id = ?'),
+        'responses' => $q('SELECT COUNT(*) FROM responses r JOIN participants p ON p.id = r.participant_id WHERE p.family_id = ?'),
+        'external' => $q('SELECT COUNT(*) FROM external_responses e JOIN participants p ON p.id = e.participant_id WHERE p.family_id = ?'),
+    ];
+};
+
+/** Crea una familia abierta con un participante que responde todo. */
+$seedFamily = function (string $name) use ($adminId): array {
+    [$fam] = FamilyRepository::create($name, 2, null, null, $adminId);
+    FamilyRepository::update((int)$fam['id'], ['status' => 'abierta']);
+    $reg = ParticipantRepository::register((int)$fam['id'], 'Participante ' . $name, 'Primera generación', 'Otro rol patrimonial');
+    $pid = (int)$reg['participant']['id'];
+    $rev = 0;
+    for ($q = 1; $q <= 20; $q++) {
+        $res = ResponseRepository::saveAnswer($pid, $q, ($q % 5) + 1, $rev, $q);
+        $rev = (int)$res['revision'];
+    }
+    foreach (BVM_EXTERNAL_QUESTION_IDS as $ext) {
+        $res = ResponseRepository::saveExternalAnswer($pid, $ext, 4, $rev);
+        $rev = (int)$res['revision'];
+    }
+    return [$fam, $pid];
+};
+
+[$famArchivar] = $seedFamily('Familia Archivar');
+FamilyRepository::archive((int)$famArchivar['id']);
+$after = $countFor((int)$famArchivar['id']);
+$famArchivar = FamilyRepository::findById((int)$famArchivar['id']);
+check('Archivar conserva familia, participantes y respuestas',
+    $famArchivar !== null && $famArchivar['status'] === 'archivada'
+    && $after['participants'] === 1 && $after['responses'] === 20 && $after['external'] === 2);
+
+[$famBorrar] = $seedFamily('Familia Borrar');
+[$famTestigo] = $seedFamily('Familia Testigo');
+$before = $countFor((int)$famBorrar['id']);
+check('Antes de eliminar existen los datos dependientes',
+    $before['participants'] === 1 && $before['responses'] === 20 && $before['external'] === 2);
+$deleted = FamilyRepository::hardDelete((int)$famBorrar['id']);
+check('hardDelete informa el conteo real eliminado',
+    $deleted['participants'] === 1 && $deleted['responses'] === 20 && $deleted['external_responses'] === 2);
+$afterDelete = $countFor((int)$famBorrar['id']);
+check('Eliminación definitiva: no quedan familia, participantes ni respuestas',
+    $afterDelete['families'] === 0 && $afterDelete['participants'] === 0
+    && $afterDelete['responses'] === 0 && $afterDelete['external'] === 0);
+check('La familia deja de resolverse por id y por liga',
+    FamilyRepository::findById((int)$famBorrar['id']) === null
+    && FamilyRepository::findBySlug((string)$famBorrar['public_slug']) === null);
+
+// Sin huérfanos en TODA la base (no solo en la familia eliminada).
+$orphanParticipants = (int)$pdo->query(
+    'SELECT COUNT(*) FROM participants p LEFT JOIN families f ON f.id = p.family_id WHERE f.id IS NULL'
+)->fetchColumn();
+$orphanResponses = (int)$pdo->query(
+    'SELECT COUNT(*) FROM responses r LEFT JOIN participants p ON p.id = r.participant_id WHERE p.id IS NULL'
+)->fetchColumn();
+$orphanExternal = (int)$pdo->query(
+    'SELECT COUNT(*) FROM external_responses e LEFT JOIN participants p ON p.id = e.participant_id WHERE p.id IS NULL'
+)->fetchColumn();
+check('Sin participaciones ni respuestas huérfanas en la base',
+    $orphanParticipants === 0 && $orphanResponses === 0 && $orphanExternal === 0);
+
+$testigo = $countFor((int)$famTestigo['id']);
+check('Los datos de otras familias quedan intactos',
+    $testigo['families'] === 1 && $testigo['participants'] === 1
+    && $testigo['responses'] === 20 && $testigo['external'] === 2);
+
+// Auditoría: solo metadatos no sensibles (nunca respuestas individuales).
+$auditRows = $pdo->query("SELECT metadata_json FROM audit_events WHERE event_type = 'family-created'")->fetchAll();
+$sinRespuestas = true;
+foreach ($auditRows as $row) {
+    if (preg_match('/answer|respuesta|"a\\d+"/i', (string)$row['metadata_json'])) {
+        $sinRespuestas = false;
+    }
+}
+check('La auditoría no conserva respuestas individuales', $sinRespuestas);
+
 // Limpieza
 @unlink($dbPath);
 @unlink($configFile);

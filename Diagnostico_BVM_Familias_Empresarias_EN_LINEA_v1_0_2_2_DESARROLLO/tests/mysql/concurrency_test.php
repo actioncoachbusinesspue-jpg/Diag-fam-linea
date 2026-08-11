@@ -2,7 +2,7 @@
 /**
  * Concurrencia REAL del cupo sobre MySQL: dos procesos PHP disputan el
  * último lugar de una familia con límite activo. Exactamente uno debe
- * registrarse; el otro debe recibir family_full. Repite la disputa varias
+ * registrarse; el otro debe recibir capacity_reached. Repite la disputa varias
  * veces para reducir la probabilidad de un falso positivo por azar.
  *
  * Requiere BVM_IT_HOST/DB/USER/PASS (los exporta tests/mysql/run_mysql.sh).
@@ -80,9 +80,12 @@ for ($round = 1; $round <= ROUNDS; $round++) {
     }
 
     $winners = array_filter($results, fn($r) => !empty($r['ok']));
-    $full = array_filter($results, fn($r) => empty($r['ok']) && ($r['error'] ?? '') === 'family_full');
+    $full = array_filter(
+        $results,
+        fn($r) => empty($r['ok']) && ($r['reason_code'] ?? '') === ParticipationPolicy::CAPACITY_REACHED
+    );
     check("Ronda $round: exactamente un ganador", count($winners) === 1, json_encode($results));
-    check("Ronda $round: el otro recibe family_full", count($full) === 1, json_encode($results));
+    check("Ronda $round: el otro recibe capacity_reached", count($full) === 1, json_encode($results));
 
     $count = count(ParticipantRepository::listByFamily($familyId));
     check("Ronda $round: el conteo final es 3 (nunca 4)", $count === 3, (string)$count);

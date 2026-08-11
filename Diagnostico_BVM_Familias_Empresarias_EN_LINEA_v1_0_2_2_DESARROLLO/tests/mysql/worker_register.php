@@ -20,6 +20,9 @@ try {
     echo json_encode([
         'ok' => !empty($r['ok']),
         'error' => $r['error'] ?? null,
+        // 1.0.2.2: el motivo del rechazo es un código estructurado de la
+        // política central (capacity_reached, family_closed, …).
+        'reason_code' => $r['reason_code'] ?? null,
         'participant_id' => isset($r['participant']['id']) ? (int)$r['participant']['id'] : null,
     ]), "\n";
 } catch (Throwable $e) {

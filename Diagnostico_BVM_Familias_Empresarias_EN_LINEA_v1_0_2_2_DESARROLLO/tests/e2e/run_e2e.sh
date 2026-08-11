@@ -57,6 +57,14 @@ PHP
   BASE_URL="$BASE" node "$ROOT/tests/e2e/e2e_api.mjs"
   STATUS=$?
 
+  # Batería correctiva 1.0.2.2 (portada, estados, fechas, cupo, sesiones,
+  # mensajes, reporte y eliminación definitiva). Reutiliza el administrador
+  # creado por e2e_api.mjs sobre la misma base.
+  if [ $STATUS -eq 0 ]; then
+    BASE_URL="$BASE" node "$ROOT/tests/e2e/e2e_v1022.mjs"
+    STATUS=$?
+  fi
+
   # Verificaciones estáticas E45-E49 (código fuente + respuestas servidas)
   if [ $STATUS -eq 0 ]; then
     BASE_URL="$BASE" node "$ROOT/tests/e2e/static_checks.mjs"
@@ -84,6 +92,16 @@ PHP
   if [ $STATUS -eq 0 ] && [ -n "${PLAYWRIGHT_MODULE:-}" ]; then
     BASE_URL="$BASE" node "$ROOT/tests/e2e/e2e_browser.mjs"
     STATUS=$?
+    if [ $STATUS -eq 0 ]; then
+      # Navegador 1.0.2.2: portada, privacidad en tres tamaños y formulario
+      # oculto. Las capturas se generan una sola vez (estructura A).
+      if [ "$LAYOUT" = "A" ]; then
+        BASE_URL="$BASE" node "$ROOT/tests/e2e/browser_v1022.mjs"
+      else
+        BASE_URL="$BASE" BVM_SHOTS_DIR="$WORK/shots" node "$ROOT/tests/e2e/browser_v1022.mjs"
+      fi
+      STATUS=$?
+    fi
   fi
 
   if [ $STATUS -ne 0 ]; then

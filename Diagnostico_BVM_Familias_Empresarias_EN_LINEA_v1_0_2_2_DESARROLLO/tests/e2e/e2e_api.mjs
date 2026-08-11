@@ -297,9 +297,13 @@ const device2 = makeClient();
     name: 'Cuarta Persona', generation: 'Primera generación',
     participation_role: 'Otro rol patrimonial', consent: true,
   }, p5.csrf);
-  check('E52 cuarto registro → 409 con family_full',
+  // 1.0.2.2: el motivo llega como código estructurado (capacity_reached) con
+  // el mensaje exacto del prompt maestro §7. family_full se conserva por
+  // compatibilidad con clientes de 1.0.2.1.
+  check('E52 cuarto registro → 409 con capacity_reached',
     reg4.res.status === 409 && reg4.data.family_full === true
-    && /alcanzó el número de participantes autorizado/.test(reg4.data.error || ''));
+    && reg4.data.reason_code === 'capacity_reached'
+    && /Se alcanzó el número autorizado de participantes/.test(reg4.data.error || ''));
 
   // La reanudación no se bloquea con el cupo lleno (código personal de E14)
   const deviceR = makeClient();

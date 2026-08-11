@@ -12,10 +12,12 @@
   var SLUG = app.getAttribute('data-slug');
 
   var state = {
-    stage: 'cover',        // cover | key | resume | register | code | question | review | external | final | locked | conflict
+    stage: 'cover',        // cover | key | resume | register | code | question | review | external | final | locked | conflict | blocked
     familyName: '',
     openForParticipation: true,
     acceptingNew: true,    // false cuando el cupo autorizado ya se llenó
+    policy: null,          // retrato de ParticipationPolicy devuelto por el servidor
+    blockedReason: '',     // código de motivo cuando la participación está bloqueada
     participant: null,     // { name, status, current_index, revision, answers, external_answers }
     answers: new Array(20).fill(null),
     externalAnswers: {},
@@ -27,6 +29,42 @@
   };
 
   function esc(s) { return BvmApi.escapeHtml(s); }
+
+  // ---------- traducción de códigos de motivo (la política vive en el servidor) ----------
+  function fmtDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+    return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+  }
+
+  function reasonText(code) {
+    var p = state.policy || {};
+    switch (code) {
+      case 'family_draft':
+        return 'Esta aplicación aún no ha sido habilitada por BVM.';
+      case 'not_started':
+        return p.opens_at
+          ? 'La participación estará disponible a partir del ' + fmtDate(p.opens_at) + '.'
+          : 'La participación todavía no ha sido habilitada.';
+      case 'ended':
+        return p.closes_at
+          ? 'El periodo de participación concluyó el ' + fmtDate(p.closes_at) + '.'
+          : 'El periodo de participación ya concluyó.';
+      case 'family_closed':
+        return 'BVM ha cerrado esta aplicación y ya no recibe nuevas respuestas.';
+      case 'family_archived':
+        return 'Esta aplicación fue archivada por BVM y ya no admite participación.';
+      case 'capacity_reached':
+        return 'Se alcanzó el número autorizado de participantes.';
+      default:
+        return 'La participación no está disponible en este momento.';
+    }
+  }
+
+  /** Botón de cierre real de la participación (no es solo navegación). */
+  function exitButton(label) {
+    return '<button class="btn btn-quiet" data-action="participant-logout">' +
+      esc(label || 'Salir de esta participación') + '</button>';
+  }
 
   // ---------- guardado automático ----------
   var saveQueue = Promise.resolve();
@@ -55,6 +93,15 @@
           }
           if (d.conflict) { state.stage = 'conflict'; render(); return; }
           if (d.locked) { state.stage = 'locked'; render(); return; }
+          // La familia dejó de aceptar cambios mientras se respondía
+          // (cierre, archivo o fin del periodo): motivo específico.
+          if (d.blocked && d.reason_code) {
+            state.blockedReason = d.reason_code;
+            state.stage = 'blocked';
+            setSaveStatus('');
+            render();
+            return;
+          }
           setSaveStatus('offline');
           state.lastError = d.error || 'No fue posible guardar.';
         })
@@ -115,26 +162,45 @@
       '</div></div>';
   }
 
+  /**
+   * Pantalla de registro. Cuando un participante NUEVO no puede registrarse,
+   * el formulario NO se muestra (ni nombre, ni generación, ni rol, ni
+   * consentimiento, ni botón): solo el motivo exacto y las salidas válidas.
+   */
   function stageRegister() {
+    var p = state.policy || {};
+    var canRegister = p.can_register !== undefined
+      ? !!p.can_register
+      : (state.openForParticipation && state.acceptingNew);
+
+    if (!canRegister) {
+      var reason = p.register_reason || (state.openForParticipation ? 'capacity_reached' : 'family_closed');
+      // Solo el cupo lleno deja abierta la continuidad: la familia sigue
+      // Abierta y dentro de fechas, así que quien ya se registró continúa.
+      var onlyCapacity = reason === 'capacity_reached';
+      return '<div class="question-card">' +
+        '<h1>Participación no disponible</h1>' +
+        '<div class="alert alert-info" role="status">' + esc(reasonText(reason)) + '</div>' +
+        (onlyCapacity
+          ? '<p>Si ya se registró, seleccione «Continuar donde me quedé» y utilice su código personal.</p>'
+          : '<p>No es necesario que haga nada más. Si cree que se trata de un error, ' +
+            'comuníquese con su contacto en BVM.</p>') +
+        '<div class="form-actions">' +
+        (onlyCapacity ? '<button class="btn btn-primary" data-action="to-resume">Continuar donde me quedé</button>' : '') +
+        '<a class="btn btn-quiet" href="index.php">Volver al inicio</a>' +
+        '</div></div>';
+    }
+
     var genOptions = QUESTIONNAIRE.generations.map(function (g) {
       return '<option value="' + esc(g) + '">' + esc(g) + '</option>';
     }).join('');
     var roleOptions = QUESTIONNAIRE.participationRoles.map(function (r) {
       return '<option value="' + esc(r) + '">' + esc(r) + '</option>';
     }).join('');
-    var canRegister = state.openForParticipation && state.acceptingNew;
-    var blockNotice = '';
-    if (!state.openForParticipation) {
-      blockNotice = '<div class="alert alert-info">Esta familia no está aceptando nuevas participaciones en este momento.</div>';
-    } else if (!state.acceptingNew) {
-      blockNotice = '<div class="alert alert-info">Esta aplicación ya alcanzó el número de participantes autorizado. ' +
-        'Si ya se registró, utilice su código personal en «Continuar donde me quedé».</div>';
-    }
     return '<div class="question-card">' +
       '<h1>Registro individual</h1>' +
-      blockNotice +
       '<div id="stage-msg"></div>' +
-      '<p><strong>Aviso de privacidad.</strong> Sus respuestas individuales son confidenciales: se integran ' +
+      '<p id="privacy-notice"><strong>Aviso de privacidad.</strong> Sus respuestas individuales son confidenciales: se integran ' +
       'únicamente en resultados agregados de la familia. Su nombre se utiliza solo para administrar el avance ' +
       'y nunca se asocia públicamente con sus respuestas.</p>' +
       '<label for="reg-name">Nombre completo</label>' +
@@ -143,13 +209,30 @@
       '<select id="reg-generation"><option value="">Seleccione…</option>' + genOptions + '</select>' +
       '<label for="reg-role">Rol relacionado con la empresa, propiedad o patrimonio</label>' +
       '<select id="reg-role"><option value="">Seleccione…</option>' + roleOptions + '</select>' +
-      '<label class="scale-option" style="margin-top:16px;"><input type="checkbox" id="reg-consent">' +
-      '<span><span class="lbl">He leído y acepto el aviso de privacidad</span>' +
-      '<span class="desc">Acepto participar y que mis respuestas se integren en resultados agregados.</span></span></label>' +
+      // Consentimiento: casilla y textos en bloques separados para que nunca
+      // se empalmen («…aviso de privacidadAcepto participar…»).
+      '<label class="consent-option" for="reg-consent">' +
+      '<input type="checkbox" id="reg-consent" aria-describedby="consent-desc privacy-notice">' +
+      '<span class="consent-text">' +
+      '<span class="lbl">He leído y acepto el aviso de privacidad</span>' +
+      '<span class="desc" id="consent-desc">Acepto participar y que mis respuestas se integren en resultados agregados.</span>' +
+      '</span></label>' +
       '<div class="form-actions">' +
-      '<button class="btn btn-primary" data-action="do-register"' + (canRegister ? '' : ' disabled') + '>Registrarme y comenzar</button>' +
+      '<button class="btn btn-primary" data-action="do-register">Registrarme y comenzar</button>' +
       '<button class="btn btn-quiet" data-action="to-cover">Volver</button>' +
       '</div></div>';
+  }
+
+  /** Participación bloqueada por el estado de la familia (sesión ya iniciada). */
+  function stageBlocked() {
+    return '<div class="question-card">' +
+      '<h1>Participación no disponible</h1>' +
+      '<div class="alert alert-info" role="status">' + esc(reasonText(state.blockedReason)) + '</div>' +
+      '<p>Sus respuestas guardadas se conservan. Si BVM vuelve a habilitar la aplicación, ' +
+      'podrá continuar donde se quedó con su código personal.</p>' +
+      '<div class="form-actions">' + exitButton('Salir de esta participación') +
+      '<a class="btn btn-quiet" href="index.php">Volver al inicio</a></div>' +
+      '</div>';
   }
 
   function stageCode() {
@@ -188,6 +271,8 @@
         : '<button class="btn btn-primary" data-action="to-review"' + (selected == null ? ' disabled' : '') + '>Revisar mis respuestas</button>') +
       '</div>' +
       '<p class="hint">Puede cerrar esta ventana en cualquier momento: sus respuestas quedan guardadas.</p>' +
+      '<div class="exit-row">' + exitButton('Salir de esta participación') +
+      '<span class="hint">Cierra su sesión en este dispositivo. Para volver necesitará la clave de la familia y su código personal.</span></div>' +
       '</div>';
   }
 
@@ -241,7 +326,7 @@
       '<h1>Participación finalizada</h1>' +
       '<div class="alert alert-success" role="status">Gracias. Sus respuestas fueron registradas y quedaron bloqueadas.</div>' +
       '<p>El equipo BVM integrará las percepciones de todos los participantes en la radiografía de su familia.</p>' +
-      '<a class="btn btn-secondary" href="index.php">Salir</a>' +
+      '<div class="form-actions">' + exitButton('Salir de esta participación') + '</div>' +
       '</div>';
   }
 
@@ -250,7 +335,8 @@
       '<h1>Participación ya finalizada</h1>' +
       '<div class="alert alert-info">Esta participación ya fue finalizada y no puede modificarse. ' +
       'Si necesita reabrirla, solicítelo al equipo BVM.</div>' +
-      '<a class="btn btn-secondary" href="index.php">Volver al inicio</a>' +
+      '<div class="form-actions">' + exitButton('Salir de esta participación') +
+      '<a class="btn btn-quiet" href="index.php">Volver al inicio</a></div>' +
       '</div>';
   }
 
@@ -278,6 +364,7 @@
       case 'final': html = stageFinal(); break;
       case 'locked': html = stageLocked(); break;
       case 'conflict': html = stageConflict(); break;
+      case 'blocked': html = stageBlocked(); break;
       default: html = stageCover();
     }
     app.innerHTML = html;
@@ -343,14 +430,32 @@
           state.familyName = d.family.family_name;
           state.openForParticipation = d.family.open_for_participation;
           state.acceptingNew = d.family.accepting_new_registrations !== false;
+          state.policy = d.policy || null;
           if (action === 'check-key') {
             state.stage = 'register';
             render();
             return;
           }
+          // Continuidad: si la familia no admite reanudar, el motivo es del
+          // ciclo de vida (Borrador, Cerrada, Archivada o fuera de fechas).
+          if (state.policy && state.policy.can_resume === false) {
+            state.blockedReason = state.policy.lifecycle_reason;
+            state.stage = 'blocked';
+            render();
+            return;
+          }
           var code = (document.getElementById('personal-code') || {}).value || '';
           BvmApi.post('/api/participants/resume.php', { personal_code: code }).then(function (r) {
-            if (!r.ok) { showStageMsg(r.error || 'Código no reconocido.'); return; }
+            if (!r.ok) {
+              if (r.blocked && r.reason_code) {
+                state.blockedReason = r.reason_code;
+                state.stage = 'blocked';
+                render();
+                return;
+              }
+              showStageMsg(r.error || 'Código no reconocido.');
+              return;
+            }
             applyParticipant(r.participant);
             render();
           });
@@ -366,7 +471,16 @@
           consent: consent
         }).then(function (d) {
           if (!d.ok) {
-            if (d.family_full) { state.acceptingNew = false; render(); }
+            // El estado de la familia cambió entre la carga y el envío:
+            // se vuelve a pintar la pantalla con el motivo exacto.
+            if (d.reason_code) {
+              if (!state.policy) { state.policy = {}; }
+              state.policy.can_register = false;
+              state.policy.register_reason = d.reason_code;
+              if (d.reason_code === 'capacity_reached') { state.acceptingNew = false; }
+              render();
+              return;
+            }
             showStageMsg(d.error || 'No fue posible registrarse.');
             return;
           }
@@ -418,16 +532,38 @@
       case 'reload-state':
         loadExistingSession(true);
         break;
+      case 'participant-logout':
+        // Salida REAL: destruye la sesión del participante en el servidor.
+        BvmApi.post('/api/participants/logout.php', {}).then(function () {
+          state.participant = null;
+          state.personalCode = null;
+          state.answers = new Array(20).fill(null);
+          state.externalAnswers = {};
+          state.revision = 0;
+          state.currentIndex = 0;
+          state.stage = 'cover';
+          render();
+        });
+        break;
     }
   }
 
-  // ---------- arranque: ¿hay sesión activa de participante? ----------
+  // ---------- arranque: ¿hay sesión activa de participante DE ESTA familia? ----------
   function loadExistingSession(force) {
-    fetch(BvmApi.base() + '/api/participants/state.php', { credentials: 'same-origin' })
+    // La liga abierta viaja SIEMPRE en la petición: una sesión de otra familia
+    // se cierra en el servidor y esta pantalla empieza limpia (aislamiento).
+    fetch(BvmApi.base() + '/api/participants/state.php?f=' + encodeURIComponent(SLUG), { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.ok) {
           state.familyName = d.family.family_name;
+          state.policy = d.policy || null;
+          if (state.policy && state.policy.can_resume === false) {
+            state.blockedReason = state.policy.lifecycle_reason;
+            state.stage = 'blocked';
+            render();
+            return;
+          }
           applyParticipant(d.participant);
         } else if (force) {
           state.stage = 'cover';

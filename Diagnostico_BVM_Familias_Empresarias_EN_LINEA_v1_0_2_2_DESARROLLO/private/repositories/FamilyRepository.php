@@ -133,13 +133,10 @@ final class FamilyRepository
      */
     public static function isOpenForParticipation(array $family): bool
     {
-        if ($family['status'] !== 'abierta') {
-            return false;
-        }
-        return bvm_local_date_is_open(
-            $family['opens_at'] !== null ? (string)$family['opens_at'] : null,
-            $family['closes_at'] !== null ? (string)$family['closes_at'] : null
-        );
+        // Delegado a la política central (1.0.2.2): el ciclo de vida tiene una
+        // sola implementación. El cupo NO interviene aquí (se pasa 0 registrados
+        // precisamente para evaluar solo estado + fechas).
+        return ParticipationPolicy::forFamily($family, 0)->lifecycleReason() === ParticipationPolicy::OK;
     }
 
     /**

@@ -42,9 +42,15 @@ final class ParticipantRepository
      * que dos registros simultáneos no pueden exceder el límite: validar estado
      * y fechas → contar → validar cupo → validar duplicado → insertar.
      *
+     * La decisión de si la familia admite un registro nuevo NO se reimplementa
+     * aquí: la toma ParticipationPolicy (fuente única de verdad) con la fila
+     * bloqueada y el conteo real, de modo que estado, fechas y cupo se evalúan
+     * con exactamente las mismas reglas que en el resto de los endpoints.
+     *
      * Devuelve:
      *   ['ok' => true,  'participant' => ..., 'personal_code' => ..., 'over_reference' => bool]
-     *   ['ok' => false, 'error' => 'not_found' | 'not_open' | 'family_full' | 'duplicate']
+     *   ['ok' => false, 'error' => 'duplicate']
+     *   ['ok' => false, 'error' => 'policy', 'reason_code' => <ParticipationPolicy::*>, 'family' => array]
      */
     public static function register(int $familyId, string $name, string $generation, string $role): array
     {
@@ -55,21 +61,20 @@ final class ParticipantRepository
             $st->execute([$familyId]);
             $family = $st->fetch();
             if (!$family) {
-                return ['ok' => false, 'error' => 'not_found'];
-            }
-            if (!FamilyRepository::isOpenForParticipation($family)) {
-                return ['ok' => false, 'error' => 'not_open'];
+                return ['ok' => false, 'error' => 'policy', 'reason_code' => ParticipationPolicy::FAMILY_NOT_FOUND, 'family' => []];
             }
 
             $st = $pdo->prepare('SELECT COUNT(*) FROM participants WHERE family_id = ?');
             $st->execute([$familyId]);
             $registered = (int)$st->fetchColumn();
 
+            $policy = ParticipationPolicy::forFamily($family, $registered);
+            $reason = $policy->reasonCode('register');
+            if ($reason !== ParticipationPolicy::OK) {
+                return ['ok' => false, 'error' => 'policy', 'reason_code' => $reason, 'family' => $family];
+            }
             $expected = $family['expected_participants'] !== null ? (int)$family['expected_participants'] : null;
             $enforce = (int)($family['enforce_participant_limit'] ?? 1) === 1;
-            if ($expected !== null && $enforce && $registered >= $expected) {
-                return ['ok' => false, 'error' => 'family_full'];
-            }
 
             $st = $pdo->prepare('SELECT id FROM participants WHERE family_id = ? AND normalized_name = ?');
             $st->execute([$familyId, bvm_normalize_name($name)]);

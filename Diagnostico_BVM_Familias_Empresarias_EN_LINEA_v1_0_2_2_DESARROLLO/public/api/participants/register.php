@@ -47,18 +47,19 @@ try {
 
 if (empty($result['ok'])) {
     switch ($result['error'] ?? '') {
-        case 'not_found':
-            bvm_json_error('Familia no encontrada.', 404);
-            break;
-        case 'not_open':
-            bvm_json_error('Esta familia no está aceptando nuevas participaciones en este momento.', 409);
-            break;
-        case 'family_full':
+        case 'policy':
+            // Motivo estructurado y específico (nunca un mensaje ambiguo único):
+            // family_draft | not_started | ended | family_closed | family_archived |
+            // capacity_reached | family_not_found. La interfaz lo traduce.
+            $reason = (string)$result['reason_code'];
             bvm_json_error(
-                'Esta aplicación ya alcanzó el número de participantes autorizado. ' .
-                'Si ya se registró, utilice su código personal para continuar.',
-                409,
-                ['family_full' => true]
+                ParticipationPolicy::messageFor($reason, $result['family'] ?? []),
+                ParticipationPolicy::httpStatus($reason),
+                [
+                    'reason_code' => $reason,
+                    // Compatibilidad con clientes de 1.0.2.1.
+                    'family_full' => $reason === ParticipationPolicy::CAPACITY_REACHED,
+                ]
             );
             break;
         case 'duplicate':
@@ -78,7 +79,7 @@ if (empty($result['ok'])) {
 $participant = $result['participant'];
 $personalCode = $result['personal_code'];
 
-bvm_participant_login((int)$participant['id'], $familyId);
+bvm_participant_login((int)$participant['id'], $familyId, (string)$family['public_slug']);
 AuditRepository::log('participant-registered', null, $familyId, (int)$participant['id']);
 
 bvm_json_response([

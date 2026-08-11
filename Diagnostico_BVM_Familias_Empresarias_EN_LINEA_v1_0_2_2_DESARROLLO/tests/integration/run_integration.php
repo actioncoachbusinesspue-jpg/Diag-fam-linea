@@ -161,7 +161,10 @@ foreach (['Ana Robles', 'Luis Robles', 'Paula Robles'] as $i => $nameB) {
     }
 }
 $r = ParticipantRepository::register((int)$familyB['id'], 'Sofía Robles', 'Segunda generación', 'Otro rol patrimonial');
-check('Cuarto registro rechazado por cupo (family_full)', empty($r['ok']) && ($r['error'] ?? '') === 'family_full');
+// 1.0.2.2: el rechazo llega como motivo estructurado de la política central.
+check('Cuarto registro rechazado por cupo (capacity_reached)',
+    empty($r['ok']) && ($r['error'] ?? '') === 'policy'
+    && ($r['reason_code'] ?? '') === ParticipationPolicy::CAPACITY_REACHED);
 
 // La reanudación NUNCA se bloquea por cupo lleno
 $ana = ParticipantRepository::findByPersonalCode((int)$familyB['id'], $bCodes['Ana Robles']['code']);
@@ -169,7 +172,9 @@ check('Reanudación funciona con cupo lleno', $ana !== null && (int)$ana['id'] =
 
 // Con cupo lleno, incluso un duplicado recibe family_full (el mensaje guía a reanudar)
 $r = ParticipantRepository::register((int)$familyB['id'], 'ana robles', 'Primera generación', 'Otro rol patrimonial');
-check('Duplicado con cupo lleno recibe family_full', empty($r['ok']) && ($r['error'] ?? '') === 'family_full');
+check('Duplicado con cupo lleno recibe capacity_reached',
+    empty($r['ok']) && ($r['error'] ?? '') === 'policy'
+    && ($r['reason_code'] ?? '') === ParticipationPolicy::CAPACITY_REACHED);
 
 // Aumentar el cupo permite un registro más
 FamilyRepository::update((int)$familyB['id'], ['expected_participants' => 4]);
@@ -192,7 +197,9 @@ check('Capacidad reporta excedido en modo referencia', $capB['state'] === 'exced
 // Familia cerrada no acepta registros
 FamilyRepository::update((int)$familyB['id'], ['status' => 'cerrada']);
 $r = ParticipantRepository::register((int)$familyB['id'], 'Otro Más', 'Primera generación', 'Otro rol patrimonial');
-check('Familia cerrada rechaza registro (not_open)', empty($r['ok']) && ($r['error'] ?? '') === 'not_open');
+check('Familia cerrada rechaza registro (family_closed)',
+    empty($r['ok']) && ($r['error'] ?? '') === 'policy'
+    && ($r['reason_code'] ?? '') === ParticipationPolicy::FAMILY_CLOSED);
 FamilyRepository::update((int)$familyB['id'], ['status' => 'abierta']);
 
 // expected NULL → sin límite aunque enforce esté activo

@@ -59,6 +59,9 @@ require_once BVM_PRIVATE_DIR . '/repositories/FamilyRepository.php';
 require_once BVM_PRIVATE_DIR . '/repositories/ParticipantRepository.php';
 require_once BVM_PRIVATE_DIR . '/repositories/ResponseRepository.php';
 require_once BVM_PRIVATE_DIR . '/repositories/AuditRepository.php';
+// Política de participación: fuente ÚNICA de verdad del ciclo de vida
+// (estado + fechas + cupo) compartida por los seis endpoints (1.0.2.2).
+require_once BVM_PRIVATE_DIR . '/services/ParticipationPolicy.php';
 
 /** URL base pública de la aplicación (sin diagonal final). */
 function bvm_base_url(): string
@@ -157,12 +160,7 @@ function bvm_format_local(?string $utcDateTime, string $format = 'Y-m-d H:i'): s
  */
 function bvm_local_date_is_open(?string $opensAt, ?string $closesAt, ?string $todayLocal = null): bool
 {
-    $today = $todayLocal ?? bvm_local_today();
-    if ($opensAt !== null && $opensAt !== '' && substr($opensAt, 0, 10) > $today) {
-        return false;
-    }
-    if ($closesAt !== null && $closesAt !== '' && substr($closesAt, 0, 10) < $today) {
-        return false;
-    }
-    return true;
+    // Desde 1.0.2.2 la ventana de fechas tiene UNA sola implementación, dentro
+    // de ParticipationPolicy, que además distingue «aún no abre» de «ya cerró».
+    return ParticipationPolicy::dateWindowReason($opensAt, $closesAt, $todayLocal) === ParticipationPolicy::OK;
 }

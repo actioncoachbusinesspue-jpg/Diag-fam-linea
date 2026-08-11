@@ -13,6 +13,11 @@ $familyId = (int)($_SESSION['bvm_family_unlocked'] ?? 0);
 if ($familyId <= 0) {
     bvm_json_error('Primero ingrese la clave de la familia.', 401);
 }
+// Reanudar para responder exige exactamente la misma política que guardar:
+// una familia en Borrador, Cerrada, Archivada o fuera de fechas no reanuda.
+// El cupo lleno NO bloquea aquí (quien ya está registrado siempre continúa).
+[$family] = bvm_require_participation_allowed($familyId, 'resume');
+
 $code = strtoupper(trim((string)($in['personal_code'] ?? '')));
 if (!preg_match('/^[A-Z2-9]{4}-[A-Z2-9]{4}$/', $code)) {
     bvm_json_error('El código personal tiene el formato XXXX-XXXX.', 422);
@@ -30,7 +35,7 @@ if (!$participant) {
 }
 LoginAttemptRepository::clear($attemptKey);
 
-bvm_participant_login((int)$participant['id'], $familyId);
+bvm_participant_login((int)$participant['id'], $familyId, (string)$family['public_slug']);
 AuditRepository::log('participant-resumed', null, $familyId, (int)$participant['id']);
 
 bvm_json_response([

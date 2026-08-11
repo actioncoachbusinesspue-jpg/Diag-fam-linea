@@ -6,6 +6,8 @@
 require_once dirname(__DIR__, 2) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 bvm_require_method('POST');
 $sess = bvm_require_participant_api();
+// Finalizar es un cambio de estado: exige la misma política que guardar.
+bvm_require_participation_allowed($sess['family_id'], 'finalize');
 
 $participantId = $sess['participant_id'];
 $participant = ParticipantRepository::findById($participantId);

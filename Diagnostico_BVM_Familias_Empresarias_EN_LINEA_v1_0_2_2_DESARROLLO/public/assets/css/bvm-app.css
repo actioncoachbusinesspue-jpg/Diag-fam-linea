@@ -243,6 +243,62 @@ table.bvm-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .scale-option input { margin-top: 4px; accent-color: var(--bvm-gold); }
 .scale-option .lbl { font-weight: 600; color: var(--bvm-navy); font-size: .94rem; }
 .scale-option .desc { font-size: .84rem; color: var(--bvm-soft-gray); }
+
+/* ---- Casilla de consentimiento y casillas de configuración (1.0.2.2) ----
+   El título de la casilla y su explicación son BLOQUES independientes: nunca
+   se empalman en una sola línea («…aviso de privacidadAcepto participar…»).
+   El label completo es clicable y el foco del teclado siempre es visible. */
+.consent-option {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--bvm-divider);
+  border-radius: 9px;
+  padding: 14px 16px;
+  margin: 18px 0 4px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color .12s ease, background .12s ease;
+}
+.consent-option:hover { border-color: var(--bvm-gold); }
+.consent-option:focus-within { border-color: var(--bvm-gold); outline: 3px solid var(--bvm-light-gold); outline-offset: 2px; }
+.consent-option input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--bvm-gold);
+  cursor: pointer;
+}
+.consent-text { display: block; min-width: 0; }
+.consent-option .lbl {
+  display: block;
+  font-weight: 600;
+  color: var(--bvm-navy);
+  font-size: .94rem;
+  line-height: 1.35;
+}
+.consent-option .desc {
+  display: block;
+  margin-top: 6px;
+  font-size: .86rem;
+  line-height: 1.45;
+  color: var(--bvm-soft-gray);
+}
+@media (max-width: 420px) {
+  .consent-option { padding: 13px 13px; gap: 10px; }
+}
+
+/* Salida real de la participación: acción discreta con su explicación. */
+.exit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bvm-divider);
+}
 .save-status { font-size: .8rem; color: var(--bvm-soft-gray); min-height: 1.2em; }
 .save-status.saving { color: var(--bvm-warning); }
 .save-status.saved { color: var(--bvm-positive); }

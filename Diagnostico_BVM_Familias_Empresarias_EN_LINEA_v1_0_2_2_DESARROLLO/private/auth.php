@@ -139,12 +139,19 @@ function bvm_logout(): void
 
 // ---- Sesión de participante ------------------------------------------------
 
-function bvm_participant_login(int $participantId, int $familyId): void
+/**
+ * Inicia la sesión del participante. Desde 1.0.2.2 queda vinculada SIEMPRE a
+ * las tres claves: participante, familia y liga pública (slug). Sin el slug no
+ * es posible distinguir la participación de la Familia A de la de la Familia B
+ * dentro del mismo navegador.
+ */
+function bvm_participant_login(int $participantId, int $familyId, string $familySlug): void
 {
     bvm_session_start();
     session_regenerate_id(true);
     $_SESSION['bvm_participant_id'] = $participantId;
     $_SESSION['bvm_participant_family_id'] = $familyId;
+    $_SESSION['bvm_participant_family_slug'] = $familySlug;
 }
 
 function bvm_participant_session(): ?array
@@ -156,7 +163,42 @@ function bvm_participant_session(): ?array
     return [
         'participant_id' => (int)$_SESSION['bvm_participant_id'],
         'family_id'      => (int)$_SESSION['bvm_participant_family_id'],
+        'family_slug'    => (string)($_SESSION['bvm_participant_family_slug'] ?? ''),
     ];
+}
+
+/**
+ * Contexto de participante vigente para la liga $slug.
+ *
+ * Al abrir participar.php?f=FAMILIA_B con una sesión de participante de la
+ * Familia A, la sesión ANTERIOR se limpia automáticamente: nunca se restauran
+ * datos de A dentro del flujo de B. La sesión administrativa de BVM (si la
+ * hubiera en el mismo navegador) NO se toca.
+ *
+ * Devuelve true si tras la operación queda una sesión de participante válida
+ * para esta liga.
+ */
+function bvm_participant_bind_family(string $slug, int $familyId): bool
+{
+    bvm_session_start();
+    $sess = bvm_participant_session();
+    $unlocked = (int)($_SESSION['bvm_family_unlocked'] ?? 0);
+    $unlockedSlug = (string)($_SESSION['bvm_family_unlocked_slug'] ?? '');
+
+    $participantMatches = $sess !== null
+        && $sess['family_id'] === $familyId
+        && $sess['family_slug'] === $slug;
+    $unlockMatches = $unlocked === 0 || ($unlocked === $familyId && $unlockedSlug === $slug);
+
+    if ($sess !== null && !$participantMatches) {
+        bvm_participant_logout();
+        return false;
+    }
+    if (!$unlockMatches) {
+        // Clave de OTRA familia validada en esta sesión: se descarta.
+        unset($_SESSION['bvm_family_unlocked'], $_SESSION['bvm_family_unlocked_slug']);
+    }
+    return $participantMatches;
 }
 
 function bvm_require_participant_api(bool $checkCsrf = true): array
@@ -171,8 +213,23 @@ function bvm_require_participant_api(bool $checkCsrf = true): array
     return $sess;
 }
 
+/**
+ * Cierre REAL de la participación: destruye todas las variables de sesión del
+ * participante (identidad, familia, liga y la clave de familia validada) y
+ * renueva el identificador de sesión. Nunca cierra una sesión administrativa
+ * BVM independiente que exista en el mismo navegador.
+ */
 function bvm_participant_logout(): void
 {
     bvm_session_start();
-    unset($_SESSION['bvm_participant_id'], $_SESSION['bvm_participant_family_id']);
+    unset(
+        $_SESSION['bvm_participant_id'],
+        $_SESSION['bvm_participant_family_id'],
+        $_SESSION['bvm_participant_family_slug'],
+        $_SESSION['bvm_family_unlocked'],
+        $_SESSION['bvm_family_unlocked_slug']
+    );
+    // Cambio de contexto de identidad → identificador de sesión nuevo.
+    // session_regenerate_id(false) conserva $_SESSION (la sesión admin sigue viva).
+    session_regenerate_id(false);
 }

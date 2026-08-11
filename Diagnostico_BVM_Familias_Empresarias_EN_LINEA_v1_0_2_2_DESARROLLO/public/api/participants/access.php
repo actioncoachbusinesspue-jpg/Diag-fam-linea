@@ -28,14 +28,15 @@ if (!$family || !FamilyRepository::verifyAccessCode($family, $code)) {
 }
 LoginAttemptRepository::clear($attemptKey);
 
-$open = FamilyRepository::isOpenForParticipation($family);
 $_SESSION['bvm_family_unlocked'] = (int)$family['id'];
+$_SESSION['bvm_family_unlocked_slug'] = (string)$family['public_slug'];
 
-// Informativo para la interfaz: si el cupo ya se llenó, se avisa ANTES de
-// llenar el formulario. La validación definitiva ocurre al registrar
-// (transacción con bloqueo), nunca aquí.
-$registered = count(ParticipantRepository::listByFamily((int)$family['id']));
-$capacity = FamilyRepository::capacity($family, $registered);
+// Informativo para la interfaz: el motivo exacto por el que (no) se puede
+// registrar o continuar se calcula con la política central, ANTES de llenar
+// el formulario. La validación definitiva ocurre al registrar (transacción
+// con la familia bloqueada), nunca aquí.
+$policy = ParticipationPolicy::forFamily($family);
+$open = $policy->lifecycleReason() === ParticipationPolicy::OK;
 
 bvm_json_response([
     'ok' => true,
@@ -44,6 +45,8 @@ bvm_json_response([
         'status' => $family['status'],
         'open_for_participation' => $open,
         'closes_at' => $family['closes_at'],
-        'accepting_new_registrations' => $open && $capacity['accepting_new'],
+        'accepting_new_registrations' => $policy->canRegisterNewParticipant(),
     ],
+    // Contrato con la interfaz: códigos de motivo estructurados + fechas.
+    'policy' => $policy->describe(),
 ]);

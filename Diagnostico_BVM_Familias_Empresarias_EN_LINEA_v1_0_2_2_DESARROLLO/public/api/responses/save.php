@@ -6,6 +6,8 @@
 require_once dirname(__DIR__, 2) . '/bvm_paths.php'; // localizador único de private/ (v1.0.2.1)
 bvm_require_method('POST');
 $sess = bvm_require_participant_api();
+// El estado de la familia gobierna TODO el ciclo, no solo el registro (1.0.2.2).
+bvm_require_participation_allowed($sess['family_id'], 'save');
 
 $in = bvm_json_input();
 $questionId = $in['question_id'] ?? null;

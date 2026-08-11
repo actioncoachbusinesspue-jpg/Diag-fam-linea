@@ -65,7 +65,7 @@ foráneas que ya existían. El despliegue preserva exactamente la base actual.
 
 | Suite | Comprobaciones | Fallas |
 |---|---|---|
-| E2E completa, estructuras Hostinger A y B (incluye la batería nueva y navegador) | 396 | 0 |
+| E2E completa, estructuras Hostinger A y B (incluye la batería nueva y navegador) | 418 | 0 |
 | Integración PHP (política, cupo, fechas, archivar/eliminar) | 98 | 0 |
 | MySQL/MariaDB real (esquema, migración, concurrencia, cascada) | 127 | 0 |
 | Paridad metodológica contra el maestro congelado | 15 | 0 |

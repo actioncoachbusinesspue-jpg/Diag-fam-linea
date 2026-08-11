@@ -58,12 +58,16 @@ bvm_admin_header($user, (string)$family['family_name'], 'familias', [
         <input id="cfg-expected" type="number" min="1" max="500">
       </div>
     </div>
-    <label class="scale-option" style="margin-top:6px;">
+    <!-- Misma presentación en bloques que el consentimiento: el título de la
+         casilla y su explicación nunca se empalman en una sola línea. -->
+    <label class="consent-option" for="cfg-enforce-limit">
       <input type="checkbox" id="cfg-enforce-limit">
-      <span><span class="lbl">Cerrar nuevos registros al alcanzar el número esperado</span>
-      <span class="desc">Al activarlo, las personas ya registradas podrán continuar, pero no se aceptarán
-      nuevos participantes cuando se alcance el cupo. Si lo desactiva, el número esperado es solo una meta
-      y el excedente se muestra como referencia.</span></span>
+      <span class="consent-text">
+        <span class="lbl">Cerrar nuevos registros al alcanzar el número esperado</span>
+        <span class="desc">Al activarlo, las personas ya registradas podrán continuar, pero no se aceptarán
+        nuevos participantes cuando se alcance el cupo. Si lo desactiva, el número esperado es solo una meta
+        y el excedente se muestra como referencia.</span>
+      </span>
     </label>
     <div class="form-row">
       <div>

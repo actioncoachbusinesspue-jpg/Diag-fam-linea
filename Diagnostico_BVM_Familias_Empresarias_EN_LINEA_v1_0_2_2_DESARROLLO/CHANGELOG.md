@@ -113,7 +113,7 @@ verificada con diferencia 0 y hash del motor metodológico sin cambios.
 - Nunca se muestra «Borrador» junto a «Disponible».
 
 ### Pruebas
-- E2E en las dos estructuras de despliegue: 396 comprobaciones, 0 fallas
+- E2E en las dos estructuras de despliegue: 418 comprobaciones, 0 fallas
   (incluye la batería nueva de la sección 18 y las pruebas de navegador).
 - Integración: 98 comprobaciones, 0 fallas. MySQL/MariaDB real: 127, 0 fallas.
 - Paridad metodológica: diferencia 0. Los 8 PDF (demo/real/estrés/empates ×

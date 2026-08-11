@@ -265,6 +265,71 @@ for (const vp of [
   void pageCsrf;
 }
 
+// ============================================================
+// ADMINISTRACIÓN en navegador: ciclo de vida, invitación, reporte y borrado
+// (Hallazgos 2, 10 y 11 renderizados de verdad, con su JavaScript)
+// ============================================================
+{
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const jsErrors = jsErrorCollector(page);
+
+  await page.goto(BASE + '/acceso-bvm.php', { waitUntil: 'networkidle' });
+  await page.fill('#username', ADMIN_USER);
+  await page.fill('#password', ADMIN_PASS);
+  await Promise.all([page.waitForURL('**/admin/**'), page.click('#submit-btn')]);
+
+  // --- Familia en Borrador ---
+  await page.goto(BASE + '/admin/familia.php?id=' + borrador.family.id, { waitUntil: 'networkidle' });
+  await page.waitForSelector('#lifecycle-actions button');
+  check('E06b la familia en Borrador ofrece «Configurar y abrir participación»',
+    (await page.textContent('#lifecycle-actions')).includes('Configurar y abrir participación'));
+  check('E02d en Borrador se advierte no enviar todavía la invitación',
+    (await page.textContent('#invite-state')).includes('No envíe todavía esta invitación'));
+  check('E02e en Borrador la acción de invitación es de resguardo, no de envío',
+    (await page.textContent('#invite-actions')).includes('Guardar datos de invitación'));
+  check('E11b el estado es la etiqueta primaria y el cupo la secundaria',
+    (await page.textContent('#summary')).includes('Borrador')
+    && (await page.textContent('#summary')).includes('Cupo')
+    && !(await page.textContent('#summary')).includes('Disponible'));
+  // La casilla de cupo de administración usa la misma presentación en bloques
+  // que el consentimiento: título y explicación nunca se empalman.
+  const cfgBox = await page.evaluate(() => {
+    const label = document.querySelector('label[for="cfg-enforce-limit"]');
+    const lbl = label.querySelector('.lbl').getBoundingClientRect();
+    const desc = label.querySelector('.desc').getBoundingClientRect();
+    return { lblBottom: lbl.bottom, descTop: desc.top };
+  });
+  check('E39b la casilla de cupo en administración no empalma su explicación',
+    cfgBox.descTop >= cfgBox.lblBottom - 0.5);
+  check('E43b sin finalizados el CTA del reporte está deshabilitado',
+    (await page.getAttribute('#report-actions button', 'disabled')) !== null
+    && (await page.textContent('#report-note')).includes('Reporte disponible cuando exista al menos una participación finalizada'));
+
+  // --- Alcance de la eliminación definitiva ---
+  await page.click('#delete-btn');
+  await page.waitForSelector('#delete-confirm:not([hidden])');
+  const preview = await page.textContent('#delete-preview');
+  check('E54b antes de confirmar se muestra el alcance y la irreversibilidad',
+    preview.includes('participantes') && preview.includes('respuestas')
+    && preview.includes('Esta acción no puede deshacerse'));
+  check('E53b archivar se ofrece por separado, como conservación',
+    (await page.textContent('#peligro-t, .panel')).length > 0
+    && (await page.textContent('body')).includes('Archivar familia (conserva los datos)'));
+  await page.screenshot({ path: join(SHOTS, 'E54_alcance_eliminacion.png'), fullPage: true });
+
+  // --- Familia Abierta: la invitación ya puede enviarse ---
+  await page.goto(BASE + '/admin/familia.php?id=' + abierta.family.id, { waitUntil: 'networkidle' });
+  await page.waitForSelector('#invite-actions button');
+  check('E09c una familia Abierta declara «Lista para recibir participantes»',
+    (await page.textContent('#invite-state')).includes('Lista para recibir participantes'));
+  check('E09d y ofrece «Copiar invitación para enviar»',
+    (await page.textContent('#invite-actions')).includes('Copiar invitación para enviar'));
+  await page.screenshot({ path: join(SHOTS, 'E09_familia_abierta.png'), fullPage: true });
+
+  check('E78b administración sin errores de JavaScript', jsErrors.length === 0, jsErrors.join(' | '));
+  await page.close();
+}
+
 await browser.close();
 console.log('');
 if (failures === 0) {

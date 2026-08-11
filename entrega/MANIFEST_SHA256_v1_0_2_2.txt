@@ -1,0 +1,228 @@
+MANIFEST SHA-256 — Diagnóstico BVM para Familias Empresarias, versión en línea 1.0.2.2
+======================================================================================
+
+Fecha de generación: 2026-08-11
+Archivos del proyecto: 153
+
+Verificación:
+    sha256sum -c MANIFEST_SHA256.txt        (dentro de la carpeta del proyecto)
+
+El paquete NO contiene: private/config.php, credenciales, APP_KEY,
+install_token real, cookies, sesiones, dumps de Hostinger ni datos de clientes.
+Las únicas familias presentes en la evidencia son ficticias.
+
+--------------------------------------------------------------------------------------
+PAQUETES DE ENTREGA
+--------------------------------------------------------------------------------------
+83f5468d79aa2a548855aef3e9670677213f1886eeda3ee526af49483df17813  Diagnostico_BVM_Familias_Empresarias_EN_LINEA_v1_0_2_2.zip
+3274e14e09ab1f6474f8142b1207d89aec325c40d1fb7ce212354dafe81bcca7  Diagnostico_BVM_v1_0_2_2_archivos_modificados.zip
+
+--------------------------------------------------------------------------------------
+MOTOR METODOLÓGICO CONGELADO (idéntico a la versión 1.0.2.1)
+--------------------------------------------------------------------------------------
+5a89db7793c264e1b7ab930d5490b72b8f8d96e320c9b404e9c1a8d1104346bf  private/reference-app/referencia_app.html
+5a89db7793c264e1b7ab930d5490b72b8f8d96e320c9b404e9c1a8d1104346bf  reference/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_DESARROLLO.html
+
+--------------------------------------------------------------------------------------
+ARCHIVOS NUEVOS O MODIFICADOS EN 1.0.2.2 (43)
+--------------------------------------------------------------------------------------
+5d6e59d2f4d800391bebcb757ab973727ff4de5d9c988a758f39c9a277d6d7cb  CHANGELOG.md
+8b5d887240d9d9889a80dff65e1d565961d7a79c6ac224d4cb9b0ca6e4e9e8b9  DEPLOY_HOSTINGER.md
+4d465edababb42f3f44fa01f6b1de670ee82ea480a7816313eda975395ec78a8  README.md
+8d8d9bea0be9542ac212b07d0a88f44cc5df3137cde37c1ea15af47949f3cbce  docs/DEPLOY_1_0_2_2_DESDE_1_0_2_1.md
+308056291f17f9c830b71be34f99056d19655d255f53404d315fb15ffe5b1d49  docs/QA_V1_0_2_2.md
+11e37d41fcbd7cadb0756eef7d388df4ecb32a93a6ddd98b367787117a6507b2  docs/RESUMEN_EJECUTIVO_1_0_2_2.md
+4b871ecceda2ee66794a5c41ae48e70ec9706d56de1d6c6058b9f2b54da6be5e  docs/ROLLBACK_1_0_2_2.md
+ab52d89bf804e39abd41762a92b95122edad2c8fc91e41e383aae85a8b5dc51c  private/auth.php
+c05f7e35934601e7c72be1b75bf43b98f150d6ea7b32d5508765ce2ffa992f35  private/bootstrap.php
+e3267157b109b06a38d9a389fda3c527c2eeebf51512c6c8dcce09bfe5e55ce2  private/config.dev.example.php
+49c11bac1a74ed6d4a90254c7d43efc9c5a19e1606a10f87302d7eec145cbddd  private/health_checks.php
+893bf614b1a788939f520d9076a5f2a6c263add565627a87a23e9c88dc1147cc  private/reference_renderer.php
+f3c9627d70c1699f04cdd4c9e223c1d255649799a2cd6af1429458a830095d6d  private/repositories/FamilyRepository.php
+e90cc12f9247969585c6a37d1559d647ab85c9f63c1a3736e1fd7f7fcef69bf8  private/repositories/ParticipantRepository.php
+b17c98f8b976696eb8d0144787bbcf4f030d125feb8a3001d2be46f64f7331c9  private/services/ParticipationPolicy.php
+14cf5427db0553e99da908a2cc3eef378d4d5485cf3fb494716b8b463272dd50  public/admin/familia.php
+80aaaaba98c6e09b711e56c867063dded9f4e016b3aa2e619d0eebb3fdd5f81b  public/admin/familias.php
+1c857a41d7ee71f77db980fb6e0bfb622a8da54193531219284c2d3608558c8f  public/admin/reporte.php
+e8d135acf388d7bd684b9e6e5fe01ac6022d6934c3040fbf3228fc3e13f5c401  public/api/families/create.php
+653937d31d0170493c13866243e17afc04e412bbb7838947beacae32c8337d21  public/api/families/delete.php
+ba6c0300086e76f127ba364c2cb2e3b171022ccf944cb910f763764fde9bee9e  public/api/families/detail.php
+cbf6e09c6369e615a7d00c43c4111397afef5175f18854511121c772cb0941b2  public/api/families/import.php
+81b7f964435a55d6acb12b84ebc38572b18f3637684250b5837f0923bcdc55ef  public/api/families/update.php
+90701376f0d445470236a29be09840f916e753f1e8095c675a4a6e4a78ebb19a  public/api/participants/access.php
+45481ca508ec6283b02bdf7dc4b43492ad32fd1de27eaae47df09a6960277074  public/api/participants/logout.php
+6041b6cfa37d58ea39c98fb33912692d86f2497ddcc486d3e7680bc32e4bc536  public/api/participants/register.php
+0b39829e584bbe7a055510e507a492d9e1e616a7a99d1cab31dda628bc98b8d9  public/api/participants/resume.php
+02151d03341b44eadc3b80bc50ed73e4b407285cb05770de5cc4ecc971d90c31  public/api/participants/state.php
+0f73f54032a37c2e4f3b711900435d101fc0940eabc1a8d741374cb61bf49701  public/api/responses/external.php
+6acf9a803da66b7e3d2d8fcaea3de75bc5d24f7e5cf6a6ddadbd79ef46aaab50  public/api/responses/finalize.php
+f82776cd3477fa3da367a7646da3193df8f03fd6f7681e56d9ddf8160c43a488  public/api/responses/save.php
+8587547d2620350a7537df2d68df30def76b99a22010f2f48ecd7e22ebb9aad4  public/assets/css/bvm-app.css
+29a181d03276b00e05c87378cf11e646a3d202302231009a2dac5f988cafa3a0  public/assets/js/bvm-participante.js
+29e4846e75e442ca658c84e2f24fed5eb5571945964cfcc9c86dbdae283695de  public/index.php
+bafcb6f870d72b2daf2848986e0214a59290a71e506fdcaa55ae3e962fd35e71  public/participar.php
+f3e3acaf6ec29977e8f2903a1ce412dffcb4dbf90148d568dcd31716c9a774c0  tests/e2e/browser_v1022.mjs
+41dc75eddb73a64bb9d7d78238101564f499c95b81b92a213933d61c283cf561  tests/e2e/e2e_api.mjs
+163b91c7a1ba66dfd501efe1e9c6a26f21d39df9e28730e3733f02fd711575fa  tests/e2e/e2e_v1022.mjs
+e90f82996438c1825507fffde3bf5e1fd3521502c172c9c92236aa3d1c64e8a0  tests/e2e/run_e2e.sh
+a978a2643817c2a5a55844ea2da4c32848a262db723c09582225cf186dca1ece  tests/e2e/static_checks.mjs
+a42fc063971617f4cc2ad783c3e017d5bd8dc0375384399b0c9dcc0bd31e53bd  tests/integration/run_integration.php
+c29cb1bc0ed64a37e7a61d9d42dd41bca3567c243678f17c81870ea971c3e1ee  tests/mysql/concurrency_test.php
+18e5b9074ed9e909be8a1e964e56c2c6e60e6714390047265a541ee22557b365  tests/mysql/worker_register.php
+
+--------------------------------------------------------------------------------------
+TODOS LOS ARCHIVOS DEL PROYECTO
+--------------------------------------------------------------------------------------
+5d6e59d2f4d800391bebcb757ab973727ff4de5d9c988a758f39c9a277d6d7cb  CHANGELOG.md
+8b5d887240d9d9889a80dff65e1d565961d7a79c6ac224d4cb9b0ca6e4e9e8b9  DEPLOY_HOSTINGER.md
+4d465edababb42f3f44fa01f6b1de670ee82ea480a7816313eda975395ec78a8  README.md
+91ffed0da048a13883aa016725cadeb151cd0f64cc31f3c83d5c5f9dc196ebf4  database/.htaccess
+34e646662d0f10a4937e664cd6f76fe57ae77cd6fc0f886a35c294aabc00ec8c  database/migrations/0001_esquema_inicial.sql
+259d389ed448f5b48af8d26c7faadc68e3ae144bc12e11d2c837fe8638392b56  database/migrations/0002_family_assignments.sql
+4b5f7fecc0329341f205f2af1855674ef506afa02239dfee7028bb318e7452bb  database/migrations/0003_enforce_participant_limit.sql
+897ccbdededf1874ef2705b4af54446f30f8ecde023ec7e19d1eb54047eb2976  database/migrations/0004_resume_token_lookup.sql
+8bcb2efe050ebfa0458eb5bd21463ef739c90fabe02473fea3b7406f643a0d43  database/migrations/README.md
+48bb399472c5bf3d02f904cae55f23d39b941ceb81a3d6787db32d43c15bb969  database/schema.sql
+8d8d9bea0be9542ac212b07d0a88f44cc5df3137cde37c1ea15af47949f3cbce  docs/DEPLOY_1_0_2_2_DESDE_1_0_2_1.md
+ad795caced7b50f7e7b4f9a423958320cb430457f41a6ebd98b77f7dc151736f  docs/GUIA_PARTICIPANTE.md
+cac839e6b1b1be8ebba55cdf50391aaebf7498a0be5f002b02152842b43e5720  docs/MANUAL_ADMIN_BVM.md
+6452785196314dbad0f95dbc050ced63d3f81ac32013006e4f617a6519e1dc82  docs/MIGRACION_1_0_1_A_1_0_2.md
+5b5b88f6f049dc20aef710878a538064f6e0949253eb60e0fa34b4dd06dde294  docs/MIGRACION_DESDE_VERSION_LOCAL.md
+308056291f17f9c830b71be34f99056d19655d255f53404d315fb15ffe5b1d49  docs/QA_V1_0_2_2.md
+e192196bc6f9b659f38e2e12e2b891fa8a697521514362d6599343ce77f56899  docs/RESUMEN_EJECUTIVO.md
+11e37d41fcbd7cadb0756eef7d388df4ecb32a93a6ddd98b367787117a6507b2  docs/RESUMEN_EJECUTIVO_1_0_2_2.md
+4b871ecceda2ee66794a5c41ae48e70ec9706d56de1d6c6058b9f2b54da6be5e  docs/ROLLBACK_1_0_2_2.md
+7771edb27dcd67e94bdf628439f145d3d56413bad670a10828376ea38622960d  docs/SEGURIDAD_Y_PRIVACIDAD.md
+713a7541fd9b445f58aaff3fbead665f8c728e2f15b24e9e7a7ae6c1a17058b2  private/.htaccess
+a97e18feee831980c06e4eb62e7c94a71115de6a7bb4ef8c9ece0e1c2ce00999  private/admin_layout.php
+ab52d89bf804e39abd41762a92b95122edad2c8fc91e41e383aae85a8b5dc51c  private/auth.php
+c05f7e35934601e7c72be1b75bf43b98f150d6ea7b32d5508765ce2ffa992f35  private/bootstrap.php
+e3267157b109b06a38d9a389fda3c527c2eeebf51512c6c8dcce09bfe5e55ce2  private/config.dev.example.php
+a6b89bf0e9818b7ca2fee8e517552f9186bdf2be6b0040257dc83823ee53fe2e  private/config.example.php
+9078d3d247d4a3482d6d6d3d1fe277161fbd0011b2d6758872d7af1aefafa982  private/csrf.php
+c643a68883cc3642fbcd85ab49a013ceff7fcd4d8b425c13a6b18b3f086f4f28  private/cuestionario.php
+50c9fc4e28238cd4b36c2d37ba0e50ac53814f26228f2a762bbe9c73de1efd9c  private/database.php
+49c11bac1a74ed6d4a90254c7d43efc9c5a19e1606a10f87302d7eec145cbddd  private/health_checks.php
+5a89db7793c264e1b7ab930d5490b72b8f8d96e320c9b404e9c1a8d1104346bf  private/reference-app/referencia_app.html
+4426c2953afc1035efd287db719c41a98ee2df3995aba82e509b2b2a36ea551f  private/reference_presentation_patch.php
+893bf614b1a788939f520d9076a5f2a6c263add565627a87a23e9c88dc1147cc  private/reference_renderer.php
+a36ba1e44f1bc3955b18c844bfbb0090c836b1cf4bf8595d8c39acc507f50f6f  private/repositories/AdminUserRepository.php
+3eafa534a2f82c680ff9d71439a33253e129324418843ed204f9e6c7ad600fa2  private/repositories/AuditRepository.php
+f3c9627d70c1699f04cdd4c9e223c1d255649799a2cd6af1429458a830095d6d  private/repositories/FamilyRepository.php
+f64aaca655e5134ad62c4c41b033f6ec3f3058c2f023f649b7dd9046cb0446fd  private/repositories/LoginAttemptRepository.php
+e90cc12f9247969585c6a37d1559d647ab85c9f63c1a3736e1fd7f7fcef69bf8  private/repositories/ParticipantRepository.php
+cd8bb3502fcfff653f07ed40f750e30b33844874e1270c88b3d1c15a58404e6e  private/repositories/ResponseRepository.php
+a437e84404d349f079497d21463f80441c2b3e424ad55fb0e065c98aca88553b  private/security.php
+70ba26a497bd09fce8e7d0c7913d1b7725e72a3b0e26920859d7d0ca6e032858  private/services/FamilyDataService.php
+b17c98f8b976696eb8d0144787bbcf4f030d125feb8a3001d2be46f64f7331c9  private/services/ParticipationPolicy.php
+cbaa5dfb65d898d269008d737be651ac87c5744fccd26691b85b75e9c6dc402e  private/validators.php
+325571293333d4b01a1ef4589e433ba7cf569126597dc143e8efb2d735b8ce72  public/.htaccess
+47ed912e7a63284b6b1265526183a56e5441d5f726ea187468283349fa257009  public/acceso-bvm.php
+68825679e09bbf79e40ff23c25fa4743e2617afcb4112a8610bc3a1944299181  public/admin/cerrar-sesion.php
+14cf5427db0553e99da908a2cc3eef378d4d5485cf3fb494716b8b463272dd50  public/admin/familia.php
+80aaaaba98c6e09b711e56c867063dded9f4e016b3aa2e619d0eebb3fdd5f81b  public/admin/familias.php
+df6885a2019313d9d70dd9e23ffe2f99aedf2f17548015fcf16c13ffef1d7eba  public/admin/importar.php
+a5065866101a3923bc1497ba5ba9c2f11150e28882e3d6026a161affa2bbd595  public/admin/index.php
+1c857a41d7ee71f77db980fb6e0bfb622a8da54193531219284c2d3608558c8f  public/admin/reporte.php
+0cd4c3c40940e87269b39b0d84a9ccc9567d6f62772dee20844192a8cdda2553  public/admin/salud.php
+3c0de50b751e755c5e2f787125410a805fc1af2b80203d7d575b33a56d7b7651  public/api/auth/login.php
+477fe020e3632f600f135f519d1d543124adcfad2644d4f530cec3372a3334b6  public/api/auth/logout.php
+e8d135acf388d7bd684b9e6e5fe01ac6022d6934c3040fbf3228fc3e13f5c401  public/api/families/create.php
+653937d31d0170493c13866243e17afc04e412bbb7838947beacae32c8337d21  public/api/families/delete.php
+ba6c0300086e76f127ba364c2cb2e3b171022ccf944cb910f763764fde9bee9e  public/api/families/detail.php
+b5bb004ef733288d45e339ee7d6e0d980ee2f3166a14ef40946f6d4cdab2c9e1  public/api/families/export.php
+cbf6e09c6369e615a7d00c43c4111397afef5175f18854511121c772cb0941b2  public/api/families/import.php
+42bb895ed134e45c380ee9ef3de568e3a1c988b14e373fb107e13b3a07fe8fa0  public/api/families/list.php
+ca214a1e1b42f0748832136a62daff3aa397aadeb658e63f5840efb091216d2f  public/api/families/regenerate-key.php
+81b7f964435a55d6acb12b84ebc38572b18f3637684250b5837f0923bcdc55ef  public/api/families/update.php
+90701376f0d445470236a29be09840f916e753f1e8095c675a4a6e4a78ebb19a  public/api/participants/access.php
+67c25ac9ffc479aba92cebd5c94aeb36cd81d563e389403e584fe2843a3787c6  public/api/participants/admin-actions.php
+45481ca508ec6283b02bdf7dc4b43492ad32fd1de27eaae47df09a6960277074  public/api/participants/logout.php
+6041b6cfa37d58ea39c98fb33912692d86f2497ddcc486d3e7680bc32e4bc536  public/api/participants/register.php
+0b39829e584bbe7a055510e507a492d9e1e616a7a99d1cab31dda628bc98b8d9  public/api/participants/resume.php
+02151d03341b44eadc3b80bc50ed73e4b407285cb05770de5cc4ecc971d90c31  public/api/participants/state.php
+985d8ef261ade8c4df8a274e3c4677301c341c750e92adce83c034409df0ca36  public/api/reports/family-data.php
+0f73f54032a37c2e4f3b711900435d101fc0940eabc1a8d741374cb61bf49701  public/api/responses/external.php
+6acf9a803da66b7e3d2d8fcaea3de75bc5d24f7e5cf6a6ddadbd79ef46aaab50  public/api/responses/finalize.php
+f82776cd3477fa3da367a7646da3193df8f03fd6f7681e56d9ddf8160c43a488  public/api/responses/save.php
+8587547d2620350a7537df2d68df30def76b99a22010f2f48ecd7e22ebb9aad4  public/assets/css/bvm-app.css
+a0031b00fce99aa606d61418a54f01df3f01579f186d0004d10c28f75d125c4d  public/assets/js/bvm-api.js
+5b31153225ab16cc13779d27233e34975fbcd8581c0a82e557f19629de09bbe2  public/assets/js/bvm-cuestionario.js
+29a181d03276b00e05c87378cf11e646a3d202302231009a2dac5f988cafa3a0  public/assets/js/bvm-participante.js
+7cab2a26b47418917c6e6494c8668e7df4cc557930b5658f9103acb2c49c126a  public/bvm_paths.php
+e66b8e63ebbc7865913dec532880e5534f43f5a539fb3e0834051096fd807bed  public/demostracion.php
+29e4846e75e442ca658c84e2f24fed5eb5571945964cfcc9c86dbdae283695de  public/index.php
+005e1193ff3108c9671041aeddf53fc2ea9351d2e906373a6c0cc758ed5426d4  public/instalar.php
+bafcb6f870d72b2daf2848986e0214a59290a71e506fdcaa55ae3e962fd35e71  public/participar.php
+ace83839306e6efe49994b422123542e10fc1b49fd06babdecb41dcfa6ac9223  qa-evidence/MATRIZ_DE_PRUEBAS.md
+67f5b16bb25bdbb1c6861bc0253b16ead85061e92ae80c7096cea6f2031bc8f1  qa-evidence/logs/e2e.log
+2c09d06d924b6805954218509e725092c7dd4e9a80eeaaa81564451767dce733  qa-evidence/logs/evidencia.log
+d1784fb2921e8159f9ca4446ef01d30468bb550d1c6bd040019c03ffab5ee18b  qa-evidence/logs/integracion.log
+fcf1b636e0e42c654eccaf27b165db3c8aa548afaf538e9f49d93de2d52a9744  qa-evidence/logs/mysql.log
+53338740cf9e85e28d36e97a8a76abce3f59ef7a9c5b38c88a0b5c8d0f6b19a0  qa-evidence/logs/paridad.log
+c3e05c527891672cfdba92f020c8e9bf3f0e7f929074d080381e8d31bd82e541  qa-evidence/parity/family_from_db.json
+69d528b67c6ed02822c5f27bbe74978c58a2f577a70c2deeaede3919e151e1a6  qa-evidence/parity/parity_report.json
+d8d4d7f13ea2da88bfd10c97905a77ce59b0df270389c4ee1806ff4d1c39fbee  qa-evidence/pdf/demo_a4.pdf
+5abde360bc7054bdfbb21b79d0d7805beabf163a7cfec2a5866aad269cc8a72b  qa-evidence/pdf/demo_letter.pdf
+d74aafb48b98977480a74ec27d633f30d5d6dbedbbd24db51502955bd513169e  qa-evidence/pdf/real_a4.pdf
+4b3a34117fc0a70dc2a33de6f204731162899dc1916e327bd81951888c06a84d  qa-evidence/pdf/real_letter.pdf
+19ac9c9d5165c467f2fef056aad3008bb83466213429993de0ac5aa1e57c087a  qa-evidence/pdf/stress_a4.pdf
+82bd96cea54ae0f3f65647f62a54546a3f250a4f82dfeb8a3038106c20ba36b0  qa-evidence/pdf/stress_letter.pdf
+412052ed297e319585c242d6778942814ae2e7389c59ac334b561c39bdcad573  qa-evidence/pdf/tie_a4.pdf
+68c53f95380a3ddbdefd7f8d48c3d73c4747347d8877cb6e69b5753ca18e1dfc  qa-evidence/pdf/tie_letter.pdf
+598003d6385465641bc80f31723f2920d5ce33a6478bcf49770d1b5a581590fe  qa-evidence/v1.0.2.2/CONGELAMIENTO_HASHES.md
+540ac9c0688a20a307356f07d625ac858d86bde65b0bc3b6232242d28ac261e1  qa-evidence/v1.0.2.2/README.md
+e515cd1e0684b10e2a7b031ccc6c0215677a833f0e02442de3b3687d642fd434  qa-evidence/v1.0.2.2/logs/e2e.log
+e13e24145590493032f505301db268a7043ac992017f309f79b4e51acc5c9e29  qa-evidence/v1.0.2.2/logs/health-check-mysql.log
+e8b8a59d3db3c315dc1c0b3a01e88f01e18d801de5ab8d9b87dd3c6617a4491d  qa-evidence/v1.0.2.2/logs/integracion.log
+d3d1affca7acc3d30c6fc55f3b0e739ca8d75c828f58a77d91f17faddaea68e7  qa-evidence/v1.0.2.2/logs/mysql.log
+53338740cf9e85e28d36e97a8a76abce3f59ef7a9c5b38c88a0b5c8d0f6b19a0  qa-evidence/v1.0.2.2/logs/paridad.log
+c3e05c527891672cfdba92f020c8e9bf3f0e7f929074d080381e8d31bd82e541  qa-evidence/v1.0.2.2/paridad/family_from_db.json
+69d528b67c6ed02822c5f27bbe74978c58a2f577a70c2deeaede3919e151e1a6  qa-evidence/v1.0.2.2/paridad/parity_report.json
+d8d4d7f13ea2da88bfd10c97905a77ce59b0df270389c4ee1806ff4d1c39fbee  qa-evidence/v1.0.2.2/reportes/demo_a4.pdf
+20b57d70b9084442e6d0f3b9e6361e4e99a6b4f68e434b5e54f2acd5a0d0e5eb  qa-evidence/v1.0.2.2/reportes/demo_a4_contacto.png
+5abde360bc7054bdfbb21b79d0d7805beabf163a7cfec2a5866aad269cc8a72b  qa-evidence/v1.0.2.2/reportes/demo_letter.pdf
+e9e428bcda082573d631dd3b699c2ae02a14dcdbc52af9f7c38148c7969a9313  qa-evidence/v1.0.2.2/reportes/demo_letter_contacto.png
+d74aafb48b98977480a74ec27d633f30d5d6dbedbbd24db51502955bd513169e  qa-evidence/v1.0.2.2/reportes/real_a4.pdf
+196d00b6546a0a3d76d64811da0974bf82548838c3ffdbaa69cfc891a8abe93d  qa-evidence/v1.0.2.2/reportes/real_a4_contacto.png
+4b3a34117fc0a70dc2a33de6f204731162899dc1916e327bd81951888c06a84d  qa-evidence/v1.0.2.2/reportes/real_letter.pdf
+a55d6e0080774328b28e8a94b61737fc2f7d350d518a4e588c4697a414a1ed4b  qa-evidence/v1.0.2.2/reportes/real_letter_contacto.png
+19ac9c9d5165c467f2fef056aad3008bb83466213429993de0ac5aa1e57c087a  qa-evidence/v1.0.2.2/reportes/stress_a4.pdf
+3058da55dff3f48beeee649c00dfcb7460e2b0a11624e386d5b9ffac0a25ad57  qa-evidence/v1.0.2.2/reportes/stress_a4_contacto.png
+82bd96cea54ae0f3f65647f62a54546a3f250a4f82dfeb8a3038106c20ba36b0  qa-evidence/v1.0.2.2/reportes/stress_letter.pdf
+bcaa7cff4c8900d43d1d353b28b26673ae349365246227d3d2afd9e98454eeca  qa-evidence/v1.0.2.2/reportes/stress_letter_contacto.png
+412052ed297e319585c242d6778942814ae2e7389c59ac334b561c39bdcad573  qa-evidence/v1.0.2.2/reportes/tie_a4.pdf
+37109d60e3ef65b37618f5a78333710cab514419d298ef9f56365a8eed9787a7  qa-evidence/v1.0.2.2/reportes/tie_a4_contacto.png
+68c53f95380a3ddbdefd7f8d48c3d73c4747347d8877cb6e69b5753ca18e1dfc  qa-evidence/v1.0.2.2/reportes/tie_letter.pdf
+fef3d166361bd005db9315f65b8a5e885043359f1a69773ec615328b0eaf9de7  qa-evidence/v1.0.2.2/reportes/tie_letter_contacto.png
+5c3177f2895a7caad337adf87984c3f74d89fcb59e0f534f95d63d2aa51c8780  qa-evidence/v1.0.2.2/screenshots/E03_portada_panel_invitacion.png
+301174203f02f0211f4f352562f35304b94c304ccb5d687d1b4da35e0e72bab8  qa-evidence/v1.0.2.2/screenshots/E09_familia_abierta.png
+5aab5b81478ca14028959a6d355c701a896b466903cbb50bf3fdfd3f671b28df  qa-evidence/v1.0.2.2/screenshots/E37_cupo_lleno.png
+59827d482168d7e9b6372539a6ada36402153151e66e344b3fe4c65600cf0bc9  qa-evidence/v1.0.2.2/screenshots/E38_borrador_sin_formulario.png
+65e0f43977f67090db0644e2b651f7b52fc00d4df1823c791c4e2aca26236c04  qa-evidence/v1.0.2.2/screenshots/E39_escritorio_1280x900_privacidad.png
+be2075a2253ae192d5e063f4e6f4123698df64e8004ad41de7731a5c6f3ddd7d  qa-evidence/v1.0.2.2/screenshots/E40_movil_390x844_privacidad.png
+b026d3453f989c529ee28455e5ecc97e72f5eeba78831789506c7478036ea751  qa-evidence/v1.0.2.2/screenshots/E41_movil_375x667_privacidad.png
+121d9baca680309eed37e6a87d9c3a1f7d0ace4380885f58ab66c7a8a87963f8  qa-evidence/v1.0.2.2/screenshots/E54_alcance_eliminacion.png
+5a89db7793c264e1b7ab930d5490b72b8f8d96e320c9b404e9c1a8d1104346bf  reference/Diagnostico_BVM_Familias_Empresarias_EN_LINEA_DESARROLLO.html
+93515f54eb2425ec1dc030accde1200399305df01ed5c875d06e655799c937c2  reference/NO_MODIFICAR_ARCHIVO_ESTABLE.txt
+f3e3acaf6ec29977e8f2903a1ce412dffcb4dbf90148d568dcd31716c9a774c0  tests/e2e/browser_v1022.mjs
+41dc75eddb73a64bb9d7d78238101564f499c95b81b92a213933d61c283cf561  tests/e2e/e2e_api.mjs
+32ec5d6032f605fabc26ca6e7fcfab6e88b98a8a28b3e507f7b0df61abce0be3  tests/e2e/e2e_browser.mjs
+163b91c7a1ba66dfd501efe1e9c6a26f21d39df9e28730e3733f02fd711575fa  tests/e2e/e2e_v1022.mjs
+e90f82996438c1825507fffde3bf5e1fd3521502c172c9c92236aa3d1c64e8a0  tests/e2e/run_e2e.sh
+a978a2643817c2a5a55844ea2da4c32848a262db723c09582225cf186dca1ece  tests/e2e/static_checks.mjs
+0dfbf89101383af8025585b037a82a06a619cd7acd4c9f9efda284b736e46a34  tests/evidence/generate_pdfs.mjs
+b65b09aeaf05ffe755c6dad06157363b09ed8fbd486cda9b347de3811069a73d  tests/evidence/render_pngs.mjs
+b90e99e8a91e53fbb8ff82e5e8c46b368717b492c01c239c4abaf3dfda6c985c  tests/evidence/run_evidence.sh
+68d0ce6a41cce9150638c3be82f667ca089bfc1b604d031044d68efff805398d  tests/evidence/seed_evidence.mjs
+e7ad346e84e3f716f775fe217b8d62ca73afb610b9d0e924686d49e8900f2f0b  tests/fixtures/schema_sqlite.sql
+a42fc063971617f4cc2ad783c3e017d5bd8dc0375384399b0c9dcc0bd31e53bd  tests/integration/run_integration.php
+c29cb1bc0ed64a37e7a61d9d42dd41bca3567c243678f17c81870ea971c3e1ee  tests/mysql/concurrency_test.php
+9b445da51bfac6b54cbf23ab71654e016527f06360f3eea7ca43ef51951ff9a0  tests/mysql/mysql_specific.php
+dc84fbd27a67a1422c3a9bb2fa3e4023de6b58a08416ddc9f1a474c5173625bf  tests/mysql/run_mysql.sh
+9c8485fa8122e0f5c887f2720cd193c8931fc344895ec6ce6b5d998298eb58f6  tests/mysql/schema_equivalence.php
+18e5b9074ed9e909be8a1e964e56c2c6e60e6714390047265a541ee22557b365  tests/mysql/worker_register.php
+d4f493c338b6ec305436af94b6b4711e894f5891154bcb8c13259665925d4a78  tests/parity/parity_check.mjs
+39da3191c38b19b2640958a08d3d58a1d5a16850daedebebbc78c22f3a15a34d  tools/.htaccess
+d33d648c460767abaf6e0f244caaba2b1119b844d3bbbf4555ab85f65747ec51  tools/health-check.php
+fae7d3a1dd8ed67ad416b4add754af6375a3c982b1529d6ba8c5ac6d9ed1f985  tools/import-local-backup.php

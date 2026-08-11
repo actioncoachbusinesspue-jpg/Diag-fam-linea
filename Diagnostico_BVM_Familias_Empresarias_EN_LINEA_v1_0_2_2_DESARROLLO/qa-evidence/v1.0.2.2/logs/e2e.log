@@ -205,11 +205,22 @@ NAVEGADOR: TODAS LAS PRUEBAS PASARON
 [OK]    E37 con el cupo lleno el mensaje es el específico
 [OK]    E37b se conserva «Continuar donde me quedé» (la familia sigue abierta)
 [OK]    E38d con cupo lleno tampoco se muestra el formulario de registro
+[OK]    E06b la familia en Borrador ofrece «Configurar y abrir participación»
+[OK]    E02d en Borrador se advierte no enviar todavía la invitación
+[OK]    E02e en Borrador la acción de invitación es de resguardo, no de envío
+[OK]    E11b el estado es la etiqueta primaria y el cupo la secundaria
+[OK]    E39b la casilla de cupo en administración no empalma su explicación
+[OK]    E43b sin finalizados el CTA del reporte está deshabilitado
+[OK]    E54b antes de confirmar se muestra el alcance y la irreversibilidad
+[OK]    E53b archivar se ofrece por separado, como conservación
+[OK]    E09c una familia Abierta declara «Lista para recibir participantes»
+[OK]    E09d y ofrece «Copiar invitación para enviar»
+[OK]    E78b administración sin errores de JavaScript
 
 NAVEGADOR 1.0.2.2: TODAS LAS PRUEBAS PASARON
 [OK]    E79/E80 sin errores ni warnings de PHP en el registro (estructura A)
 
-================ ESTRUCTURA B — docroot: /tmp/tmp.iiBbUhwwwi/diagnostico-bvm-online ================
+================ ESTRUCTURA B — docroot: /tmp/tmp.PFSyw9M90P/diagnostico-bvm-online ================
 [OK]    E01 carga pública (200, tres caminos)
 [OK]    E02 demostración sin login
 [OK]    E03 admin redirige a login sin sesión
@@ -415,6 +426,17 @@ NAVEGADOR: TODAS LAS PRUEBAS PASARON
 [OK]    E37 con el cupo lleno el mensaje es el específico
 [OK]    E37b se conserva «Continuar donde me quedé» (la familia sigue abierta)
 [OK]    E38d con cupo lleno tampoco se muestra el formulario de registro
+[OK]    E06b la familia en Borrador ofrece «Configurar y abrir participación»
+[OK]    E02d en Borrador se advierte no enviar todavía la invitación
+[OK]    E02e en Borrador la acción de invitación es de resguardo, no de envío
+[OK]    E11b el estado es la etiqueta primaria y el cupo la secundaria
+[OK]    E39b la casilla de cupo en administración no empalma su explicación
+[OK]    E43b sin finalizados el CTA del reporte está deshabilitado
+[OK]    E54b antes de confirmar se muestra el alcance y la irreversibilidad
+[OK]    E53b archivar se ofrece por separado, como conservación
+[OK]    E09c una familia Abierta declara «Lista para recibir participantes»
+[OK]    E09d y ofrece «Copiar invitación para enviar»
+[OK]    E78b administración sin errores de JavaScript
 
 NAVEGADOR 1.0.2.2: TODAS LAS PRUEBAS PASARON
 [OK]    E79/E80 sin errores ni warnings de PHP en el registro (estructura B)
